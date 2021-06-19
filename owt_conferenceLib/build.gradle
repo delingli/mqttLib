@@ -1,0 +1,77 @@
+apply plugin: 'com.android.library'
+apply from: '../upload-aar.gradle'
+
+android {
+    compileSdkVersion build_versions.compileSdkVersion
+    buildToolsVersion build_versions.build_tools
+    defaultConfig {
+        minSdkVersion build_versions.min_sdk
+        targetSdkVersion build_versions.target_sdk
+        versionCode build_versions.versionCode
+        versionName build_versions.versionName
+        ndk {
+//            moduleName "pro_screen"
+            // abiFilters "arm64-v8a", "armeabi-v7a", "x86", "x86_64"
+//            abiFilters  'armeabi', 'armeabi-v7a',  'x86', 'x86_64', 'mips'
+            abiFilters "armeabi-v7a"//, 'armeabi'
+        }
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            //zipalign优化
+            zipAlignEnabled true
+            // 移除无用的resource文件
+            shrinkResources false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+
+        }
+        debug {
+            initWith release
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+    implementation('io.socket:socket.io-client:1.0.0') {
+        // excluding org.json which is provided by Android
+        exclude group: 'org.json', module: 'json'
+    }
+    androidTestImplementation 'com.android.support:support-annotations:28.0.0'
+    androidTestImplementation 'com.android.support.test:runner:1.0.2'
+    androidTestImplementation 'com.android.support.test:rules:1.0.2'
+    androidTestImplementation('io.socket:socket.io-client:1.0.0') {
+        // excluding org.json which is provided by Android
+        exclude group: 'org.json', module: 'json'
+    }
+    testImplementation deps.junit
+    androidTestImplementation deps.ext_junit
+    androidTestImplementation deps.espresso_core
+    api 'com.idc.idcsdk:owtBaseLib:1.0.0@aar'//    api project(':owt_baseLib')
+
+}
+
+//这里maven配置
+publishing {
+    publications {
+        uploadSDK(MavenPublication) {
+            artifact "build/outputs/aar/owt_conferenceLib-debug.aar"
+            artifactId "owtConferenceLib"
+            version android.defaultConfig.versionName
+        }
+    }
+}
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+    mavenCentral()
+    maven { url 'http://10.10.20.198:8081/nexus/content/groups/IDC/' }//公司私有仓IDC组
+
+}

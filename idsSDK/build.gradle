@@ -1,0 +1,70 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-android-extensions'
+    id 'kotlin-kapt'
+}
+apply from: '../upload-aar.gradle'
+android {
+    compileSdkVersion build_versions.compileSdkVersion
+    buildToolsVersion build_versions.build_tools
+
+    defaultConfig {
+        minSdkVersion build_versions.min_sdk
+        targetSdkVersion build_versions.target_sdk
+        versionCode build_versions.versionCode
+        versionName build_versions.versionName
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            initWith release
+        }
+
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+}
+dependencies {
+    api fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
+    api 'com.idc.idcsdk:layoutManagerLib:1.0.0@aar'
+    api 'com.idc.idcsdk:arcfaceCamerax:1.0.0@aar'
+    api 'com.idc.idcsdk:owtConferenceLib:1.0.0@aar'
+    api 'com.idc.idcsdk:fileDownload:1.0.0@aar'
+    api 'xiaofei.library:hermes-eventbus:0.3.0'
+    //pi project(':layoutmanagerLib')
+//    api project(':arcface3withcamerax')
+//    api project(':owt_conferenceLib')
+//    api project(':filedownload')
+    testImplementation deps.junit
+    androidTestImplementation deps.ext_junit
+    androidTestImplementation deps.espresso_core
+}
+
+//这里maven配置
+publishing {
+    publications {
+        uploadSDK(MavenPublication) {
+            artifact "build/outputs/aar/idsSDK-debug.aar"
+            artifactId "idsSDK"
+            version "1.0.1"
+        }
+    }
+}
+
+allprojects {
+    repositories {
+        mavenCentral()
+        maven { url 'http://10.10.20.198:8081/nexus/content/groups/IDC/' }//公司私有仓IDC组
+    }
+}
+

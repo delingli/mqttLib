@@ -1,0 +1,9 @@
+rootProject.name = "IdsApp"
+include ':app'
+include ':layoutmanagerLib'
+include ':filedownload'
+include ':arcface3withcamerax'
+include ':owt_baseLib'
+include ':owt_conferenceLib'
+include ':idsSDK'
+include ':vlcLib'

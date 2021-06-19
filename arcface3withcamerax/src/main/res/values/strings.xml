@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Arcface3WithCameraX</string>
+    <string name="permission_denied">权限被拒绝！</string>
+    <string name="permission_denied1">没有相关权限！</string>
+    <string name="init_failed">引擎初始化失败，错误码为 %d</string>
+    <string name="bind_fail">人脸相机初始化失败，请先调用setLifecycleOwner!</string>
+    <string name="active_success">引擎激活成功</string>
+    <string name="already_activated">引擎已激活，无需再次激活</string>
+    <string name="active_failed">引擎激活失败，错误码为 %d</string>
+</resources>
