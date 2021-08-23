@@ -55,7 +55,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 private const val ISACTIVEKEY = "isActive"
 
-class FaceCameraView : RelativeLayout, LifecycleObserver {
+open class FaceCameraView : RelativeLayout, LifecycleObserver {
     private var lifecycleOwner: LifecycleOwner? = null
     private var textureView: TextureView? = null
     private var faceRectView: FaceRectView
@@ -66,10 +66,10 @@ class FaceCameraView : RelativeLayout, LifecycleObserver {
      * 所需的所有权限信息
      */
     private val NEEDED_PERMISSIONS = arrayOf(
-            Manifest.permission.CAMERA,
-            Manifest.permission.READ_PHONE_STATE,
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
+        Manifest.permission.CAMERA,
+        Manifest.permission.READ_PHONE_STATE,
+        Manifest.permission.READ_EXTERNAL_STORAGE,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
     private var lensFacing = CameraX.LensFacing.BACK
     private var faceEngine: FaceEngine? = null
@@ -77,21 +77,21 @@ class FaceCameraView : RelativeLayout, LifecycleObserver {
     private val MAX_DETECT_NUM = 5
     private val TAG = "FaceCameraView"
     private var faceHelper: FaceHelper? = null
-    private var previeWidth = -1
-    private var previeHeight = -1
+    public var previeWidth = -1
+    public var previeHeight = -1
     private val requestFeatureStatusMap = ConcurrentHashMap<Int, Int>()
     private var drawHelper: DrawHelper? = null
     private var isGetFaceId = AtomicBoolean(false)
 
-    private val isBackFaceCodeNow = AtomicBoolean(false)
+    public val isBackFaceCodeNow = AtomicBoolean(false)
 
 
     private var tempWidth = -1
     private var tempHeight = -1
-    private var tempdata: ByteArray? = null
+    public var tempdata: ByteArray? = null
     private var temprect: Rect? = null
     private var firstOne = true
-    private var tempbitmap: Bitmap? = null
+    public var tempbitmap: Bitmap? = null
     private var backFaceFeatureListener: ((data: ByteArray) -> Unit)? = null
     private var disposable: Disposable? = null
     private var disposable2: Disposable? = null
@@ -101,7 +101,7 @@ class FaceCameraView : RelativeLayout, LifecycleObserver {
 
     @JvmOverloads
     constructor(
-            context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
+        context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
     ) : super(context, attrs, defStyleAttr) {
         textureView = TextureView(context)
         faceRectView = FaceRectView(context)
@@ -134,12 +134,12 @@ class FaceCameraView : RelativeLayout, LifecycleObserver {
     private fun initEngine() {
         faceEngine = FaceEngine()
         afCode = faceEngine?.init(
-                context,
-                DetectMode.ASF_DETECT_MODE_VIDEO,
-                DetectFaceOrientPriority.ASF_OP_0_ONLY,
-                16,
-                MAX_DETECT_NUM,
-                FaceEngine.ASF_FACE_RECOGNITION or FaceEngine.ASF_FACE_DETECT
+            context,
+            DetectMode.ASF_DETECT_MODE_VIDEO,
+            DetectFaceOrientPriority.ASF_OP_0_ONLY,
+            16,
+            MAX_DETECT_NUM,
+            FaceEngine.ASF_FACE_RECOGNITION or FaceEngine.ASF_FACE_DETECT
         ) ?: -1
         //val versionInfo = VersionInfo()
         //faceEngine?.getVersion(versionInfo)
@@ -147,9 +147,9 @@ class FaceCameraView : RelativeLayout, LifecycleObserver {
 
         if (afCode != ErrorInfo.MOK) {
             Toast.makeText(
-                    context,
-                    context.getString(R.string.init_failed, afCode),
-                    Toast.LENGTH_SHORT
+                context,
+                context.getString(R.string.init_failed, afCode),
+                Toast.LENGTH_SHORT
             ).show()
         }
     }
@@ -255,7 +255,7 @@ class FaceCameraView : RelativeLayout, LifecycleObserver {
                             doGetFaceCode(tempdata, previeWidth, previeHeight)
                         }
                     }
-                }catch (e:Exception){
+                } catch (e: Exception) {
 
                 }
 
@@ -300,7 +300,10 @@ class FaceCameraView : RelativeLayout, LifecycleObserver {
             override fun onFaceFeatureInfoGet(faceFeature: FaceFeature?, requestId: Int) {
                 //FR成功
                 if (faceFeature != null) {
-                    Log.e(TAG, "onPreview: fr end = " + System.currentTimeMillis() + " trackId = " + requestId)
+                    Log.e(
+                        TAG,
+                        "onPreview: fr end = " + System.currentTimeMillis() + " trackId = " + requestId
+                    )
                     searchFace(faceFeature)
                 } else {
                     requestFeatureStatusMap[requestId] = RequestFeatureStatus.FAILED
@@ -321,19 +324,19 @@ class FaceCameraView : RelativeLayout, LifecycleObserver {
                 previeHeight,
                 faceRectView.width,
                 faceRectView.height,
-                    it,
+                it,
                 cameraId,
                 false
-        )
+            )
         }
 
         faceHelper = FaceHelper.Builder()
-                .faceEngine(faceEngine)
-                .frThreadNum(MAX_DETECT_NUM)
-                .previewSize(previeWidth, previeHeight)
-                .faceListener(faceListener)
-                .currentTrackId(ConfigUtil.getTrackId(context))
-                .build()
+            .faceEngine(faceEngine)
+            .frThreadNum(MAX_DETECT_NUM)
+            .previewSize(previeWidth, previeHeight)
+            .faceListener(faceListener)
+            .currentTrackId(ConfigUtil.getTrackId(context))
+            .build()
     }
 
 
@@ -359,13 +362,13 @@ class FaceCameraView : RelativeLayout, LifecycleObserver {
             for (i in facePreviewInfoList.indices) {
                 val name = faceHelper?.getName(facePreviewInfoList[i].trackId)
                 drawInfoList.add(
-                        DrawInfo(
-                                facePreviewInfoList[i].faceInfo.rect,
-                                GenderInfo.UNKNOWN,
-                                AgeInfo.UNKNOWN_AGE,
-                                LivenessInfo.UNKNOWN,
-                                name ?: facePreviewInfoList[i].trackId.toString()
-                        )
+                    DrawInfo(
+                        facePreviewInfoList[i].faceInfo.rect,
+                        GenderInfo.UNKNOWN,
+                        AgeInfo.UNKNOWN_AGE,
+                        LivenessInfo.UNKNOWN,
+                        name ?: facePreviewInfoList[i].trackId.toString()
+                    )
                 )
             }
             drawHelper?.draw(faceRectView, drawInfoList)
@@ -374,12 +377,12 @@ class FaceCameraView : RelativeLayout, LifecycleObserver {
         if (facePreviewInfoList != null) {
             for (i in facePreviewInfoList.indices) {
                 faceHelper?.requestFaceFeature(
-                        data,
-                        facePreviewInfoList[i].faceInfo,
-                        width,
-                        height,
-                        FaceEngine.CP_PAF_NV21,
-                        facePreviewInfoList[i].trackId
+                    data,
+                    facePreviewInfoList[i].faceInfo,
+                    width,
+                    height,
+                    FaceEngine.CP_PAF_NV21,
+                    facePreviewInfoList[i].trackId
                 )
             }
         }
@@ -388,7 +391,7 @@ class FaceCameraView : RelativeLayout, LifecycleObserver {
     }
 
 
-    private fun searchFace(frFace: FaceFeature) {
+    open fun searchFace(frFace: FaceFeature) {
         if (isBackFaceCodeNow.get()) return
         isBackFaceCodeNow.set(true)
         val compareResult = FaceServer.instance.faceIsExistList(frFace)
@@ -454,8 +457,12 @@ class FaceCameraView : RelativeLayout, LifecycleObserver {
         }, 1000)
     }
 
-    fun setBackFaceFeatureListener(listener: (data: ByteArray) -> Unit) {
+    public open fun setBackFaceFeatureListener(listener: (data: ByteArray) -> Unit) {
         backFaceFeatureListener = listener
+    }
+
+    public fun getBackFaceFeatureListener(): ((ByteArray) -> Unit)? {
+        return backFaceFeatureListener;
     }
 
 
@@ -485,22 +492,22 @@ class FaceCameraView : RelativeLayout, LifecycleObserver {
                 val activeCode = FaceEngine.active(activity, appId, sdkKey)
                 emitter.onNext(activeCode)
             }).subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .`as`(activity.bindLifeCycle())
-                    .subscribe {
-                        if (it == ErrorInfo.MOK) {
-                            Toast.makeText(activity, R.string.active_success, Toast.LENGTH_LONG).show()
-                            ConfigUtil.setBoolean(activity, ISACTIVEKEY, true)
-                        } else if (it == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED) {
-                           // Toast.makeText(activity, R.string.already_activated, Toast.LENGTH_LONG) .show()
-                        } else {
-                            Toast.makeText(
-                                    activity,
-                                    activity.getString(R.string.active_failed, it),
-                                    Toast.LENGTH_LONG
-                            ).show()
-                        }
+                .observeOn(AndroidSchedulers.mainThread())
+                .`as`(activity.bindLifeCycle())
+                .subscribe {
+                    if (it == ErrorInfo.MOK) {
+                        Toast.makeText(activity, R.string.active_success, Toast.LENGTH_LONG).show()
+                        ConfigUtil.setBoolean(activity, ISACTIVEKEY, true)
+                    } else if (it == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED) {
+                        // Toast.makeText(activity, R.string.already_activated, Toast.LENGTH_LONG) .show()
+                    } else {
+                        Toast.makeText(
+                            activity,
+                            activity.getString(R.string.active_failed, it),
+                            Toast.LENGTH_LONG
+                        ).show()
                     }
+                }
         }
     }
 

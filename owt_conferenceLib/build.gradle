@@ -53,7 +53,7 @@ dependencies {
     testImplementation deps.junit
     androidTestImplementation deps.ext_junit
     androidTestImplementation deps.espresso_core
-    api 'com.idc.idcsdk:owtBaseLib:1.0.0@aar'//    api project(':owt_baseLib')
+    api 'com.idc.idcsdk:owtBaseLib:1.0.2@aar'//    api project(':owt_baseLib')
 
 }
 

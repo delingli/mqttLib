@@ -102,8 +102,8 @@ build_versions.target_sdk = 21
 build_versions.compileSdkVersion = 30
 build_versions.build_tools = "30.0.3"
 
-build_versions.versionCode = 1
-build_versions.versionName = "1.0.0"
+build_versions.versionCode = 2
+build_versions.versionName = "1.0.2"
 build_versions.applicationId = "com.zld.monitor.proj"
 
 ext.build_versions = build_versions
