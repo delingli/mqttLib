@@ -1,25 +1,27 @@
-plugins {
-    id 'com.android.application'
-}
+apply plugin: 'com.android.library'
+apply from: '../upload-aar.gradle'
 
 android {
     compileSdkVersion build_versions.compileSdkVersion
     buildToolsVersion build_versions.build_tools
 
     defaultConfig {
-        applicationId "com.example.idsapp"
         minSdkVersion build_versions.min_sdk
         targetSdkVersion build_versions.target_sdk
-        versionCode 1
-        versionName "1.0"
+        versionCode build_versions.versionCode
+        versionName build_versions.versionName
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            initWith release
         }
     }
     compileOptions {
@@ -32,26 +34,25 @@ dependencies {
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
-//    implementation project(path: ':hermesLib')
-//    implementation 'com.idc.idcsdk:hermesLib:1.0.2'
-    implementation 'com.idc.idcsdk:mqttLib:1.0.0'
-//    implementation project(path: ':mqttLib')
-    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
-
     testImplementation deps.junit
     androidTestImplementation deps.ext_junit
     androidTestImplementation deps.espresso_core
-//    implementation project(path: ':idsSDK')
-//    implementation 'com.idc.idcsdk:layoutManagerLib:1.0.0@aar'
-//    api 'com.idc.idcsdk:idsSDK:1.0.1@aar'
-
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-//    https://blog.csdn.net/wang295689649/article/details/105219587
+    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
+    implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
+    implementation 'androidx.gridlayout:gridlayout:1.0.0'
 }
 repositories {
-    flatDir {
-        dirs 'libs'
+    maven {
+        url "https://repo.eclipse.org/content/repositories/paho-snapshots/"
     }
-    maven { url 'http://10.10.20.198:8081/nexus/content/groups/IDC/' }//公司私有仓IDC组
+}
+//这里maven配置
+publishing {
+    publications {
+        uploadSDK(MavenPublication) {
+            artifact "build/outputs/aar/mqttLib-debug.aar"
+            artifactId "mqttLib"
+            version "1.0.0"
+        }
+    }
 }

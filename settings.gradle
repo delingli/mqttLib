@@ -8,3 +8,5 @@ include ':owt_conferenceLib'
 include ':idsSDK'
 include ':vlcLib'
 include ':hermesLib'
+
+include ':mqttLib'

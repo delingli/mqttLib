@@ -17,6 +17,7 @@
             <option value="$PROJECT_DIR$/hermesLib" />
             <option value="$PROJECT_DIR$/idsSDK" />
             <option value="$PROJECT_DIR$/layoutmanagerLib" />
+            <option value="$PROJECT_DIR$/mqttLib" />
             <option value="$PROJECT_DIR$/owt_baseLib" />
             <option value="$PROJECT_DIR$/owt_conferenceLib" />
             <option value="$PROJECT_DIR$/vlcLib" />
@@ -25,5 +26,6 @@
         <option name="resolveModulePerSourceSet" value="false" />
       </GradleProjectSettings>
     </option>
+    <option name="offlineMode" value="true" />
   </component>
 </project>
