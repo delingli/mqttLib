@@ -3,7 +3,10 @@ package com.ldl.mqttlib.impl;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.IBinder;
+
+import androidx.annotation.RequiresApi;
 
 import com.ldl.mqttlib.utils.MqttManager;
 
@@ -26,7 +29,11 @@ public class CustomMqttService extends Service {
         if (null != onlineInforOption) {
             intent.putExtra(ONLINE_OPTION_KEY, option);
         }
-        context.startService(intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            context.startForegroundService(intent);
+        }else {
+            context.startService(intent);
+        }
     }
 
     @Override
