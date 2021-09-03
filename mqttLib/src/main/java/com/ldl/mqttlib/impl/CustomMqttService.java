@@ -10,6 +10,10 @@ import androidx.annotation.RequiresApi;
 
 import com.ldl.mqttlib.utils.MqttManager;
 
+/**
+ * 废除使用直接调用 link MqttManager
+ */
+@Deprecated
 public class CustomMqttService extends Service {
     public CustomMqttService() {
     }
@@ -31,7 +35,7 @@ public class CustomMqttService extends Service {
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(intent);
-        }else {
+        } else {
             context.startService(intent);
         }
     }
@@ -45,7 +49,7 @@ public class CustomMqttService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        MqttManager.getInstance().init();
+//        MqttManager.getInstance().init();
     }
 
     @Override

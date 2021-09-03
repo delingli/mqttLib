@@ -1,5 +1,6 @@
 package com.ldl.mqttlib.utils;
 
+import android.content.Context;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 
@@ -7,7 +8,9 @@ import androidx.annotation.IntRange;
 
 import com.ldl.mqttlib.basic.IMqtt;
 import com.ldl.mqttlib.impl.MqttImpl;
+import com.ldl.mqttlib.impl.MqttOption;
 import com.ldl.mqttlib.impl.OnGeneralReceiveListener;
+import com.ldl.mqttlib.impl.OnlineInforOption;
 
 import org.json.JSONObject;
 
@@ -27,8 +30,9 @@ public class MqttManager {
     private MqttManager() {
     }
 
-    public void init() {
+    public void init(Context context,MqttOption mqttOption, OnlineInforOption onlineInforOption) {
         iMqtt = new MqttImpl();
+        iMqtt.init(context.getApplicationContext(),mqttOption,onlineInforOption);
     }
 
 

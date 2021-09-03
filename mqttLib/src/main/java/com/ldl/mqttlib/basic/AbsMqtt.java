@@ -4,12 +4,12 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.util.ArrayMap;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.JobIntentService;
 
 import com.ldl.mqttlib.impl.MqttOption;
 import com.ldl.mqttlib.impl.OnlineInforOption;
@@ -42,24 +42,33 @@ public abstract class AbsMqtt implements IMqtt, MqttActionListener, IMqttReceive
     private MqttConnectOptions mQttConnectOptions;
     protected Context mContext;
     private Integer qos = 2;
-    private CustomHandler mHandler ;
 
-    private class CustomHandler extends Handler {
-        private WeakReference<Context> reference;
+    private Handler.Callback mCallBack = new Handler.Callback() {
+        @Override
+        public boolean handleMessage(@NonNull Message msg) {
+            if (msg.what == 1) {
+                toClientConnection();
+            }
+            return true;
+        }
+    };
+    private CustomHandler mHandler = new CustomHandler(mCallBack);
 
-        public CustomHandler(Context context) {
-            reference = new WeakReference<>(context);
+    static class CustomHandler extends Handler {
+        private WeakReference<Callback> reference;
+
+        public CustomHandler(Callback callback) {
+            reference = new WeakReference<Handler.Callback>(callback);
         }
 
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            Context context = reference.get();
-            if (context != null) {
-                if (msg.what == 1) {
-                    toClientConnection();
-                }
+            if (reference != null && reference.get() != null) {
+                Callback callback = reference.get();
+                callback.handleMessage(msg);
             }
+
         }
     }
 
@@ -82,8 +91,10 @@ public abstract class AbsMqtt implements IMqtt, MqttActionListener, IMqttReceive
     private MqttCallback mqttCallback = new MqttCallback() {
         @Override
         public void connectionLost(Throwable cause) {
-            Log.e(tag, "连接断开" + cause.getCause().toString());
-            cause.printStackTrace();
+            Log.e(tag, "连接断开");
+            if (null != cause) {
+                cause.printStackTrace();
+            }
             onFailures(null, cause);
         }
 
@@ -114,7 +125,6 @@ public abstract class AbsMqtt implements IMqtt, MqttActionListener, IMqttReceive
     @Override
     public void init(Context context, MqttOption option, OnlineInforOption onlineInforOption) {
         this.mContext = context.getApplicationContext();
-        mHandler = new CustomHandler(mContext);
         this.mqttOption = option;
         this.onlineInforOption = onlineInforOption;
         mQttAndroidClient = new MqttAndroidClient(mContext, mqttOption.getHost(), mqttOption.getClientid());
@@ -133,10 +143,9 @@ public abstract class AbsMqtt implements IMqtt, MqttActionListener, IMqttReceive
             willJson.put("status", "offline");
             willJson.put("device_sn", option.getClientid());
             // //setWill方法，如果项目中需要知道客户端是否掉线可以调用该方法。设置最终端口的通知消息
-            mQttConnectOptions.setWill(mqttOption.getPublish_topid(), willJson.toString().getBytes(), qos, mqttOption.getRetained());
+            mQttConnectOptions.setWill(mqttOption.getPublish_topid(), willJson.toString().getBytes(), qos, false);
         } catch (Exception e) {
             e.printStackTrace();
-            Log.e(tag, e.getCause().toString());
             connect = false;
             onFailures(null, e);
         }
@@ -178,8 +187,10 @@ public abstract class AbsMqtt implements IMqtt, MqttActionListener, IMqttReceive
                 mQttAndroidClient.subscribe(mqttOption.getPublish_topid(), qos);//订阅主题，参数：主题、服务质量
             }
             //发布上线消息;操
-            String str = getOnlineMessage();
-            publish(str, qos, true);
+            if (mqttOption != null) {
+                String str = getOnlineMessage();
+                publish(str, qos, mqttOption.getRetained());
+            }
 
         } catch (MqttException e) {
             e.printStackTrace();
@@ -240,7 +251,13 @@ public abstract class AbsMqtt implements IMqtt, MqttActionListener, IMqttReceive
 
     @Override
     public void onFailures(IMqttToken iMqttToken, Throwable throwable) {
-        Log.e(tag, "连接失败 " + throwable.getMessage());
+        Log.e(tag, "连接失败");
+        if (null != throwable) {
+            throwable.printStackTrace();
+        }
+        if (null == mHandler) {
+            mHandler = new CustomHandler(mCallBack);
+        }
         mHandler.sendEmptyMessageDelayed(1, RECONNECT_TIME);
     }
 
