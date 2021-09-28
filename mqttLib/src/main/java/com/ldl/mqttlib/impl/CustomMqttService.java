@@ -17,7 +17,6 @@ import com.ldl.mqttlib.utils.MqttManager;
 public class CustomMqttService extends Service {
     public CustomMqttService() {
     }
-
     private static String OPTION_KEY = "option_key";
     private static String ONLINE_OPTION_KEY = "online_option_key";
 

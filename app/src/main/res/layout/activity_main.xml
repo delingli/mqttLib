@@ -42,4 +42,20 @@
         tools:layout_editor_absoluteX="83dp"
         tools:layout_editor_absoluteY="414dp" />
 
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="开始下载"
+        tools:layout_editor_absoluteX="62dp"
+        tools:layout_editor_absoluteY="495dp" />
+
+    <Button
+        android:id="@+id/button4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="暂停下载"
+        tools:layout_editor_absoluteX="260dp"
+        tools:layout_editor_absoluteY="495dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

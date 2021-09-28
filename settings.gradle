@@ -10,3 +10,4 @@ include ':vlcLib'
 include ':hermesLib'
 
 include ':mqttLib'
+include ':RabbitMqLib'

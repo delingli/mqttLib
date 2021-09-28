@@ -39,6 +39,8 @@ dependencies {
 //    implementation project(path: ':mqttLib')
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
 
+    implementation 'com.itc.itcsdk:core:3.8.16'
+    implementation 'com.itc.itcsdk:compiler:3.8.16'
     testImplementation deps.junit
     androidTestImplementation deps.ext_junit
     androidTestImplementation deps.espresso_core

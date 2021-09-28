@@ -103,7 +103,7 @@ build_versions.compileSdkVersion = 30
 build_versions.build_tools = "30.0.3"
 
 build_versions.versionCode = 2
-build_versions.versionName = "1.0.2"
+build_versions.versionName = "1.0.3"
 build_versions.applicationId = "com.zld.monitor.proj"
 
 ext.build_versions = build_versions
@@ -112,7 +112,7 @@ def addRepos(handler) {
     //Add the JitPack repository
     handler.maven { url 'https://maven.aliyun.com/repository/public' }
     handler.maven { url 'https://maven.aliyun.com/repository/google' }
-    handler.maven { url 'https://dl.bintray.com/rtlei/rt-library' }
+//    handler.maven { url 'https://dl.bintray.com/rtlei/rt-library' }
     handler.maven { url "https://jitpack.io" }
     handler.maven { url 'http://10.10.20.198:8081/nexus/content/groups/IDC/' }//公司私有仓IDC组
     handler.google()

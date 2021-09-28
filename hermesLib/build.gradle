@@ -3,6 +3,8 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 apply from: '../upload-aar.gradle'
+//apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/installv1.gradle'
+//apply from: 'https://raw.githubusercontent.com/nuuneoi/JCenter/master/bintrayv1.gradle'
 android {
     compileSdkVersion build_versions.compileSdkVersion
     buildToolsVersion build_versions.build_tools
@@ -33,12 +35,17 @@ android {
 
 dependencies {
     api fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
-    api 'xiaofei.library:hermes-eventbus:0.3.0'
+//    api 'xiaofei.library:hermes-eventbus:0.3.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
     testImplementation deps.junit
     androidTestImplementation deps.ext_junit
     androidTestImplementation deps.espresso_core
+
+    implementation 'org.greenrobot:eventbus:3.0.0'
+    implementation 'xiaofei.library:hermes:0.7.0'
+    implementation 'xiaofei.library:concurrent-utils:0.1.4'
+
 }
 repositories {
     mavenCentral()
