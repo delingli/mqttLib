@@ -12,6 +12,7 @@ import android.os.Parcelable;
 import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.LogUtils;
+import com.rt.rabbitmqlib.basic.AbsRabbitDispatch;
 import com.rt.rabbitmqlib.basic.IRabbitDispatch;
 import com.rt.rabbitmqlib.impl.RabbitMqImpl;
 import com.rt.rabbitmqlib.impl.RabbitMqOption;
@@ -25,9 +26,9 @@ import com.rt.rabbitmqlib.utils.RabbitMqManager;
 /**
  * Created by ${zml} on 2019/4/17.
  */
-public class RabbitService extends Service {
+public class RabbitService extends Service implements AbsRabbitDispatch.RabbitEventListener {
     private static String tag = "RabbitService";
-    private static IRabbitDispatch dispatcher;
+    private  IRabbitDispatch dispatcher;
     private static Handler dispatcherHandler;
     private HandlerThread dispatcherThread;
     private static Runnable runner;
@@ -35,6 +36,7 @@ public class RabbitService extends Service {
     private static String ONLINE_OPTION_KEY = "rabbitmqparamsoption_keyz";
     private RabbitMqOption option;
     private RabbitMqParamsOption onlineinforoption;
+    private int reConnectTime = 20 * 1000;
 
     public static void startRabbitService(Context context, RabbitMqOption option, RabbitMqParamsOption rabbitMqParamsOption) {
         Intent intent = new Intent(context, RabbitService.class);
@@ -43,6 +45,27 @@ public class RabbitService extends Service {
             intent.putExtra(ONLINE_OPTION_KEY, option);
         }
         context.startService(intent);
+    }
+    public static void stopRabbitService(Context context) {
+        Intent intent = new Intent(context, RabbitService.class);
+        context.stopService(intent);
+    }
+
+    public  void restartRabbitDispatcher() {
+        LogUtils.iTag(tag, "Restart Rabbit dispatcher ... ");
+        if (dispatcherHandler == null) return;
+        dispatcherHandler.removeCallbacksAndMessages(null);
+        dispatcherHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                LogUtils.dTag(tag, "Delayed destroy of dispatcher resources.");
+                if (dispatcher != null) {
+                    dispatcher.destroyDispatcher();
+                    dispatcher = null;
+//                    dispatcherHandler.postDelayed(runner, 1000);
+                }
+            }
+        }, 100);
     }
 
 /*    public void onMessageReceived(String message) {
@@ -65,6 +88,7 @@ public class RabbitService extends Service {
     public void onCreate() {
         super.onCreate();
         //如果没有配置，显示默认ip
+        RabbitMqManager.getInstance().init(dispatcher = new RabbitMqImpl(this));
         if (runner == null) {
             runner = new Runnable() {
                 @Override
@@ -86,13 +110,13 @@ public class RabbitService extends Service {
     public boolean startRabbitDispatcher() {
         LogUtils.iTag(tag, "Start Rabbit dispatcher creation ... ");
         if (dispatcher == null) {
-            RabbitMqManager.getInstance().init(dispatcher = new RabbitMqImpl());
-            dispatcher.initRabbitDispatcher(this.getApplicationContext(), option, onlineinforoption);
+            RabbitMqManager.getInstance().init(dispatcher = new RabbitMqImpl(this));
         }
+        dispatcher.initRabbitDispatcher(this.getApplicationContext(), option, onlineinforoption);
         boolean ret = dispatcher.reCreateRabbitConnection();
         if (!ret) {
-            LogUtils.iTag(tag, "Start Rabbit dispatcher failed, recreate it after 5s.");
-            dispatcherHandler.postDelayed(runner, 5000);
+            LogUtils.iTag(tag, "Start Rabbit dispatcher failed, recreate it after 5s."+ret);
+            dispatcherHandler.postDelayed(runner, reConnectTime);
         } else {
             LogUtils.iTag(tag, "Start Rabbit dispatcher successful.");
         }
@@ -128,6 +152,18 @@ public class RabbitService extends Service {
         dispatcherThread.quit();
         dispatcherThread = null;
 
+    }
+
+    @Override
+    public void onMessageReceived(String message) {
+        LogUtils.dTag(tag, "onMessageReceived: " + message);
+    }
+
+    @Override
+    public void onShutdownSignaled(String consumerTag, String sig) {
+        LogUtils.dTag(tag, "onShutdownSignaled: " + consumerTag + " " + sig);
+        LogUtils.dTag(tag, "On shutdown signaled，recreate dispatcher resources.");
+        dispatcherHandler.postDelayed(runner, reConnectTime);
     }
 }
 

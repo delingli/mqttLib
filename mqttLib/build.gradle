@@ -52,7 +52,7 @@ publishing {
         uploadSDK(MavenPublication) {
             artifact "build/outputs/aar/mqttLib-debug.aar"
             artifactId "mqttLib"
-            version "1.0.2"
+            version "1.0.3"
         }
     }
 }

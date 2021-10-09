@@ -58,27 +58,23 @@ public class HermesEventBus {
 
     private volatile int mState = STATE_DISCONNECTED;
 
-    private xiaofei.library.hermes.HermesListener hermesListener;
-
     /**
-     *
      * 1. Consider more about the interleaving, especially when the service is being connected or disconnected.
-     *
+     * <p>
      * 2. Pay attention to the following cases:
-     *
-     *    (1) Write-after-write hazard
-     *        Before the connection succeeds, e1, e2 and e3 are put into the queue.
-     *        Then when the connection succeeds, they are posted one by one.
-     *        However, after e1 is posted, we post another event e4.
-     *        I should guarantee that e4 is posted after e3.
-     *
-     *    (2) Read-after-write hazard
-     *        Before the connection succeeds, some sticky events (e1, e2 and e3)
-     *        are put into the queue.
-     *        Then when the connection succeeds, they are posted one by one.
-     *        However, after e1 is posted, we get a sticky event.
-     *        I should guarantee that we get e3 rather than e1.
-     *
+     * <p>
+     * (1) Write-after-write hazard
+     * Before the connection succeeds, e1, e2 and e3 are put into the queue.
+     * Then when the connection succeeds, they are posted one by one.
+     * However, after e1 is posted, we post another event e4.
+     * I should guarantee that e4 is posted after e3.
+     * <p>
+     * (2) Read-after-write hazard
+     * Before the connection succeeds, some sticky events (e1, e2 and e3)
+     * are put into the queue.
+     * Then when the connection succeeds, they are posted one by one.
+     * However, after e1 is posted, we get a sticky event.
+     * I should guarantee that we get e3 rather than e1.
      */
 
     private HermesEventBus() {
@@ -129,14 +125,6 @@ public class HermesEventBus {
         }
     }
 
-    public void setHermesListener(xiaofei.library.hermes.HermesListener hermesListener) {
-        if (mMainProcess && hermesListener != null) {
-            Hermes.setHermesListener(hermesListener);
-        } else {
-            this.hermesListener = hermesListener;
-        }
-    }
-
     public void connectApp(Context context, String packageName) {
         mContext = context.getApplicationContext();
         mMainProcess = false;
@@ -149,21 +137,6 @@ public class HermesEventBus {
     public void destroy() {
         if (!mMainProcess) {
             Hermes.disconnect(mContext);
-        }
-    }
-
-    public void unInit() {
-        if (!mMainProcess) {
-            mState = STATE_DISCONNECTED;
-            if (mRemoteApis != null) {
-                mRemoteApis.action(new Action<IMainService>() {
-                    @Override
-                    public void call(IMainService o) {
-                        Log.d("ldl", "强制执行释放反注册子进程");
-                        o.unregister(Process.myPid());
-                    }
-                });
-            }
         }
     }
 
@@ -221,6 +194,20 @@ public class HermesEventBus {
                 o.post(event);
             }
         });
+    }
+
+    public void unInit() {
+        if (!mMainProcess) {
+            mState = STATE_DISCONNECTED;
+            if (mRemoteApis != null) {
+                mRemoteApis.action(new Action<IMainService>() {
+                    @Override
+                    public void call(IMainService o) {
+                        o.unregister(Process.myPid());
+                    }
+                });
+            }
+        }
     }
 
     public void cancelEventDelivery(final Object event) {
@@ -309,35 +296,22 @@ public class HermesEventBus {
             }
             });
              */
-
-//            Log.v(TAG, "Hermes " + Service.class.getCanonicalName());
-//            Log.v(TAG, "Hermes " + service.getCanonicalName());
-            if (service.getCanonicalName().equals(Service.class.getCanonicalName())) {
-                IMainService mainService = Hermes.getInstanceInService(service, IMainService.class);
-                mainService.register(Process.myPid(), SubService.getInstance());
-                mRemoteApis.set(mainService);
-                mState = STATE_CONNECTED;
-            }
-            if (hermesListener != null) {
-                hermesListener.onHermesConnected(service);
-            }
+            IMainService mainService = Hermes.getInstanceInService(service, IMainService.class);
+            mainService.register(Process.myPid(), SubService.getInstance());
+            mRemoteApis.set(mainService);
+            mState = STATE_CONNECTED;
         }
 
         @Override
         public void onHermesDisconnected(Class<? extends HermesService> service) {
             // Log.v(TAG, "Hermes disconnected in Process " + Process.myPid());
-            if (service.getCanonicalName().equals(Service.class.getCanonicalName())) {
-                mState = STATE_DISCONNECTED;
-                mRemoteApis.action(new Action<IMainService>() {
-                    @Override
-                    public void call(IMainService o) {
-                        o.unregister(Process.myPid());
-                    }
-                });
-            }
-            if (hermesListener != null) {
-                hermesListener.onHermesDisconnected(service);
-            }
+            mState = STATE_DISCONNECTED;
+            mRemoteApis.action(new Action<IMainService>() {
+                @Override
+                public void call(IMainService o) {
+                    o.unregister(Process.myPid());
+                }
+            });
             // I deleted the statement which assigns null to mRemoteApis.
             // Then, if the service is disconnected, the pending events will still be posted
             // but this process will not receive them any more.

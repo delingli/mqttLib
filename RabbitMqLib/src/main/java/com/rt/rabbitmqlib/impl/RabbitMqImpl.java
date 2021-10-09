@@ -17,10 +17,15 @@ class RabbitMqImpl extends AbsRabbitDispatch {
         sendtoApp(message);
     }
 
+    public RabbitMqImpl(RabbitEventListener listener) {
+        this.eventListener = listener;
+    }
+
     private void sendtoApp(String mqttMessage) {
         LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(context);
         Intent intent = new Intent(RabitMqAction.RECEOIVER_ACTION);
         intent.putExtra(RabitMqAction.KEY_CONTENT_MESSAGE, mqttMessage);
+        intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
         localBroadcastManager.sendBroadcast(intent);
     }
 
@@ -29,9 +34,6 @@ class RabbitMqImpl extends AbsRabbitDispatch {
         if (!TextUtils.isEmpty(consumerTag) && !TextUtils.isEmpty(sig))
             LogUtils.eTag(TAG, consumerTag, sig);
     }
-
-
-
 
 
 }

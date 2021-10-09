@@ -35,8 +35,8 @@ public abstract class AbsMqtt implements IMqtt, MqttActionListener, IMqttReceive
     public static String tag = "MqttImpl";
     private MqttAndroidClient mQttAndroidClient;
     public static int CLIENTTIMEOUT = 30;
-    public static int HESRTTIME = 30;
-    public static int RECONNECT_TIME = 5 * 1000;
+    public static int HESRTTIME = 15;
+    public static int RECONNECT_TIME = 30 * 1000;
     private MqttOption mqttOption;
     private OnlineInforOption onlineInforOption;
     private MqttConnectOptions mQttConnectOptions;

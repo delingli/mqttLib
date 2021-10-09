@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.arialyy.aria.core.Aria;
 import com.ldl.mqttlib.impl.CustomMqttService;
 import com.ldl.mqttlib.impl.MqttAction;
 import com.ldl.mqttlib.impl.MqttOption;
@@ -29,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         textView = findViewById(R.id.textView);
-        Aria.download(this).register();
+
         mLocalBroadcastManager = LocalBroadcastManager.getInstance(this);
 
         findViewById(R.id.button).setOnClickListener(new View.OnClickListener() {
@@ -59,14 +58,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-   @Download.onTaskComplete
-   void taskComplete() {
-        taskComplete();
-    }
-
-    @Download.onTaskComplete void taskComplete(DownloadTask task) {
-        //在这里处理任务完成的状态
-    }
     private void toConnectService() {
         MqttOption option = new MqttOption.MqttOptionBuilder(host)
                 .publish_topid(topic)

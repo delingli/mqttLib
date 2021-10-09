@@ -3,9 +3,11 @@ package com.rt.rabbitmqlib.basic;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.ArrayMap;
+import android.util.Log;
 
 import com.blankj.utilcode.util.LogUtils;
 import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.AlreadyClosedException;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
@@ -36,10 +38,19 @@ abstract public class AbsRabbitDispatch implements IRabbitDispatch, IRabbitMqRec
     private RabbitMqParamsOption rabbitMqParamsOption;
     private ConnectionFactory factory;
     private Connection connection;
-    private int CONNECTIONTIMEOUT = 1000 * 10;
+    private int CONNECTIONTIMEOUT = 1000 * 30;
     private int HEARTBEAT = 10;
-
+    private boolean underDestroy = false;
     private Map params = new ArrayMap<String, String>();//参数
+    protected RabbitEventListener eventListener;
+
+    public interface RabbitEventListener {
+        void onMessageReceived(String message);
+
+        void onShutdownSignaled(String consumerTag, String sig);
+    }
+
+    private String devicesn;
 
     @Override
     public void initRabbitDispatcher(Context context, RabbitMqOption rabbitMqOption, RabbitMqParamsOption rabbitMqParamsOption) {
@@ -52,9 +63,10 @@ abstract public class AbsRabbitDispatch implements IRabbitDispatch, IRabbitMqRec
         if (rabbitMqOption == null) {
             throw new RuntimeException("RabbitMqOption 配置参数不得为空");
         }
+        this.devicesn = DeviceIdUtil.getDeviceId(context);
         //初始参数
         params.put("type", 1);
-        params.put("device_sn", DeviceIdUtil.getDeviceId(context));
+        params.put("device_sn", devicesn);
         params.put("resolution", DeviceIdUtil.getScreenHeight(context) + "*" + DeviceIdUtil.getScreenWidth(context));
         params.put("memory", DeviceIdUtil.getTotalMemory() / 1024);
         params.put("device_ip", Objects.requireNonNull(DeviceIdUtil.getLocalIpAddress()));
@@ -125,6 +137,8 @@ abstract public class AbsRabbitDispatch implements IRabbitDispatch, IRabbitMqRec
         return false;
     }
 
+    private int ix = 1;
+
     @Override
     public boolean reCreateRabbitConnection() {
         LogUtils.dTag(TAG, "RabbitDispatcher try connection & channel creation.");
@@ -134,22 +148,24 @@ abstract public class AbsRabbitDispatch implements IRabbitDispatch, IRabbitMqRec
             }
             if (factory != null) {
                 connection = factory.newConnection();
-                channel = connection.createChannel();
+                channel = connection.createChannel(ix);
+                ix++;
                 //设备上报的channel
                 report = connection.createChannel();
                 // 声明队列
-                if (params != null) {
-                    String device_sn = (String) params.get("device_sn");
-                    channel.queueDeclare(device_sn, true, false, false, null);
-                    consumerTag = channel.basicConsume(device_sn, false, new RabbitConsumer(channel));
-                }
+                LogUtils.dTag(TAG, "RabbitDispatcher device_sn" + devicesn);
+//                channel.queueDeclare(devicesn, true, false, false, null);
+                channel.queueDeclare(devicesn, true, false, false, null);
+                consumerTag = channel.basicConsume(devicesn, true, new RabbitConsumer(channel));
+
             }
-        } catch (IOException | TimeoutException e) {
+        } catch (IOException e) {
             LogUtils.eTag(TAG, "IOException emitted!");
-            if(null!=e){
-                e.printStackTrace();
-            }
+            e.printStackTrace();
             return false;
+        } catch (TimeoutException t) {
+            t.printStackTrace();
+            LogUtils.eTag(TAG, "TimeoutException emitted!");
         }
         return true;
 
@@ -157,7 +173,7 @@ abstract public class AbsRabbitDispatch implements IRabbitDispatch, IRabbitMqRec
 
     @Override
     public void destroyDispatcher() {
-//        underDestroy = true;
+        underDestroy = true;
         LogUtils.dTag(TAG, "DestroyDispatcher called!");
         cleanConnectionResource(consumerTag);
         factory = null;
@@ -204,24 +220,30 @@ abstract public class AbsRabbitDispatch implements IRabbitDispatch, IRabbitMqRec
                                    AMQP.BasicProperties properties,
                                    byte[] body) throws IOException {
 
+
             String routingKey = envelope.getRoutingKey();
             String contentType = properties.getContentType();
             LogUtils.dTag(TAG, "handle message with routingKey:" + routingKey + " contentType: " + contentType);
             long deliveryTag = envelope.getDeliveryTag();
             String message = new String(body);
-            LogUtils.dTag(TAG, "message:" + message + " dtag: " + deliveryTag);
             if (lastMsgId != deliveryTag) {
                 lastMsgId = deliveryTag;
-                if (!TextUtils.isEmpty(message)) {
+                if (!TextUtils.isEmpty(message) && !underDestroy) {
+                    LogUtils.dTag(TAG, "message:" + message + "deliveryTag:" + deliveryTag);
                     receiveMessage(message);
                 }
-                LogUtils.dTag(TAG, "message:" + message);
+
             }
-            channel.basicAck(deliveryTag, false);
+            LogUtils.dTag(TAG, "ChannelNumber:" + channel.getChannelNumber() + "消息:" + message);
+//            channel.basicAck(deliveryTag, false);
+
+//            channel.basicConsume(deliveryTag, false);
+            if (eventListener != null && underDestroy == false) {
+                eventListener.onMessageReceived(message);
+            }
 
         }
 
-        private boolean underDestroy = false;
 
         @Override
         public void handleShutdownSignal(String consumerTag, ShutdownSignalException sig) {
@@ -238,15 +260,20 @@ abstract public class AbsRabbitDispatch implements IRabbitDispatch, IRabbitMqRec
             } catch (TimeoutException e) {
                 LogUtils.eTag(TAG, "TimeoutException emitted!");
                 e.printStackTrace();
+            } catch (AlreadyClosedException e) {
+                LogUtils.eTag(TAG, "AlreadyClosedException emitted!");
+                e.printStackTrace();
             } finally {
                 report = null;
                 channel = null;
                 connection = null;
-
-                if (underDestroy == false) {
-                    LogUtils.eTag(TAG, "trigger callback listener: ");
+                if (eventListener != null && underDestroy == false) {
+                    LogUtils.dTag(TAG, "trigger callback listener: " + eventListener);
+                    eventListener.onShutdownSignaled(consumerTag, sig.toString());
                     onError(consumerTag, sig.toString());
+
                 }
+
             }
         }
     }

@@ -3,6 +3,7 @@
     package="com.itc.hermeslib">
     <application
         android:label="@string/app_name">
-        <service android:name="HermesEventBus$Service"/>
+        <service android:name=".HermesEventBus$Service"/>
+
     </application>
 </manifest>
