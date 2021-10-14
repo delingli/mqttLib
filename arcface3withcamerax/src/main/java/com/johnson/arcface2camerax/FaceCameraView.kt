@@ -53,50 +53,50 @@ import java.util.concurrent.atomic.AtomicBoolean
  * @Author WangShunYi
  * @Date 2019-08-02 10:43
  */
-private const val ISACTIVEKEY = "isActive"
 
 open class FaceCameraView : RelativeLayout, LifecycleObserver {
-    private var lifecycleOwner: LifecycleOwner? = null
-    private var textureView: TextureView? = null
-    private var faceRectView: FaceRectView
+    open var lifecycleOwner: LifecycleOwner? = null
+    open var textureView: TextureView? = null
+    open var faceRectView: FaceRectView
 
-    private var cameraId: Int = 0
+    open var cameraId: Int = 0
+
 
     /**
      * 所需的所有权限信息
      */
-    private val NEEDED_PERMISSIONS = arrayOf(
+    open val NEEDED_PERMISSIONS = arrayOf(
         Manifest.permission.CAMERA,
         Manifest.permission.READ_PHONE_STATE,
         Manifest.permission.READ_EXTERNAL_STORAGE,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
-    private var lensFacing = CameraX.LensFacing.BACK
-    private var faceEngine: FaceEngine? = null
-    private var afCode = -1
-    private val MAX_DETECT_NUM = 5
-    private val TAG = "FaceCameraView"
-    private var faceHelper: FaceHelper? = null
+    open var lensFacing = CameraX.LensFacing.BACK
+    public open var faceEngine: FaceEngine? = null
+    open var afCode = -1
+    open val MAX_DETECT_NUM = 5
+    open val TAG = "FaceCameraView"
+    open var faceHelper: FaceHelper? = null
     public var previeWidth = -1
     public var previeHeight = -1
-    private val requestFeatureStatusMap = ConcurrentHashMap<Int, Int>()
-    private var drawHelper: DrawHelper? = null
-    private var isGetFaceId = AtomicBoolean(false)
+    open val requestFeatureStatusMap = ConcurrentHashMap<Int, Int>()
+    open var drawHelper: DrawHelper? = null
+    open var isGetFaceId = AtomicBoolean(false)
 
-    public val isBackFaceCodeNow = AtomicBoolean(false)
+    open val isBackFaceCodeNow = AtomicBoolean(false)
 
 
-    private var tempWidth = -1
-    private var tempHeight = -1
-    public var tempdata: ByteArray? = null
-    private var temprect: Rect? = null
-    private var firstOne = true
-    public var tempbitmap: Bitmap? = null
+    open var tempWidth = -1
+    open var tempHeight = -1
+    var tempdata: ByteArray? = null
+    open var temprect: Rect? = null
+    open var firstOne = true
+    var tempbitmap: Bitmap? = null
     private var backFaceFeatureListener: ((data: ByteArray) -> Unit)? = null
-    private var disposable: Disposable? = null
-    private var disposable2: Disposable? = null
-    private var onPAUSE = false
-    private var singleTask = Executors.newSingleThreadExecutor()
+    public open var disposable: Disposable? = null
+    public open var disposable2: Disposable? = null
+    public open var onPAUSE = false
+    public open var singleTask = Executors.newSingleThreadExecutor()
 
 
     @JvmOverloads
@@ -114,7 +114,7 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
     /**
      * 初始化环境
      */
-    private fun initEnvironment() {
+    public open fun initEnvironment() {
         if (!context.hasPermission(*NEEDED_PERMISSIONS)) {
             Toast.makeText(context, R.string.permission_denied1, Toast.LENGTH_SHORT).show()
             return
@@ -131,7 +131,7 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
     /**
      * 初始化引擎
      */
-    private fun initEngine() {
+    public open fun initEngine() {
         faceEngine = FaceEngine()
         afCode = faceEngine?.init(
             context,
@@ -157,7 +157,7 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
     /**
      * 初始化相机预览
      */
-    private fun initCamera() {
+    open fun initCamera() {
         //星神屏摄像头默认是前置，其他屏都是后置
         if (BuildConfig.BUILD_TYPE.equals("xingshenDebug") || BuildConfig.BUILD_TYPE.equals("xingshen")) {
             lensFacing = CameraX.LensFacing.FRONT
@@ -175,7 +175,7 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
     /**
      * 开启相机
      */
-    private fun startCamera() = try {
+    public open fun startCamera() = try {
         val metrics = DisplayMetrics().also { textureView?.display!!.getRealMetrics(it) }
         val screenAspectRatio = Rational(metrics.widthPixels, metrics.heightPixels)
 
@@ -203,7 +203,7 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
         Toast.makeText(context, "打开相机失败!", Toast.LENGTH_LONG).show()
     }
 
-    private fun buildImageAnalysisUseCase(): ImageAnalysis {
+    public open fun buildImageAnalysisUseCase(): ImageAnalysis {
 
         val metrics = DisplayMetrics().also { textureView?.display?.getRealMetrics(it) }
         val screenAspectRatio = Rational(metrics.widthPixels, metrics.heightPixels)
@@ -265,7 +265,7 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
         return analysis
     }
 
-    private fun updateTransform() {
+    public open fun updateTransform() {
         val matrix = Matrix()
 
         // Compute the center of the view finder
@@ -289,7 +289,7 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
     /**
      * 在相机初始化后初始化人脸识别工具
      */
-    private fun initFaceHelp() {
+    public open fun initFaceHelp() {
         //如果相机未初始化
         if (previeWidth == -1 || previeHeight == -1) return
         val faceListener = object : FaceListener {
@@ -340,7 +340,7 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
     }
 
 
-    private fun doGetFaceCode(data: ByteArray?, width: Int, height: Int) {
+    public open fun doGetFaceCode(data: ByteArray?, width: Int, height: Int) {
         if (data == null) {
             isGetFaceId.set(false)
             return
@@ -413,7 +413,7 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
      * 当onResume的时候初始化相机
      */
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    fun onResume() {
+    public open fun onResume() {
         onPAUSE = false
         firstOne = true
 
@@ -429,7 +429,7 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
      * 当onPAUSE的时候释放资源
      */
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    fun onPAUSE() {
+    public open fun onPAUSE() {
         onPAUSE = true
         CameraX.unbindAll()
 
@@ -461,7 +461,7 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
         backFaceFeatureListener = listener
     }
 
-    public fun getBackFaceFeatureListener(): ((ByteArray) -> Unit)? {
+    public open fun getBackFaceFeatureListener(): ((ByteArray) -> Unit)? {
         return backFaceFeatureListener;
     }
 
@@ -469,7 +469,7 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
     /**
      * 销毁引擎
      */
-    private fun unInitEngine() {
+    public open fun unInitEngine() {
         faceEngine ?: return
         if (afCode == ErrorInfo.MOK) {
             afCode = faceEngine!!.unInit()
@@ -478,11 +478,13 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
     }
 
     companion object {
+        const val ISACTIVEKEY = "isActive"
+
         /**
          * 激活人脸识别引擎
          */
         @JvmStatic
-        fun activeFaceEngine(activity: ComponentActivity, appId: String, sdkKey: String) {
+        open fun activeFaceEngine(activity: ComponentActivity, appId: String, sdkKey: String) {
             val isActive = ConfigUtil.getBoolean(activity, ISACTIVEKEY, false)
             Log.i("FaceCameraView", "isActive: $isActive")
             if (isActive) return
