@@ -42,7 +42,7 @@ public class RabbitService extends Service implements AbsRabbitDispatch.RabbitEv
         Intent intent = new Intent(context, RabbitService.class);
         intent.putExtra(OPTION_KEY, option);
         if (null != rabbitMqParamsOption) {
-            intent.putExtra(ONLINE_OPTION_KEY, option);
+            intent.putExtra(ONLINE_OPTION_KEY, rabbitMqParamsOption);
         }
         context.startService(intent);
     }
@@ -127,8 +127,8 @@ public class RabbitService extends Service implements AbsRabbitDispatch.RabbitEv
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && null != intent.getParcelableExtra(OPTION_KEY)) {
-            option = intent.getParcelableExtra(OPTION_KEY);
-            onlineinforoption = intent.getParcelableExtra(ONLINE_OPTION_KEY);
+            option =  intent.getParcelableExtra(OPTION_KEY);
+            onlineinforoption =  intent.getParcelableExtra(ONLINE_OPTION_KEY);
         } else {
             stopSelf();
             throw new RuntimeException("请传递MqttOption配置参数");

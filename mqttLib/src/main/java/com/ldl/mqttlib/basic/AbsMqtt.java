@@ -31,7 +31,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 
-public abstract class AbsMqtt implements IMqtt, MqttActionListener, IMqttReceiveListener {
+public abstract class
+AbsMqtt implements IMqtt, MqttActionListener, IMqttReceiveListener {
     public static String tag = "MqttImpl";
     private MqttAndroidClient mQttAndroidClient;
     public static int CLIENTTIMEOUT = 30;

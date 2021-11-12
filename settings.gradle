@@ -11,3 +11,4 @@ include ':hermesLib'
 
 include ':mqttLib'
 include ':RabbitMqLib'
+include ':UPanEpochLog'

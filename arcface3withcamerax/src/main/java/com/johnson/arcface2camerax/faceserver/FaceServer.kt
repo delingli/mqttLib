@@ -112,7 +112,8 @@ class FaceServer {
             if (maxSimilar < SIMILAR_THRESHOLD) {
                 //如果长度不够移除最早添加的人员
                 if (faceTempInfoList.size >= saveNumber) {
-                    val temp = faceTempInfoList.maxBy { Date().time - it.addTime.time }
+                    val temp =
+                        faceTempInfoList.maxByOrNull { it: FaceTempInfo? -> Date().time - it!!.addTime.time }
                     faceTempInfoList.remove(temp)
                 }
                 faceTempInfoList.add(FaceTempInfo(faceFeature.featureData, Date()))

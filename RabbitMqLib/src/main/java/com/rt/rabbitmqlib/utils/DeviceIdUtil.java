@@ -260,7 +260,7 @@ public class DeviceIdUtil {
         } catch (SocketException ex) {
             Log.e("NETGET", ex.toString());
         }
-        return null;
+        return "";
     }
 
     //需要获得READ_PHONE_STATE权限，>=6.0，默认返回null

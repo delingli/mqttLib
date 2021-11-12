@@ -16,13 +16,13 @@ import kotlin.concurrent.thread
  * @Author WangShunYi
  * @Date 2019-11-19 13:41
  */
-class FaceUtils(val context: Context, val backFaceFeatureListener: ((data: ByteArray?, trackId: Int?) -> Unit)) {
-    private var faceEngine: FaceEngine? = null
-    private val TAG = FaceUtils::class.java.simpleName
-    private var faceHelper: FaceHelper? = null
-    private val MAX_DETECT_NUM = 50     //最大识别人脸数和最大识别线程数
-    private var faceListener: FaceListener? = null
-    private var afCode = -1
+open class FaceUtils(val context: Context, val backFaceFeatureListener: ((data: ByteArray?, trackId: Int?) -> Unit)) {
+    open var faceEngine: FaceEngine? = null
+    open val TAG = FaceUtils::class.java.simpleName
+    open var faceHelper: FaceHelper? = null
+    open val MAX_DETECT_NUM = 50     //最大识别人脸数和最大识别线程数
+    open var faceListener: FaceListener? = null
+    open var afCode = -1
 
 
     init {
@@ -32,7 +32,7 @@ class FaceUtils(val context: Context, val backFaceFeatureListener: ((data: ByteA
     /**
      * 初始化引擎
      */
-    private fun initFaceEngine() {
+    open fun initFaceEngine() {
         faceEngine = FaceEngine()
         afCode = faceEngine?.init(
             context,
@@ -74,7 +74,7 @@ class FaceUtils(val context: Context, val backFaceFeatureListener: ((data: ByteA
     /**
      * 销毁引擎
      */
-    private fun unInitEngine() {
+    open fun unInitEngine() {
         faceEngine ?: return
         if (afCode == ErrorInfo.MOK) {
             afCode = faceEngine!!.unInit()
@@ -82,7 +82,7 @@ class FaceUtils(val context: Context, val backFaceFeatureListener: ((data: ByteA
         }
     }
 
-    fun unInit() {
+    open fun unInit() {
         if (faceHelper != null) {
             synchronized(faceHelper!!) {
                 unInitEngine()
@@ -97,7 +97,7 @@ class FaceUtils(val context: Context, val backFaceFeatureListener: ((data: ByteA
      * bitmap 需要获取特征码的图片
      * trackId 图片的标记值
      */
-    fun getFaceCodeInImage(bitmap: Bitmap?, trackId: Int?) {
+    open fun getFaceCodeInImage(bitmap: Bitmap?, trackId: Int?) {
         if (bitmap == null || trackId == null) return
         thread {
             var tempBitmap = bitmap
@@ -131,7 +131,7 @@ class FaceUtils(val context: Context, val backFaceFeatureListener: ((data: ByteA
     /**
      * 对比两个特征码的相似度
      */
-    fun comparisonCode(firstCode: ByteArray?, secondCode: ByteArray?): Float? {
+    open fun comparisonCode(firstCode: ByteArray?, secondCode: ByteArray?): Float? {
         if (firstCode == null || secondCode == null) return null
         val firstFaceFeature = FaceFeature(firstCode)
         val secondFaceFeature = FaceFeature(secondCode)

@@ -98,7 +98,7 @@ ext.deps = deps
 /**App相关编译构建版本配置start**/
 def build_versions = [:]
 build_versions.min_sdk = 21
-build_versions.target_sdk = 21
+build_versions.target_sdk = 30
 build_versions.compileSdkVersion = 30
 build_versions.build_tools = "30.0.3"
 

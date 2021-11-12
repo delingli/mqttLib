@@ -57,10 +57,10 @@ abstract public class AbsRabbitDispatch implements IRabbitDispatch, IRabbitMqRec
         this.context = context.getApplicationContext();
         this.rabbitMqOption = rabbitMqOption;
         this.rabbitMqParamsOption = rabbitMqParamsOption;
-        if (context == null) {
+        if (this.context == null) {
             throw new RuntimeException("Context 参数不得为空");
         }
-        if (rabbitMqOption == null) {
+        if (this.rabbitMqOption == null) {
             throw new RuntimeException("RabbitMqOption 配置参数不得为空");
         }
         this.devicesn = DeviceIdUtil.getDeviceId(context);
@@ -74,14 +74,16 @@ abstract public class AbsRabbitDispatch implements IRabbitDispatch, IRabbitMqRec
         params.put("device_version", DeviceIdUtil.getSystemVersion());
         params.put("root", DeviceIdUtil.isRoot() ? 1 : 0);
         params.put("storage", getDeviceStroge());//存储总内存
-        if (null != rabbitMqParamsOption && null != rabbitMqParamsOption.getParams()) {
+        if (null != this.rabbitMqParamsOption && null != this.rabbitMqParamsOption.getParams()) {
             //转换
             ArrayMap<String, String> params = rabbitMqParamsOption.getParams();
             for (Iterator<Map.Entry<String, String>> it = params.entrySet().iterator(); it.hasNext(); ) {
                 Map.Entry<String, String> next = it.next();
-                params.put(next.getKey(), next.getValue());
+                this.params.put(next.getKey(), next.getValue());
             }
         }
+        LogUtils.d(TAG, "params:" + this.params.toString());
+        this.devicesn = (String) this.params.get("device_sn");
         initConnectFactor();
     }
 
