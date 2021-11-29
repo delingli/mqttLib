@@ -12,6 +12,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/RabbitMqLib" />
+            <option value="$PROJECT_DIR$/UPanEpochLog" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/arcface3withcamerax" />
             <option value="$PROJECT_DIR$/filedownload" />
