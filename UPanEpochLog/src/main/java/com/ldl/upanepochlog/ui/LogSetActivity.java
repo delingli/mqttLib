@@ -85,7 +85,9 @@ public class LogSetActivity extends AppCompatActivity implements View.OnClickLis
 
         int id = v.getId();
         if (id == R.id.btn_clearApp) {
-            LogUtilManager.getInstance().clearAppLog();
+            LogUtilManager.getInstance().setAppLogSwitch(true);
+
+//            LogUtilManager.getInstance().clearAppLog();
         } else if (id == R.id.btn_crash) {
             LogUtilManager.getInstance().clearCrashLog();
         } else if (id == R.id.btn_anrlog) {

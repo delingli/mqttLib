@@ -211,7 +211,8 @@ abstract class AbsLogApi implements ILogApi {
 
     @Override
     public void stopLogcat() {
-        enableLog(false);//关闭logcat关闭运行时日志
+        this.logEnable=false;
+        enableLog(logEnable);//关闭logcat关闭运行时日志
         LogUtils.getConfig().setLog2FileSwitch(logEnable);
         if (null != mProcess) {
             mProcess.destroy();

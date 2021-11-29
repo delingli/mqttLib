@@ -1,6 +1,8 @@
 package com.rt.rabbitmqlib.basic;
 
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.text.TextUtils;
 import android.util.ArrayMap;
 import android.util.Log;
@@ -49,7 +51,20 @@ abstract public class AbsRabbitDispatch implements IRabbitDispatch, IRabbitMqRec
 
         void onShutdownSignaled(String consumerTag, String sig);
     }
-
+/*private boolean canConnect(){
+    ConnectivityManager connectivityManager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+    NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+    if (info != null && info.isAvailable()) {
+        String name = info.getTypeName();
+        Log.i(TAG, "当前网络名称：" + name);
+        return true;
+    } else {
+        Log.i(TAG, "没有可用网络");
+        *//*没有可用网络的时候，延迟30秒再尝试重连*//*
+        mHandler.sendEmptyMessageDelayed(1, RECONNECT_TIME);
+        return false;
+    }
+}*/
     private String devicesn;
 
     @Override

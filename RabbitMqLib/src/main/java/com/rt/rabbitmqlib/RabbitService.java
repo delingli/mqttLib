@@ -12,6 +12,7 @@ import android.os.Parcelable;
 import androidx.annotation.Nullable;
 
 import com.blankj.utilcode.util.LogUtils;
+import com.blankj.utilcode.util.NetworkUtils;
 import com.rt.rabbitmqlib.basic.AbsRabbitDispatch;
 import com.rt.rabbitmqlib.basic.IRabbitDispatch;
 import com.rt.rabbitmqlib.impl.RabbitMqImpl;
@@ -28,7 +29,7 @@ import com.rt.rabbitmqlib.utils.RabbitMqManager;
  */
 public class RabbitService extends Service implements AbsRabbitDispatch.RabbitEventListener {
     private static String tag = "RabbitService";
-    private  IRabbitDispatch dispatcher;
+    private IRabbitDispatch dispatcher;
     private static Handler dispatcherHandler;
     private HandlerThread dispatcherThread;
     private static Runnable runner;
@@ -46,12 +47,13 @@ public class RabbitService extends Service implements AbsRabbitDispatch.RabbitEv
         }
         context.startService(intent);
     }
+
     public static void stopRabbitService(Context context) {
         Intent intent = new Intent(context, RabbitService.class);
         context.stopService(intent);
     }
 
-    public  void restartRabbitDispatcher() {
+    public void restartRabbitDispatcher() {
         LogUtils.iTag(tag, "Restart Rabbit dispatcher ... ");
         if (dispatcherHandler == null) return;
         dispatcherHandler.removeCallbacksAndMessages(null);
@@ -103,11 +105,25 @@ public class RabbitService extends Service implements AbsRabbitDispatch.RabbitEv
         dispatcherThread.start();
         //在这个线程中创建一个handler对象
         dispatcherHandler = new Handler(dispatcherThread.getLooper());
-
+        NetworkUtils.registerNetworkStatusChangedListener(onNetworkStatusChangedListener);
     }
 
+    private NetworkUtils.OnNetworkStatusChangedListener onNetworkStatusChangedListener = new NetworkUtils.OnNetworkStatusChangedListener() {
+        @Override
+        public void onDisconnected() {
+            if (dispatcher != null) {
+                dispatcher.destroyDispatcher();
+            }
+        }
+
+        @Override
+        public void onConnected(NetworkUtils.NetworkType networkType) {
+            dispatcherHandler.post(runner);
+        }
+    };
 
     public boolean startRabbitDispatcher() {
+
         LogUtils.iTag(tag, "Start Rabbit dispatcher creation ... ");
         if (dispatcher == null) {
             RabbitMqManager.getInstance().init(dispatcher = new RabbitMqImpl(this));
@@ -115,7 +131,8 @@ public class RabbitService extends Service implements AbsRabbitDispatch.RabbitEv
         dispatcher.initRabbitDispatcher(this.getApplicationContext(), option, onlineinforoption);
         boolean ret = dispatcher.reCreateRabbitConnection();
         if (!ret) {
-            LogUtils.iTag(tag, "Start Rabbit dispatcher failed, recreate it after 5s."+ret);
+            dispatcher.destroyDispatcher();
+            LogUtils.iTag(tag, "Start Rabbit dispatcher failed, recreate it after 5s." + ret);
             dispatcherHandler.postDelayed(runner, reConnectTime);
         } else {
             LogUtils.iTag(tag, "Start Rabbit dispatcher successful.");
@@ -127,8 +144,8 @@ public class RabbitService extends Service implements AbsRabbitDispatch.RabbitEv
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null && null != intent.getParcelableExtra(OPTION_KEY)) {
-            option =  intent.getParcelableExtra(OPTION_KEY);
-            onlineinforoption =  intent.getParcelableExtra(ONLINE_OPTION_KEY);
+            option = intent.getParcelableExtra(OPTION_KEY);
+            onlineinforoption = intent.getParcelableExtra(ONLINE_OPTION_KEY);
         } else {
             stopSelf();
             throw new RuntimeException("请传递MqttOption配置参数");
@@ -151,6 +168,7 @@ public class RabbitService extends Service implements AbsRabbitDispatch.RabbitEv
         runner = null;
         dispatcherThread.quit();
         dispatcherThread = null;
+        NetworkUtils.unregisterNetworkStatusChangedListener(onNetworkStatusChangedListener);
 
     }
 
@@ -163,7 +181,9 @@ public class RabbitService extends Service implements AbsRabbitDispatch.RabbitEv
     public void onShutdownSignaled(String consumerTag, String sig) {
         LogUtils.dTag(tag, "onShutdownSignaled: " + consumerTag + " " + sig);
         LogUtils.dTag(tag, "On shutdown signaled，recreate dispatcher resources.");
-        dispatcherHandler.postDelayed(runner, reConnectTime);
+        if(NetworkUtils.isConnected()){
+            dispatcherHandler.postDelayed(runner, reConnectTime);
+        }
     }
 }
 

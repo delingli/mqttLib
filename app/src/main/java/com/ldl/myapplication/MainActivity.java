@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.idsapp.R;
 import com.ldl.mqttlib.impl.CustomMqttService;
 import com.ldl.mqttlib.impl.MqttAction;
 import com.ldl.mqttlib.impl.MqttOption;

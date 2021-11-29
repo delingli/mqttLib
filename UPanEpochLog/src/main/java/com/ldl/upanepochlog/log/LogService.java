@@ -23,20 +23,18 @@ public class LogService extends Service implements AbsLogApi.onUploadListener {
     private static String key_switch = "switch_logs";
     private static final String TAG = "LogService";
     private ILogApi mLogApi;
-
-    public LogService() {
-    }
+    private NotificationManager mNotificationManager;
 
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+        return null;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        setNotification();
+        setCustomNotification();
         LogUtilManager.getInstance().setLogApi(mLogApi = new LogApi(this));//创建初始化
         LogUtils.dTag(TAG, "服务开启");
         mLogApi.init();
@@ -47,33 +45,35 @@ public class LogService extends Service implements AbsLogApi.onUploadListener {
 
     public static void startServices(Context context) {
         Intent intent = new Intent(context, LogService.class);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            context.startForegroundService(intent);
-        } else {
-            context.startService(intent);
-        }
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+//            context.startForegroundService(intent);
+//        } else {
+//            context.startService(intent);
+//        }
+        context.startService(intent);
     }
 
     public static void startServices(Context context, @ServiceOpt.ServiceOpts int opt) {
         Intent intent = new Intent(context, LogService.class);
         intent.putExtra(key_opt, opt);
-
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            context.startForegroundService(intent);
-        } else {
-            context.startService(intent);
-        }
+        context.startService(intent);
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+//            context.startForegroundService(intent);
+//        } else {
+//            context.startService(intent);
+//        }
     }
 
     public static void startServices(Context context, int fileCount, int fileSize) {
         Intent intent = new Intent(context, LogService.class);
         intent.putExtra(KEY_FILE_SIZE, fileCount);
         intent.putExtra(KEY_FILE_COUNT, fileSize);
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
-            context.startForegroundService(intent);
-        } else {
-            context.startService(intent);
-        }
+        context.startService(intent);
+//        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+//            context.startForegroundService(intent);
+//        } else {
+//            context.startService(intent);
+//        }
     }
 
 
@@ -86,18 +86,15 @@ public class LogService extends Service implements AbsLogApi.onUploadListener {
 
     private void setNotification() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        NotificationChannel notificationChannel;
         Notification notification;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            notificationChannel = new NotificationChannel(CHANNEL_ID, getPackageName(), NotificationManager.IMPORTANCE_HIGH);
-            notificationManager.createNotificationChannel(notificationChannel);
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel;
             notificationChannel = new NotificationChannel(CHANNEL_ID, getPackageName(), NotificationManager.IMPORTANCE_HIGH);
             notificationManager.createNotificationChannel(notificationChannel);
             notification = new Notification.Builder(this, CHANNEL_ID)
                     .setContentTitle("日志收集服务")
                     .setContentText("日志收集进行中...")
+                    .setAutoCancel(true)
                     .setSmallIcon(R.mipmap.app_itc)
                     .build();
         } else {
@@ -106,19 +103,46 @@ public class LogService extends Service implements AbsLogApi.onUploadListener {
                     .setContentText("日志收集进行中...")//设置内容
                     .setWhen(System.currentTimeMillis())//设置创建时间
                     .setSmallIcon(R.mipmap.app_itc)//设置状态栏图标
+                    .setAutoCancel(true)
                     .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.app_itc))//设置通知栏图标
                     .build();
         }
         startForeground(1, notification);
     }
+    final int NOTIFICATION_ID = 12234;
+    private void setCustomNotification() {
 
+        mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        Notification notification;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel;
+            notificationChannel = new NotificationChannel(CHANNEL_ID, getPackageName(), NotificationManager.IMPORTANCE_HIGH);
+            mNotificationManager.createNotificationChannel(notificationChannel);
+            notification = new Notification.Builder(this, CHANNEL_ID)
+                    .setContentTitle("日志收集服务")
+                    .setContentText("日志收集进行中...")
+                    .setAutoCancel(false)
+                    .setSmallIcon(R.mipmap.app_itc)
+                    .build();
+        } else {
+            notification = new Notification.Builder(this)
+                    .setContentTitle("日志收集服务")//设置标题
+                    .setContentText("日志收集进行中...")//设置内容
+                    .setWhen(System.currentTimeMillis())//设置创建时间
+                    .setSmallIcon(R.mipmap.app_itc)//设置状态栏图标
+                    .setAutoCancel(false)
+                    .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.app_itc))//设置通知栏图标
+                    .build();
+        }
+        mNotificationManager.notify(NOTIFICATION_ID,notification);
+    }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
             handlerOpt(intent);
             handlerLogFileConfig(intent);
         }
-        return START_NOT_STICKY;
+        return super.onStartCommand(intent, flags, startId);
     }
 
     private void handlerLogFileConfig(Intent intent) {
@@ -149,7 +173,7 @@ public class LogService extends Service implements AbsLogApi.onUploadListener {
                         public void onSucess() {
                             mLogApi.deleteFile();
                             LogUtils.eTag(TAG, "上传成功了关闭服务...");
-                            stopForeground(true);
+//                            stopForeground(true);
                             stopSelf();
                         }
 
@@ -197,10 +221,10 @@ public class LogService extends Service implements AbsLogApi.onUploadListener {
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
+//        stopForeground(true);
+        mNotificationManager.cancel(NOTIFICATION_ID);
         if (null != mLogApi) {
-            if (null != mLogApi) {
-                mLogApi.notifyDeviceState(new ILogApi.OnCallBack() {
+            mLogApi.notifyDeviceState(new ILogApi.OnCallBack() {
                     @Override
                     public void onSucess() {
                         LogUtils.dTag(TAG, "服务在onddestory中执行成功通知服务器改状态");
@@ -212,11 +236,11 @@ public class LogService extends Service implements AbsLogApi.onUploadListener {
 
                     }
                 });
-            }
             mLogApi.stopLogcat();
             mLogApi.destory();
         }
-        stopForeground(true);
+
+        super.onDestroy();
     }
 
 
@@ -240,14 +264,14 @@ public class LogService extends Service implements AbsLogApi.onUploadListener {
                 public void onSucess() {
                     LogUtils.dTag(TAG, "通知服务器修改状态Sucess");
                     stopSelf();
-                    stopForeground(true);
+//                    stopForeground(true);
                 }
 
                 @Override
                 public void onError() {
                     LogUtils.dTag(TAG, "通知服务器修改状态Error");
                     stopSelf();
-                    stopForeground(true);
+//                    stopForeground(true);
                 }
             });
         }
