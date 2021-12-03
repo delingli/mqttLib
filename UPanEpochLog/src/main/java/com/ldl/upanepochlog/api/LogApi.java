@@ -18,6 +18,7 @@ import com.lzy.okgo.model.Response;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 public
 class LogApi extends AbsLogApi {
@@ -45,49 +46,55 @@ class LogApi extends AbsLogApi {
         this.logEnable = false;
         LogUtils.getConfig().setLog2FileSwitch(logEnable);
         closeProcess();
-        threadPool.executeTask(new Runnable() {
+        miThreadPoolApi.getScheduledThreadPoolExecutor().schedule(new Runnable() {
             @Override
             public void run() {
-                try {
-                    long space = FileUtils.getLength(getDirs());
-                    LogUtils.dTag(TAG, "查询文件大小为:" + space);
-                    //todo 调用上传接口
-                    OkGo.<String>
-                            post(IP_PORT + LogApiConstant.API_SET_LOG_SIZE)
-                            .tag(Utils.getApp())
-                            .isMultipart(false)
-                            .params("device_sn", logParamsOption.getDeviceSn())
-                            .params("log_file_size", space + "").
-                            execute(new StringCallback() {
-                                @Override
-                                public void onSuccess(Response<String> response) {
-                                  if(response.isSuccessful()){
-                                      LogUtils.dTag(TAG, "文件大小通知成功");
-                                      //开启继续收集
-                                      logEnable = true;
-                                      LogUtils.getConfig().setLog2FileSwitch(logEnable);
-                                      startLogcat();
-                                  }
-                                }
+                threadPool.executeTask(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            long space = FileUtils.getLength(getDirs());
+                            LogUtils.dTag(TAG, "查询文件大小为:" + space);
+                            //todo 调用上传接口
+                            OkGo.<String>
+                                    post(IP_PORT + LogApiConstant.API_SET_LOG_SIZE)
+                                    .tag(Utils.getApp())
+                                    .isMultipart(false)
+                                    .params("device_sn", logParamsOption.getDeviceSn())
+                                    .params("log_file_size", space + "").
+                                    execute(new StringCallback() {
+                                        @Override
+                                        public void onSuccess(Response<String> response) {
+                                            if(response.isSuccessful()){
+                                                LogUtils.dTag(TAG, "文件大小通知成功");
+                                                //开启继续收集
+                                                logEnable = true;
+                                                LogUtils.getConfig().setLog2FileSwitch(logEnable);
+                                                startLogcat();
+                                            }
+                                        }
 
-                                @Override
-                                public void onError(Response<String> response) {
-                                    super.onError(response);
-                                    response.getException().printStackTrace();
-                                    LogUtils.dTag(TAG, "文件大小通知失败");
-                                    logEnable = true;
-                                    LogUtils.getConfig().setLog2FileSwitch(logEnable);
-                                    startLogcat();
-                                }
-                            });
+                                        @Override
+                                        public void onError(Response<String> response) {
+                                            super.onError(response);
+                                            response.getException().printStackTrace();
+                                            LogUtils.dTag(TAG, "文件大小通知失败");
+                                            logEnable = true;
+                                            LogUtils.getConfig().setLog2FileSwitch(logEnable);
+                                            startLogcat();
+                                        }
+                                    });
 
 
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
 
+                    }
+                });
             }
-        });
+        },2,TimeUnit.SECONDS);
+
 
 
     }
@@ -135,76 +142,82 @@ class LogApi extends AbsLogApi {
         LogUtils.getConfig().setLog2FileSwitch(logEnable);
         closeProcess();
         //todo 打包上传log
-        threadPool.executeTask(new Runnable() {
+        miThreadPoolApi.getScheduledThreadPoolExecutor().schedule(new Runnable() {
             @Override
             public void run() {
-                try {
-                    String outPath = null;
-                    File f = new File(getDirs());
-                    if (f.exists()) {
-                        File outFile = getOutLogname(f);
-                        //todo 查询是否 有未上传的文件
-                        File[] flist = f.getParentFile().listFiles();
-                        if (flist != null && flist.length > 0) {
-                            for (File ff : flist) {
-                                if (ff.exists() && ff.isFile() && ff.getName().endsWith(".zip")) {
-                                    outPath = ff.getAbsolutePath();
-                                    LogUtils.dTag(TAG, "开始上传上传失败的遗留zip");
-                                    break;
-                                }
-                            }
-
-                        }
-                        if (outPath == null) { //说明没有遗留文件,就压缩文件
-//                            boolean b=   ZipUtils.zipFile(f.getAbsolutePath(),outFile.getAbsolutePath());
-                            boolean b = ZipUtils.zipFile(f, outFile);
-                            outPath = outFile.getAbsolutePath();
-                            LogUtils.dTag(TAG, "压缩打包成功:开始上传"+b);
-                        }
-
-                        LogUtils.dTag(TAG, "上传文件全路径" + outPath);
-                  deleteOutFileDir=outPath;
-                        OkGo.<String>
-                                post(getUploadUrl())
-                                .tag(Utils.getApp())
-                                .isMultipart(false)
-                                .params("device_sn", logParamsOption.getDeviceSn())
-                                .params("run_log_file", new File(outPath)).
-                                execute(new StringCallback() {
-                                    @Override
-                                    public void onSuccess(Response<String> response) {
-                                        LogUtils.dTag(TAG, "上传成功回调...");
-                                        if (null != onCallBack) {
-                                            onCallBack.onSucess();
+                threadPool.executeTask(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            String outPath = null;
+                            File f = new File(getDirs());
+                            if (f.exists()) {
+                                File outFile = getOutLogname(f);
+                                //todo 查询是否 有未上传的文件
+                                File[] flist = f.getParentFile().listFiles();
+                                if (flist != null && flist.length > 0) {
+                                    for (File ff : flist) {
+                                        if (ff.exists() && ff.isFile() && ff.getName().endsWith(".zip")) {
+                                            outPath = ff.getAbsolutePath();
+                                            LogUtils.dTag(TAG, "开始上传上传失败的遗留zip");
+                                            break;
                                         }
                                     }
 
-                                    @Override
-                                    public void uploadProgress(Progress progress) {
-                                        super.uploadProgress(progress);
+                                }
+                                if (outPath == null) { //说明没有遗留文件,就压缩文件
+//                            boolean b=   ZipUtils.zipFile(f.getAbsolutePath(),outFile.getAbsolutePath());
+                                    boolean b = ZipUtils.zipFile(f, outFile);
+                                    outPath = outFile.getAbsolutePath();
+                                    LogUtils.dTag(TAG, "压缩打包成功:开始上传"+b);
+                                }
+
+                                LogUtils.dTag(TAG, "上传文件全路径" + outPath);
+                                deleteOutFileDir=outPath;
+                                OkGo.<String>
+                                        post(getUploadUrl())
+                                        .tag(Utils.getApp())
+                                        .isMultipart(false)
+                                        .params("device_sn", logParamsOption.getDeviceSn())
+                                        .params("run_log_file", new File(outPath)).
+                                        execute(new StringCallback() {
+                                            @Override
+                                            public void onSuccess(Response<String> response) {
+                                                LogUtils.dTag(TAG, "上传成功回调...");
+                                                if (null != onCallBack) {
+                                                    onCallBack.onSucess();
+                                                }
+                                            }
+
+                                            @Override
+                                            public void uploadProgress(Progress progress) {
+                                                super.uploadProgress(progress);
 //                                                String currentSize = Formatter.formatFileSize(LogService.this, progress.currentSize);
 //                                                String totalSize = Formatter.formatFileSize(LogService.this, progress.totalSize);
 //                                                LogUtils.dTag(TAG, "当前上传的大小" + currentSize + "总大小:" + totalSize);
-                                    }
+                                            }
 
-                                    @Override
-                                    public void onError(Response<String> response) {
-                                        super.onError(response);
-                                        LogUtils.eTag(TAG, "上传失败回调...");
-                                        if (null != onCallBack) {
-                                            onCallBack.onError();
-                                        }
-                                    }
-                                });
+                                            @Override
+                                            public void onError(Response<String> response) {
+                                                super.onError(response);
+                                                LogUtils.eTag(TAG, "上传失败回调...");
+                                                if (null != onCallBack) {
+                                                    onCallBack.onError();
+                                                }
+                                            }
+                                        });
+                            }
+
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+
                     }
-
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-
+                });
             }
-        });
+        },2, TimeUnit.SECONDS);
+
     }
 
 

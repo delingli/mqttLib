@@ -13,8 +13,10 @@ import com.ldl.upanepochlog.util.LogUtils;
 import com.ldl.upanepochlog.util.SDCardUtils;
 import com.ldl.upanepochlog.util.Utils;
 
+import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,7 +28,7 @@ abstract class AbsLogApi implements ILogApi {
     private String TAG = "AbsLogApi";
     private static final String FILE_SEP = System.getProperty("file.separator");
     private String mDefaultDir;//路径
-    private ScheduledThteadpoolImpl miThreadPoolApi;//可执行定时相关
+    protected ScheduledThteadpoolImpl miThreadPoolApi;//可执行定时相关
     protected ThreadPoolImpl threadPool;//自定义线程池
     private Process mProcess;
     protected boolean logEnable = false;//默认false
@@ -211,20 +213,51 @@ abstract class AbsLogApi implements ILogApi {
 
     @Override
     public void stopLogcat() {
-        this.logEnable=false;
+        this.logEnable = false;
         enableLog(logEnable);//关闭logcat关闭运行时日志
         LogUtils.getConfig().setLog2FileSwitch(logEnable);
-        if (null != mProcess) {
-            mProcess.destroy();
-            mProcess = null;
+        Process p = null;
+        try {
+            if(null!=mProcess){
+                p = Runtime.getRuntime().exec("su -c kill " + getTinyCapPID(mProcess));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            LogUtils.e(TAG,"stopLogcat异常...");
+
+        } finally {
+            if (null != mProcess) {
+                mProcess.destroy();
+                mProcess = null;
+            }
+            if (null != p) {
+                p.destroy();
+                p = null;
+            }
         }
+
 
     }
 
     @Override
     public void destory() {
         if (null != mProcess) {
-            mProcess.destroy();
+            Process p = null;
+            try {
+                p = Runtime.getRuntime().exec("su -c kill " + getTinyCapPID(mProcess));
+//                    Process p=Runtime.getRuntime().exec("kill -2 " + getTinyCapPID(mProcess));
+            } catch (IOException e) {
+                e.printStackTrace();
+                LogUtils.e(TAG,"销毁异常...");
+            }
+            if (null != mProcess) {
+                mProcess.destroy();
+                mProcess = null;
+            }
+            if (null != p) {
+                p.destroy();
+            }
+
         }
         if (null != miThreadPoolApi) {
             miThreadPoolApi.dismiss();
@@ -232,6 +265,44 @@ abstract class AbsLogApi implements ILogApi {
         if (null != threadPool) {
             threadPool.closeThread();
         }
+    }
+
+    public String getTinyCapPID(Process psProcess) {
+        DataOutputStream out = new DataOutputStream(psProcess.getOutputStream());
+        InputStream is = psProcess.getInputStream();
+        try {
+            out.writeBytes("ps | grep 'tinycap' | cut -c 10-15\n");
+            out.writeBytes("ps\n");
+            out.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            out.writeBytes("exit\n");
+            out.flush();
+            psProcess.waitFor();
+        } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        String re = "";
+        try {
+            if (is.read() != 0) {
+                byte firstByte = (byte) is.read();
+                int available = is.available();
+                byte[] characters = new byte[available + 1];
+                characters[0] = firstByte;
+                is.read(characters, 1, available);
+                re = new String(characters);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        LogUtils.dTag(TAG,"查询的进程pid:"+re);
+        return re;
     }
 
     private String getLastLogFileName(String dir, String logName) {
