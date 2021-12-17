@@ -216,14 +216,16 @@ abstract class AbsLogApi implements ILogApi {
         this.logEnable = false;
         enableLog(logEnable);//关闭logcat关闭运行时日志
         LogUtils.getConfig().setLog2FileSwitch(logEnable);
-        Process p = null;
+/*        Process p = null;
         try {
-            if(null!=mProcess){
-                p = Runtime.getRuntime().exec("su -c kill " + getTinyCapPID(mProcess));
+            if (null != mProcess) {
+                String tinyCapPID = getTinyCapPID(mProcess);
+                LogUtils.d(TAG, "pp:jinchengid::" + tinyCapPID);
+                p = Runtime.getRuntime().exec("su -c kill " + tinyCapPID);
             }
         } catch (Exception e) {
             e.printStackTrace();
-            LogUtils.e(TAG,"stopLogcat异常...");
+            LogUtils.e(TAG, "stopLogcat异常...");
 
         } finally {
             if (null != mProcess) {
@@ -234,29 +236,33 @@ abstract class AbsLogApi implements ILogApi {
                 p.destroy();
                 p = null;
             }
+        }*/
+
+        if (null != mProcess) {
+            mProcess.destroy();
+            mProcess = null;
         }
-
-
     }
 
     @Override
     public void destory() {
         if (null != mProcess) {
-            Process p = null;
+/*            Process p = null;
             try {
                 p = Runtime.getRuntime().exec("su -c kill " + getTinyCapPID(mProcess));
 //                    Process p=Runtime.getRuntime().exec("kill -2 " + getTinyCapPID(mProcess));
             } catch (IOException e) {
                 e.printStackTrace();
-                LogUtils.e(TAG,"销毁异常...");
-            }
+                LogUtils.e(TAG, "销毁异常...");
+            }*/
             if (null != mProcess) {
-                mProcess.destroy();
-                mProcess = null;
+
             }
-            if (null != p) {
+            mProcess.destroy();
+            mProcess = null;
+/*            if (null != p) {
                 p.destroy();
-            }
+            }*/
 
         }
         if (null != miThreadPoolApi) {
@@ -281,12 +287,11 @@ abstract class AbsLogApi implements ILogApi {
         try {
             out.writeBytes("exit\n");
             out.flush();
-            psProcess.waitFor();
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+//            psProcess.waitFor();
         } catch (IOException e) {
             e.printStackTrace();
+            LogUtils.dTag(TAG, "查询的进程pid...faildzz:");
+
         }
         String re = "";
         try {
@@ -300,8 +305,9 @@ abstract class AbsLogApi implements ILogApi {
             }
         } catch (IOException e) {
             e.printStackTrace();
+            LogUtils.dTag(TAG, "查询的进程pid...faild:");
         }
-        LogUtils.dTag(TAG,"查询的进程pid:"+re);
+        LogUtils.dTag(TAG, "查询的进程pid:" + re);
         return re;
     }
 
