@@ -1,9 +1,12 @@
 package com.ldl.upanepochlog.api;
 
+import android.annotation.SuppressLint;
+import android.os.Build;
 import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 
 import com.ldl.upanepochlog.LogApiConstant;
 import com.ldl.upanepochlog.threadpool.ScheduledThteadpoolImpl;
@@ -17,6 +20,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -195,6 +199,7 @@ abstract class AbsLogApi implements ILogApi {
             }*/
                     } catch (IOException e) {
                         e.printStackTrace();
+                        LogUtils.dTag(TAG,"IOException执行 logcat失败");
                     }
                 }
 //                }
@@ -237,39 +242,59 @@ abstract class AbsLogApi implements ILogApi {
                 p = null;
             }
         }*/
-
-        if (null != mProcess) {
-            mProcess.destroy();
-            mProcess = null;
-        }
+        killProcess();
     }
 
     @Override
     public void destory() {
-        if (null != mProcess) {
-/*            Process p = null;
-            try {
-                p = Runtime.getRuntime().exec("su -c kill " + getTinyCapPID(mProcess));
-//                    Process p=Runtime.getRuntime().exec("kill -2 " + getTinyCapPID(mProcess));
-            } catch (IOException e) {
-                e.printStackTrace();
-                LogUtils.e(TAG, "销毁异常...");
-            }*/
-            if (null != mProcess) {
-
-            }
-            mProcess.destroy();
-            mProcess = null;
-/*            if (null != p) {
-                p.destroy();
-            }*/
-
-        }
+        killProcess();
         if (null != miThreadPoolApi) {
             miThreadPoolApi.dismiss();
         }
         if (null != threadPool) {
             threadPool.closeThread();
+        }
+    }
+
+    Process    p;
+    protected void killProcess() {
+        if (null != mProcess) {
+            try {
+
+                Field f=mProcess.getClass().getDeclaredField("pid");
+                f.setAccessible(true);
+                long handl=f.getLong(mProcess);
+                LogUtils.dTag(TAG,"pid:"+handl);
+                p = Runtime.getRuntime().exec("su -c kill -9" + handl);
+                LogUtils.dTag(TAG,"su -c kill -9"+" "+handl);
+  /*              if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    if(mProcess.waitFor(100,TimeUnit.SECONDS)){
+                        String cmd2 = "kill -SIGTERM " + String.valueOf(handl);
+                        Process process2 = Runtime.getRuntime().exec(cmd2);
+                        if (!mProcess.waitFor(100, TimeUnit.SECONDS)) {
+                            proess2.destroyForcibly();
+                        } else {
+                            LogUtils.dTag(TAG,"kill success");
+                        }
+                    }
+                }else {
+//                    p = Runtime.getRuntime().exec("su -c kill " + handl);
+                    p = Runtime.getRuntime().exec("su -c kill -9 " + handl);
+                    LogUtils.dTag(TAG,"su -c kill -9"+handl);
+
+                }*/
+            } catch (Exception e) {
+                LogUtils.eTag(TAG,"kill pid异常了");
+                e.printStackTrace();
+            }finally {
+                if(null!=p){
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                        mProcess.destroyForcibly();
+                    }else {
+                        mProcess.destroy();
+                    }
+                }
+            }
         }
     }
 

@@ -103,7 +103,8 @@ class LogApi extends AbsLogApi {
     public void configLogFile(int fileSize, int fileCount) {
         this.fileCount = fileCount;
         this.fileSize = fileSize * 1024;
-        startLogcat();
+//        killProcess();
+//        startLogcat();
     }
 
     @Override
@@ -224,7 +225,7 @@ class LogApi extends AbsLogApi {
     @NonNull
     private File getOutLogname(File f) {
         Date d = new Date();
-        SimpleDateFormat sbf = new SimpleDateFormat("yyyy-MM-dd-HH:mm");
+        SimpleDateFormat sbf = new SimpleDateFormat("yyyy-MM-dd-HH-mm");
         String log = sbf.format(d) + "-" + "logs.zip";
         String ss = f.getParent()+ File.separator + log.trim();
         return new File(ss);

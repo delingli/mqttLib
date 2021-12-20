@@ -59,10 +59,10 @@ class LogUtilManager {
      *
      * @param switchLog
      */
-    public void setAppLogSwitch(boolean switchLog) {
+    public void setAppLogSwitch(boolean switchLog,int fileCount,int fileSize) {
         LogUtils.getConfig().setLog2FileSwitch(switchLog);
         if (switchLog) {
-            LogService.startServices(app);
+            LogService.startServices(app,fileCount,fileSize);
         } else {
             LogService.stopServices(app);
         }
@@ -97,6 +97,7 @@ class LogUtilManager {
             LogService.startServices(app, CLEARALLLOG);
         }
     }
+    @Deprecated
     public void configLogFileConfig(int fileCount,int fileSize) {
         if (null != logApi) {
             LogService.startServices(app, fileCount,fileSize);

@@ -55,7 +55,7 @@ public class LogSetActivity extends AppCompatActivity implements View.OnClickLis
         mSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                LogUtilManager.getInstance().setAppLogSwitch(isChecked);
+                LogUtilManager.getInstance().setAppLogSwitch(isChecked,10,10);
             }
         });
     }
@@ -85,7 +85,7 @@ public class LogSetActivity extends AppCompatActivity implements View.OnClickLis
 
         int id = v.getId();
         if (id == R.id.btn_clearApp) {
-            LogUtilManager.getInstance().setAppLogSwitch(true);
+            LogUtilManager.getInstance().setAppLogSwitch(true,10,10);
 
 //            LogUtilManager.getInstance().clearAppLog();
         } else if (id == R.id.btn_crash) {

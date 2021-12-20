@@ -174,7 +174,7 @@ abstract public class AbsRabbitDispatch implements IRabbitDispatch, IRabbitMqRec
 //                channel.queueDeclare(devicesn, true, false, false, null);
                 channel.queueDeclare(devicesn, true, false, false, null);
                 consumerTag = channel.basicConsume(devicesn, true, new RabbitConsumer(channel));
-
+                underDestroy=false;
             }
         } catch (IOException e) {
             LogUtils.eTag(TAG, "IOException emitted!");
@@ -243,8 +243,10 @@ abstract public class AbsRabbitDispatch implements IRabbitDispatch, IRabbitMqRec
             LogUtils.dTag(TAG, "handle message with routingKey:" + routingKey + " contentType: " + contentType);
             long deliveryTag = envelope.getDeliveryTag();
             String message = new String(body);
+            LogUtils.dTag(TAG, "lastMsgId:" + lastMsgId + "deliveryTag:" + deliveryTag);
             if (lastMsgId != deliveryTag) {
                 lastMsgId = deliveryTag;
+                LogUtils.dTag(TAG, "lastMsgId!=deliveryTag..." +"underDestroy:"+underDestroy);
                 if (!TextUtils.isEmpty(message) && !underDestroy) {
                     LogUtils.dTag(TAG, "message:" + message + "deliveryTag:" + deliveryTag);
                     receiveMessage(message);

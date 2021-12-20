@@ -66,8 +66,8 @@ public class LogService extends Service implements AbsLogApi.onUploadListener {
 
     public static void startServices(Context context, int fileCount, int fileSize) {
         Intent intent = new Intent(context, LogService.class);
-        intent.putExtra(KEY_FILE_SIZE, fileCount);
-        intent.putExtra(KEY_FILE_COUNT, fileSize);
+        intent.putExtra(KEY_FILE_SIZE, fileSize);
+        intent.putExtra(KEY_FILE_COUNT, fileCount);
         context.startService(intent);
 //        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
 //            context.startForegroundService(intent);
@@ -139,8 +139,8 @@ public class LogService extends Service implements AbsLogApi.onUploadListener {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
-            handlerOpt(intent);
             handlerLogFileConfig(intent);
+            handlerOpt(intent);
         }
         return super.onStartCommand(intent, flags, startId);
     }
