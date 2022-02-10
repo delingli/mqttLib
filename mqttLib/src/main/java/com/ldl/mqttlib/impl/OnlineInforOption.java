@@ -62,7 +62,9 @@ public class OnlineInforOption implements Parcelable {
             this.params = params;
             return this;
         }
-
+        public OnlineInforOption build() {
+            return new OnlineInforOption(this);
+        }
 
     }
 }

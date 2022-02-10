@@ -11,7 +11,7 @@ versions.kotlin_gradle_plugin_version = '1.4.10'
 versions.android_maven_gradle_plugin = '2.1'
 versions.gradle_bintray_plugin_version = '1.8.1'
 versions.greendao_gradle_plugin_version = '3.3.0'
-
+versions.livedata_ktx = "2.2.0"
 
 versions.constraint_layout = "2.0.4"
 versions.glide = "4.12.0"
@@ -53,6 +53,9 @@ androidz.core_ktx = "androidx.core:core-ktx:$versions.core_ktx"
 androidz.kotlin_stdlib = "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin_gradle_plugin_version"
 androidz.kotlinx_coroutines_android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.kotlinx_coroutines_android"
 androidz.kotlinx_coroutines_core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.kotlinx_coroutines_android"
+androidz.viewmodel_ktx = "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.livedata_ktx"
+androidz.livedata_ktx = "androidx.lifecycle:lifecycle-livedata-ktx:$versions.livedata_ktx"
+
 deps.androidz = androidz//数组赋值
 
 // retrofit start

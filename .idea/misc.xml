@@ -3,8 +3,30 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/IdsApp/app/src/main/res/layout/activity_main.xml" value="0.536" />
+        <entry key="..\:/IdsApp/app/src/main/res/layout/activity_main.xml" value="0.16233766233766234" />
         <entry key="..\:/IdsApp/app/src/main/res/layout/activity_test_log.xml" value="0.1375" />
+        <entry key="..\:/IdsApp/recordeComponent/src/main/res/drawable/bg_colorful.xml" value="0.19444444444444445" />
+        <entry key="..\:/IdsApp/recordeComponent/src/main/res/drawable/bg_input_window.xml" value="0.1" />
+        <entry key="..\:/IdsApp/recordeComponent/src/main/res/drawable/bg_round_corner.xml" value="0.221025641025641" />
+        <entry key="..\:/IdsApp/recordeComponent/src/main/res/drawable/black_corner5z_bg.xml" value="0.29270833333333335" />
+        <entry key="..\:/IdsApp/recordeComponent/src/main/res/drawable/cancel_bg.xml" value="0.19010416666666666" />
+        <entry key="..\:/IdsApp/recordeComponent/src/main/res/drawable/ic_exit.xml" value="0.221025641025641" />
+        <entry key="..\:/IdsApp/recordeComponent/src/main/res/drawable/ic_launcher_background.xml" value="0.221025641025641" />
+        <entry key="..\:/IdsApp/recordeComponent/src/main/res/drawable/ic_pause.xml" value="0.221025641025641" />
+        <entry key="..\:/IdsApp/recordeComponent/src/main/res/drawable/ic_start.xml" value="0.221025641025641" />
+        <entry key="..\:/IdsApp/recordeComponent/src/main/res/layout/activity_log_set.xml" value="0.8800000000000001" />
+        <entry key="..\:/IdsApp/recordeComponent/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/IdsApp/recordeComponent/src/main/res/layout/activity_mainzz.xml" value="0.1" />
+        <entry key="..\:/IdsApp/recordeComponent/src/main/res/layout/exit_dialog_layout.xml" value="0.6407185628742516" />
+        <entry key="..\:/IdsApp/recordeComponent/src/main/res/layout/lubo_layout.xml" value="0.6" />
+        <entry key="..\:/IdsApp/recordeComponent/src/main/res/layout/main_layout_anim_reveal_window.xml" value="0.1" />
+        <entry key="..\:/IdsApp/recordeComponent/src/main/res/layout/main_layout_float_full_screen_touch_able.xml" value="0.1" />
+        <entry key="..\:/IdsApp/recordeComponent/src/main/res/layout/main_layout_float_full_screen_touch_disable.xml" value="0.14270833333333333" />
+        <entry key="..\:/IdsApp/recordeComponent/src/main/res/layout/main_layout_float_not_full_screen_touch_disable.xml" value="0.20833333333333334" />
+        <entry key="..\:/IdsApp/recordeComponent/src/main/res/layout/main_layout_float_permission_detect.xml" value="0.1" />
+        <entry key="..\:/IdsApp/recordeComponent/src/main/res/layout/main_layout_follow_touch.xml" value="0.1" />
+        <entry key="..\:/IdsApp/recordeComponent/src/main/res/layout/main_layout_input_window.xml" value="0.1" />
+        <entry key="..\:/IdsApp/recordeComponent/src/main/res/layout/test_recorde_layout.xml" value="0.284375" />
       </map>
     </option>
   </component>

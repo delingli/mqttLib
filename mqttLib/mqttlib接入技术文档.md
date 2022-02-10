@@ -1,6 +1,6 @@
 ### MqttLib技术文档
 一.接入方式:
-  ### 1.  引进 implementation 'com.idc.idcsdk:mqttLib:1.0.2'
+  ### 1.  引进 implementation 'com.idc.idcsdk:mqttLib:1.0.4'
 
 
   -----

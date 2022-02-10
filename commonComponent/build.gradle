@@ -1,0 +1,69 @@
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'kotlin-kapt'
+}
+apply from: '../upload-aar.gradle'
+android {
+    compileSdkVersion 31
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 31
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+}
+
+dependencies {
+
+    api deps.androidz.app_compat
+    api deps.androidz.recyclerview
+    api deps.androidz.constraintlayout
+    api deps.androidz.material
+    testImplementation 'junit:junit:4.+'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+
+    api deps.androidz.kotlin_stdlib
+    api deps.androidz.kotlinx_coroutines_android
+    api deps.androidz.kotlinx_coroutines_core
+    api deps.androidz.livedata_ktx
+    api deps.androidz.viewmodel_ktx
+    /*retrofit2*/
+    api deps.retrofit.runtime
+    api deps.retrofit.adapter
+    api deps.retrofit.gson
+    api deps.retrofit.converter_scalars
+    api deps.utilcode
+    api(deps.androidz.core_ktx) {
+        exclude module: 'support-annotations'
+        exclude module: 'support-compat'
+    }
+}
+publishing {
+    publications {
+        uploadSDK(MavenPublication) {
+            artifact "build/outputs/aar/commonComponent-debug.aar"
+            artifactId "commonComponent"
+            version "1.0.0"
+        }
+    }
+}

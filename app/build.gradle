@@ -43,6 +43,7 @@ dependencies {
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
     implementation project(path: ':UPanEpochLog')
     implementation project(path: ':RabbitMqLib')
+    implementation project(path: ':recordeComponent')
 
 //    implementation 'com.itc.itcsdk:core:3.8.16'
 //    implementation 'com.itc.itcsdk:compiler:3.8.16'

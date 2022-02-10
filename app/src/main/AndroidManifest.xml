@@ -16,17 +16,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.IdsApp">
-        <activity
-            android:name=".TestLogActivity"
-            android:exported="false"
-            android:process=":remote"/>
+
         <activity android:name=".MainActivity"
            >
-            <intent-filter>
+ <!--           <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
     </application>
 

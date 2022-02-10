@@ -2,7 +2,7 @@
   ## 第一步：
 
 
-              implementation   'com.idc.idcsdk:itclogs:1.0.1'
+              implementation   'com.idc.idcsdk:itclogs:1.0.8'
 
 
 

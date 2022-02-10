@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="340pt"
+    android:orientation="vertical"
+    android:background="@drawable/black_corner5z_bg"
+    android:layout_height="180pt">
+    <TextView
+        android:textSize="20pt"
+        android:textColor="#ffffff"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="40pt"
+        android:layout_width="wrap_content"
+        android:text="点击确定,将退出录播?"
+        android:layout_height="wrap_content"/>
+    <LinearLayout
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:orientation="horizontal"
+        android:layout_marginBottom="40pt"
+        android:layout_marginTop="30pt"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/tv_cancel"
+            android:layout_width="86pt"
+            android:textSize="18pt"
+            android:text="取消"
+            android:gravity="center"
+            android:background="@drawable/cancel_bg"
+            android:textColor="#FFFFFF"
+            android:layout_height="36pt"/>
+        <TextView
+            android:id="@+id/tv_sure"
+            android:layout_width="86pt"
+            android:textSize="18pt"
+            android:layout_marginStart="33pt"
+            android:text="确定"
+            android:gravity="center"
+            android:background="@drawable/sure_bg"
+            android:textColor="#FFFFFF"
+            android:layout_height="36pt"/>
+    </LinearLayout>
+
+</LinearLayout>
