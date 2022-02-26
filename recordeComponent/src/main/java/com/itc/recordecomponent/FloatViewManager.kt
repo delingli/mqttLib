@@ -13,6 +13,7 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.blankj.utilcode.util.LogUtils
+import com.blankj.utilcode.util.ToastUtils
 import com.itc.commoncomponent.network.ResultData
 import com.itc.commoncomponent.network.Results
 import com.petterp.floatingx.assist.helper.ScopeHelper
@@ -75,23 +76,32 @@ object FloatViewManager {
         }
     }
 
+    fun isShow(): Boolean {
+        mIFxControl?.let {
+            return it.isShow()
+        }
+        return false
+    }
+
+
     fun show() {
         if (mIFxControl == null) {
             throw RuntimeException("Call the toInit(context: Context) initialization method first")
         }
         mIFxControl?.let {
             if (!it.isShow()) {
-                this.start = true
                 it.show()
             }
             var mChronometer = it.getManagerViewHolder()?.getView<Chronometer>(R.id.timer)
-            if (start) {
+            var img = it.getManagerViewHolder()?.getView<ImageView>(R.id.iv_open_off)
+            if (!start) {
                 //todo 默认请求开启，开始计时
                 mChronometer?.let {
                     it.setBase(SystemClock.elapsedRealtime());//计时器清零
                     var hour = ((SystemClock.elapsedRealtime() - it.getBase()) / 1000 / 60) as Long
                     it.setFormat("0" + hour.toString() + ":%s");
-                    it.start()
+//                    it.start()
+                    toRequestStart(img, mChronometer)
                 }
             }
             it.updateView {
@@ -99,14 +109,14 @@ object FloatViewManager {
                     //todo 请求网络开关接口
                     if (it is ImageView) {
                         var img: ImageView = it as ImageView
-                        if (start) {//开始
+                        if (start) {
+                            //开始
                             mRangeTime = SystemClock.elapsedRealtime().toInt();
                             //todo 请求暂停
                             mPauseJob = GlobalScope.launch {
                                 var results: Results<ResultData<String>> = mFloatViewModel.openOff(
                                     meeting_id,
-                                    "pause",
-                                    System.currentTimeMillis().toString()
+                                    "pause"
                                 )
                                 when (results) {
                                     is Results.Sucess -> {
@@ -116,11 +126,16 @@ object FloatViewManager {
                                             mChronometer?.stop()
                                         } else {
                                             //失败,不变换
-                                            LogUtils.eTag(TAG, "请求失败"+results.data.code)
+                                            ToastUtils.showShort("暂停失败,请检察设备")
+                                            LogUtils.eTag(
+                                                TAG,
+                                                "请求失败" + results.data.code + results.data.message
+                                            )
                                         }
                                     }
                                     is Results.Error -> {
                                         //失败不变换
+                                        ToastUtils.showShort("暂停失败,请检察设备")
                                         LogUtils.eTag(TAG, "请求失败")
 
                                     }
@@ -129,37 +144,7 @@ object FloatViewManager {
 
 
                         } else {
-                            mStartJob = GlobalScope.launch {
-                                var results: Results<ResultData<String>> = mFloatViewModel.openOff(
-                                    meeting_id,
-                                    "start",
-                                    System.currentTimeMillis().toString()
-                                )
-                                when (results) {
-                                    is Results.Sucess -> {
-                                        if (results.data.code == 0) {
-                                            //成功了
-                                            img.setImageResource(R.drawable.ic_start)
-                                            mChronometer?.let {
-                                                if (mRangeTime != 0) {
-                                                    it.setBase(it.getBase() + (SystemClock.elapsedRealtime() - mRangeTime));
-                                                } else {
-                                                    it.setBase(SystemClock.elapsedRealtime());
-                                                }
-                                                it.start()
-                                            }
-                                        } else {
-                                            //失败不变
-                                            LogUtils.eTag(TAG, "请求失败"+results.data.code)
-
-                                        }
-                                    }
-                                    is Results.Error -> {
-                                        //失败
-                                        LogUtils.eTag(TAG, "请求失败")
-                                    }
-                                }
-                            }
+                            toRequestStart(img, mChronometer)
 
                         }
 
@@ -190,27 +175,29 @@ object FloatViewManager {
                             mStopJob = GlobalScope.launch {
                                 var results: Results<ResultData<String>> = mFloatViewModel.openOff(
                                     meeting_id,
-                                    "stop",
-                                    System.currentTimeMillis().toString()
+                                    "stop"
                                 )
-                             withContext(Dispatchers.Main){
-                                 when (results) {
-                                     is Results.Sucess -> {
+                                withContext(Dispatchers.Main) {
+                                    when (results) {
+                                        is Results.Sucess -> {
 
-                                         destory()
-                                         if (results.data.code == 0) {
-                                             //成功了
-                                         } else {
-                                             //失败
-                                         }
-                                     }
-                                     is Results.Error -> {
-                                         //失败
-                                         destory()
-                                         LogUtils.eTag(TAG, "请求失败")
-                                     }
-                                 }
-                             }
+
+                                            if (results.data.code == 0) {
+                                                //成功了
+                                            } else {
+                                                //失败
+                                                ToastUtils.showShort("关闭失败,请检察设备")
+                                            }
+                                            destory()
+                                        }
+                                        is Results.Error -> {
+                                            //失败
+                                            destory()
+                                            ToastUtils.showShort("关闭失败,请检察设备")
+                                            LogUtils.eTag(TAG, "请求失败")
+                                        }
+                                    }
+                                }
 
                             }
 
@@ -235,6 +222,53 @@ object FloatViewManager {
             }
         }
 
+    }
+
+    private fun toRequestStart(
+        img: ImageView?,
+        mChronometer: Chronometer?
+    ) {
+        mStartJob = GlobalScope.launch {
+            var results: Results<ResultData<String>> = mFloatViewModel.openOff(
+                meeting_id,
+                "start"
+            )
+            withContext(Dispatchers.Main) {
+                when (results) {
+                    is Results.Sucess -> {
+                        if (results.data.code == 0) {
+                            //成功了
+                            start = true
+                            img?.setImageResource(R.drawable.ic_start)
+                            mChronometer?.let {
+                                if (mRangeTime != 0) {
+                                    it.setBase(it.getBase() + (SystemClock.elapsedRealtime() - mRangeTime));
+                                } else {
+                                    it.setBase(SystemClock.elapsedRealtime());
+                                }
+                                it.start()
+                            }
+                        } else {
+                            //失败不变
+                            ToastUtils.showShort("开启失败,请检察设备")
+                            img?.setImageResource(R.drawable.ic_pause)
+                            start = false
+                            LogUtils.eTag(TAG, "请求失败" + results.data.code + results.data.message)
+
+                        }
+                    }
+                    is Results.Error -> {
+                        //失败
+                        img?.setImageResource(R.drawable.ic_pause)
+                        start = false
+                        LogUtils.eTag(TAG, "请求失败")
+                        ToastUtils.showShort("开启失败,请检察设备")
+
+                    }
+                }
+            }
+
+        }
     }
 
     fun destory() {

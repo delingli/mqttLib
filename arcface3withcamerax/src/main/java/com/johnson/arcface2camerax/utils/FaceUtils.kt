@@ -3,9 +3,12 @@ package com.johnson.arcface2camerax.utils
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
+import android.widget.Toast
 import com.arcsoft.face.*
+import com.arcsoft.face.enums.DetectFaceOrientPriority
 import com.arcsoft.face.enums.DetectMode
 import com.arcsoft.face.util.ImageUtils
+import com.johnson.arcface2camerax.R
 import com.johnson.arcface2camerax.utils.face.FaceHelper
 import com.johnson.arcfacedemo.arcface.utils.face.FaceListener
 import kotlin.concurrent.thread
@@ -16,7 +19,10 @@ import kotlin.concurrent.thread
  * @Author WangShunYi
  * @Date 2019-11-19 13:41
  */
-open class FaceUtils(val context: Context, val backFaceFeatureListener: ((data: ByteArray?, trackId: Int?) -> Unit)) {
+open class FaceUtils(
+    val context: Context,
+    val backFaceFeatureListener: ((data: ByteArray?, trackId: Int?) -> Unit)
+) {
     open var faceEngine: FaceEngine? = null
     open val TAG = FaceUtils::class.java.simpleName
     open var faceHelper: FaceHelper? = null
@@ -33,11 +39,15 @@ open class FaceUtils(val context: Context, val backFaceFeatureListener: ((data: 
      * 初始化引擎
      */
     open fun initFaceEngine() {
+        if (faceEngine != null) {
+            return
+        }
         faceEngine = FaceEngine()
+//        ConfigUtil.getFtOrient(context
         afCode = faceEngine?.init(
             context,
-            DetectMode.ASF_DETECT_MODE_VIDEO,
-            ConfigUtil.getFtOrient(context),
+            DetectMode.ASF_DETECT_MODE_IMAGE,
+            DetectFaceOrientPriority.ASF_OP_ALL_OUT,
             16,
             MAX_DETECT_NUM,
             FaceEngine.ASF_FACE_RECOGNITION or FaceEngine.ASF_FACE_DETECT
@@ -47,11 +57,15 @@ open class FaceUtils(val context: Context, val backFaceFeatureListener: ((data: 
         //Log.i(TAG, "initEngine:  init: $afCode  version:$versionInfo")
 
         if (afCode != ErrorInfo.MOK) {
-//            Toast.makeText(context, context.getString(R.string.init_failed, afCode), Toast.LENGTH_SHORT).show()
-           // Log.i(TAG, "initEngineError:  init: $afCode  version:$versionInfo")
+            Toast.makeText(
+                context,
+                context.getString(R.string.init_failed, afCode),
+                Toast.LENGTH_SHORT
+            ).show()
+            // Log.i(TAG, "initEngineError:  init: $afCode  version:$versionInfo")
             return
         }
-
+        Log.d(TAG, "initFaceEngine初始化成功")
         faceListener = object : FaceListener {
             override fun onFail(e: Exception, requestId: Int?) {
                 Log.e(TAG, "onFail: " + e.message)

@@ -12,6 +12,6 @@ interface IFloatViewService {
         @Query("meeting_id") meeting_id: String?,
         @Query("status") status: String,
         @Query("timestamp") timestamp: String,
-        @Query("sign") sign: String
+        @Query("sign") sign: String?
     ): ResultData<String>
 }

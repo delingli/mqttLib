@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Matrix
 import android.graphics.Rect
+import android.hardware.Camera
 import android.os.Handler
 import android.os.HandlerThread
 import android.util.AttributeSet
@@ -35,6 +36,7 @@ import com.johnson.arcface2camerax.utils.face.FaceHelper
 import com.johnson.arcface2camerax.utils.face.RequestFeatureStatus
 import com.johnson.arcface2camerax.widget.FaceRectView
 import com.johnson.arcface2camerax.utils.ConfigUtil
+import com.johnson.arcface2camerax.widget.RoundTextureView
 import com.johnson.arcfacedemo.arcface.utils.face.FaceListener
 import io.reactivex.Observable
 import io.reactivex.ObservableOnSubscribe
@@ -56,7 +58,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 open class FaceCameraView : RelativeLayout, LifecycleObserver {
     open var lifecycleOwner: LifecycleOwner? = null
-    open var textureView: TextureView? = null
+    open var textureView: RoundTextureView? = null
     open var faceRectView: FaceRectView
 
     open var cameraId: Int = 0
@@ -77,15 +79,13 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
     open val MAX_DETECT_NUM = 5
     open val TAG = "FaceCameraView"
     open var faceHelper: FaceHelper? = null
-    public var previeWidth = -1
-    public var previeHeight = -1
+    var previeWidth = -1
+    var previeHeight = -1
     open val requestFeatureStatusMap = ConcurrentHashMap<Int, Int>()
     open var drawHelper: DrawHelper? = null
     open var isGetFaceId = AtomicBoolean(false)
 
     open val isBackFaceCodeNow = AtomicBoolean(false)
-
-
     open var tempWidth = -1
     open var tempHeight = -1
     var tempdata: ByteArray? = null
@@ -93,28 +93,34 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
     open var firstOne = true
     var tempbitmap: Bitmap? = null
     private var backFaceFeatureListener: ((data: ByteArray) -> Unit)? = null
-    public open var disposable: Disposable? = null
-    public open var disposable2: Disposable? = null
-    public open var onPAUSE = false
-    public open var singleTask = Executors.newSingleThreadExecutor()
+    open var disposable: Disposable? = null
+    open var disposable2: Disposable? = null
+    open var onPAUSE = false
+    open var singleTask = Executors.newSingleThreadExecutor()
 
 
     @JvmOverloads
     constructor(
         context: Context, attrs: AttributeSet? = null, defStyleAttr: Int = 0
     ) : super(context, attrs, defStyleAttr) {
-        textureView = TextureView(context)
+        textureView = RoundTextureView(context)
         faceRectView = FaceRectView(context)
         val ttvlp = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-
         addView(textureView, ttvlp)
         addView(faceRectView, ttvlp)
+
+
+    }
+
+    fun setRadius(radius: Int) {
+        textureView?.radius = radius
+        textureView?.turnRound()
     }
 
     /**
      * 初始化环境
      */
-    public open fun initEnvironment() {
+    open fun initEnvironment() {
         if (!context.hasPermission(*NEEDED_PERMISSIONS)) {
             Toast.makeText(context, R.string.permission_denied1, Toast.LENGTH_SHORT).show()
             return
@@ -131,27 +137,30 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
     /**
      * 初始化引擎
      */
-    public open fun initEngine() {
-        faceEngine = FaceEngine()
-        afCode = faceEngine?.init(
-            context,
-            DetectMode.ASF_DETECT_MODE_VIDEO,
-            DetectFaceOrientPriority.ASF_OP_0_ONLY,
-            16,
-            MAX_DETECT_NUM,
-            FaceEngine.ASF_FACE_RECOGNITION or FaceEngine.ASF_FACE_DETECT
-        ) ?: -1
-        //val versionInfo = VersionInfo()
-        //faceEngine?.getVersion(versionInfo)
-        //Log.i(TAG, "initEngine:  init: $afCode  version:$versionInfo")
-
-        if (afCode != ErrorInfo.MOK) {
-            Toast.makeText(
+    open fun initEngine() {
+        if (faceEngine == null) {
+            faceEngine = FaceEngine()
+            afCode = faceEngine?.init(
                 context,
-                context.getString(R.string.init_failed, afCode),
-                Toast.LENGTH_SHORT
-            ).show()
+                DetectMode.ASF_DETECT_MODE_VIDEO,
+                DetectFaceOrientPriority.ASF_OP_0_ONLY,
+                16,
+                MAX_DETECT_NUM,
+                FaceEngine.ASF_FACE_RECOGNITION or FaceEngine.ASF_FACE_DETECT
+            ) ?: -1
+            //val versionInfo = VersionInfo()
+            //faceEngine?.getVersion(versionInfo)
+            //Log.i(TAG, "initEngine:  init: $afCode  version:$versionInfo")
+
+            if (afCode != ErrorInfo.MOK) {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.init_failed, afCode),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
         }
+
     }
 
     /**
@@ -159,11 +168,27 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
      */
     open fun initCamera() {
         //星神屏摄像头默认是前置，其他屏都是后置
-        if (BuildConfig.BUILD_TYPE.equals("xingshenDebug") || BuildConfig.BUILD_TYPE.equals("xingshen")) {
+        if (BuildConfig.BUILD_TYPE.equals("xingshenDebug") || BuildConfig.BUILD_TYPE.equals("xingshen") || BuildConfig.BUILD_TYPE.equals("yitiji")) {
             lensFacing = CameraX.LensFacing.FRONT
             cameraId = 1
         }
+        //相机数量为2则打开1,1则打开0,相机ID 1为前置，0为后置
+        cameraId = Camera.getNumberOfCameras() - 1
+        if(cameraId==1){
+            lensFacing = CameraX.LensFacing.FRONT
+        }else{
+            lensFacing = CameraX.LensFacing.BACK
+        }
+        //若指定了相机ID且该相机存在，则打开指定的相机
+//        if (specificCameraId != null && specificCameraId <= cameraId) {
+//            cameraId = specificCameraId
+//        }
 
+        //没有相机
+        if (cameraId == -1) {
+            Log.e(TAG, "没有相机")
+            return
+        }
         textureView?.post { startCamera() }
 
         textureView?.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
@@ -175,10 +200,15 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
     /**
      * 开启相机
      */
-    public open fun startCamera() = try {
+    open fun startCamera() = try {
         val metrics = DisplayMetrics().also { textureView?.display!!.getRealMetrics(it) }
         val screenAspectRatio = Rational(metrics.widthPixels, metrics.heightPixels)
-
+        Log.d(TAG, "cameraId:${cameraId}")
+        if (lensFacing == CameraX.LensFacing.BACK) {
+            Log.d(TAG, "BACK")
+        } else {
+            Log.d(TAG, "FRONT")
+        }
         val previewConfig = PreviewConfig.Builder().apply {
             setLensFacing(lensFacing)
             setTargetAspectRatio(screenAspectRatio)
@@ -200,10 +230,12 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
 
         CameraX.bindToLifecycle(lifecycleOwner, buildImageAnalysisUseCase(), preview)
     } catch (e: Exception) {
+        e.printStackTrace()
+        Log.e(TAG, e.toString())
         Toast.makeText(context, "打开相机失败!", Toast.LENGTH_LONG).show()
     }
 
-    public open fun buildImageAnalysisUseCase(): ImageAnalysis {
+    open fun buildImageAnalysisUseCase(): ImageAnalysis {
 
         val metrics = DisplayMetrics().also { textureView?.display?.getRealMetrics(it) }
         val screenAspectRatio = Rational(metrics.widthPixels, metrics.heightPixels)
@@ -265,7 +297,7 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
         return analysis
     }
 
-    public open fun updateTransform() {
+    open fun updateTransform() {
         val matrix = Matrix()
 
         // Compute the center of the view finder
@@ -289,7 +321,7 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
     /**
      * 在相机初始化后初始化人脸识别工具
      */
-    public open fun initFaceHelp() {
+    open fun initFaceHelp() {
         //如果相机未初始化
         if (previeWidth == -1 || previeHeight == -1) return
         val faceListener = object : FaceListener {
@@ -339,8 +371,7 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
             .build()
     }
 
-
-    public open fun doGetFaceCode(data: ByteArray?, width: Int, height: Int) {
+    open fun doGetFaceCode(data: ByteArray?, width: Int, height: Int) {
         if (data == null) {
             isGetFaceId.set(false)
             return
@@ -404,7 +435,6 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun onCreate(@NotNull owner: LifecycleOwner) {
         lifecycleOwner = owner
-
         //使用前释放相机
         CameraX.unbindAll()
     }
@@ -413,10 +443,10 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
      * 当onResume的时候初始化相机
      */
     @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-    public open fun onResume() {
+    open fun onResume() {
         onPAUSE = false
         firstOne = true
-
+        Log.d("ALDL", "onResume...")
         //延迟初始化相机
         Handler().postDelayed({
             initEnvironment()
@@ -429,10 +459,10 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
      * 当onPAUSE的时候释放资源
      */
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-    public open fun onPAUSE() {
+    open fun onPAUSE() {
         onPAUSE = true
         CameraX.unbindAll()
-
+        Log.d("ALDL", "onResume...")
         //延迟1s释放资源
         Handler().postDelayed({
             if (disposable?.isDisposed == false) {
@@ -457,7 +487,7 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
         }, 1000)
     }
 
-    public open fun setBackFaceFeatureListener(listener: (data: ByteArray) -> Unit) {
+    open fun setBackFaceFeatureListener(listener: (data: ByteArray) -> Unit) {
         backFaceFeatureListener = listener
     }
 
@@ -469,7 +499,7 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
     /**
      * 销毁引擎
      */
-    public open fun unInitEngine() {
+    open fun unInitEngine() {
         faceEngine ?: return
         if (afCode == ErrorInfo.MOK) {
             afCode = faceEngine!!.unInit()
@@ -501,7 +531,8 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
                         Toast.makeText(activity, R.string.active_success, Toast.LENGTH_LONG).show()
                         ConfigUtil.setBoolean(activity, ISACTIVEKEY, true)
                     } else if (it == ErrorInfo.MERR_ASF_ALREADY_ACTIVATED) {
-                        // Toast.makeText(activity, R.string.already_activated, Toast.LENGTH_LONG) .show()
+                        Toast.makeText(activity, R.string.already_activated, Toast.LENGTH_LONG)
+                            .show()
                     } else {
                         Toast.makeText(
                             activity,

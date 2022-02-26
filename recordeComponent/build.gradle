@@ -46,7 +46,7 @@ publishing {
         uploadSDK(MavenPublication) {
             artifact "build/outputs/aar/recordeComponent-debug.aar"
             artifactId "recordeComponent"
-            version "1.0.1"
+            version "1.0.3"
         }
     }
 }
