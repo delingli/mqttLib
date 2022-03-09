@@ -7,13 +7,11 @@ import android.os.Process
 import android.text.TextUtils
 import android.view.MotionEvent
 import com.example.idsapp.App
+import com.johnson.arcface2camerax.FaceCameraView.Companion.activeFaceEngine
 import com.ldl.upanepochlog.api.LogParamsOption
 import com.ldl.upanepochlog.api.LogParamsOption.LogParamsOptionBuilder
 import com.ldl.upanepochlog.log.LogUtilManager
-import com.petterp.floatingx.FloatingX
-import com.petterp.floatingx.assist.Direction
-import com.petterp.floatingx.impl.FxScrollImpl
-import com.petterp.floatingx.impl.lifecycle.FxTagActivityLifecycleImpl
+
 import java.io.BufferedReader
 import java.io.File
 import java.io.FileReader

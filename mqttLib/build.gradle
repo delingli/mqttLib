@@ -37,6 +37,7 @@ dependencies {
     testImplementation deps.junit
     androidTestImplementation deps.ext_junit
     androidTestImplementation deps.espresso_core
+    implementation 'com.blankj:utilcode:1.30.6'
     implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
     implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
@@ -52,7 +53,7 @@ publishing {
         uploadSDK(MavenPublication) {
             artifact "build/outputs/aar/mqttLib-debug.aar"
             artifactId "mqttLib"
-            version "1.0.4"
+            version "1.0.7"
         }
     }
 }

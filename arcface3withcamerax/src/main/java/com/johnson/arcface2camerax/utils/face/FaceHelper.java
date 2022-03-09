@@ -78,6 +78,7 @@ public class FaceHelper {
             if (faceEngine != null && faceRecognizeRunnables != null && faceRecognizeRunnables.size() < frThreadNum && !frThreadRunning) {
                 faceRecognizeRunnables.add(new FaceRecognizeRunnable(nv21, faceInfo, width, height, format, trackId));
                 executor.execute(faceRecognizeRunnables.poll());
+                Log.d("ldl", "requestFaceFeature:执行...");
             } else {
                 faceListener.onFaceFeatureInfoGet(null, trackId);
             }
@@ -135,6 +136,7 @@ public class FaceHelper {
             for (int i = 0; i < faceInfoList.size(); i++) {
                 facePreviewInfoList.add(new FacePreviewInfo(faceInfoList.get(i), null, currentTrackIdList.get(i)));
             }
+            Log.d("ldl", "faceInfoList:" + faceInfoList.size());
             return facePreviewInfoList;
         } else {
             facePreviewInfoList.clear();
@@ -219,6 +221,7 @@ public class FaceHelper {
                     synchronized (FaceHelper.this) {
                         frCode = faceEngine.extractFaceFeature(nv21Data, width, height, format, faceInfo, faceFeature);
                     }
+                    Log.d("ldl","frCode:"+frCode);
                     if (frCode == ErrorInfo.MOK) {
 //                        Log.i(TAG, "run: fr costTime = " + (System.currentTimeMillis() - frStartTime) + "ms");
                         faceListener.onFaceFeatureInfoGet(faceFeature, trackId);

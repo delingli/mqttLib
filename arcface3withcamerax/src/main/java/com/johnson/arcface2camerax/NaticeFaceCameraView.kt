@@ -1,9 +1,11 @@
 package com.johnson.arcface2camerax
 
 import android.Manifest
+import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.Matrix
+import android.graphics.Point
 import android.graphics.Rect
 import android.hardware.Camera
 import android.os.Handler
@@ -15,10 +17,12 @@ import android.util.Rational
 import android.view.Surface
 import android.view.TextureView
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.widget.RelativeLayout
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.camera.core.*
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -28,6 +32,7 @@ import com.arcsoft.face.enums.DetectFaceOrientPriority
 import com.arcsoft.face.enums.DetectMode
 import com.johnson.arcface2camerax.faceserver.FaceServer
 import com.johnson.arcface2camerax.model.DrawInfo
+import com.johnson.arcface2camerax.model.FacePreviewInfo
 import com.johnson.arcface2camerax.utils.DrawHelper
 import com.johnson.arcface2camerax.utils.ImageUtil
 import com.johnson.arcface2camerax.utils.extensions.bindLifeCycle
@@ -36,6 +41,9 @@ import com.johnson.arcface2camerax.utils.face.FaceHelper
 import com.johnson.arcface2camerax.utils.face.RequestFeatureStatus
 import com.johnson.arcface2camerax.widget.FaceRectView
 import com.johnson.arcface2camerax.utils.ConfigUtil
+import com.johnson.arcface2camerax.utils.camera.CameraHelper
+import com.johnson.arcface2camerax.utils.camera.CameraListener
+import com.johnson.arcface2camerax.utils.face.RecognizeColor
 import com.johnson.arcface2camerax.widget.RoundTextureView
 import com.johnson.arcfacedemo.arcface.utils.face.FaceListener
 import io.reactivex.Observable
@@ -56,12 +64,11 @@ import java.util.concurrent.atomic.AtomicBoolean
  * @Date 2019-08-02 10:43
  */
 
-open class FaceCameraView : RelativeLayout, LifecycleObserver {
+open class NaticeFaceCameraView : RelativeLayout, LifecycleObserver {
     open var lifecycleOwner: LifecycleOwner? = null
-    open var textureView: RoundTextureView? = null
-    open var faceRectView: FaceRectView
+    open lateinit var textureView: RoundTextureView
+    open lateinit var faceRectView: FaceRectView
     open var cameraId: Int = 0
-
 
     /**
      * 所需的所有权限信息
@@ -72,10 +79,10 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
         Manifest.permission.READ_EXTERNAL_STORAGE,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
-    open var lensFacing = CameraX.LensFacing.FRONT
+    open var lensFacing = CameraX.LensFacing.BACK
     public open var faceEngine: FaceEngine? = null
     open var afCode = -1
-    open val MAX_DETECT_NUM = 5
+    open val MAX_DETECT_NUM = 10
     open val TAG = "FaceCameraView"
     open var faceHelper: FaceHelper? = null
     var previeWidth = -1
@@ -106,8 +113,6 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
         val ttvlp = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
         addView(textureView, ttvlp)
         addView(faceRectView, ttvlp)
-
-
     }
 
     fun setRadius(radius: Int) {
@@ -127,6 +132,7 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
             Toast.makeText(context, R.string.bind_fail, Toast.LENGTH_LONG).show()
             return
         }
+
         initEngine()
         initCamera()
     }
@@ -141,7 +147,7 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
             afCode = faceEngine?.init(
                 context,
                 DetectMode.ASF_DETECT_MODE_VIDEO,
-                DetectFaceOrientPriority.ASF_OP_0_ONLY,
+                DetectFaceOrientPriority.ASF_OP_ALL_OUT,
                 16,
                 MAX_DETECT_NUM,
                 FaceEngine.ASF_FACE_RECOGNITION or FaceEngine.ASF_FACE_DETECT
@@ -161,15 +167,253 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
 
     }
 
+    val ANALYZING: Int = 10
+
+    private val rgbCameraID = Camera.CameraInfo.CAMERA_FACING_FRONT
+    private var previewSize: Camera.Size? = null
+
+
+    /**
+     * 删除已经离开的人脸
+     *
+     * @param facePreviewInfoList 人脸和trackId列表
+     */
+/*
+    open fun clearLeftFace(facePreviewInfoList: List<FacePreviewInfo>?) {
+        if (compareResultList != null) {
+            for (i in compareResultList.indices.reversed()) {
+                if (!requestFeatureStatusMap.containsKey(compareResultList.get(i).getTrackId())) {
+                    compareResultList.removeAt(i)
+                    adapter.notifyItemRemoved(i)
+                }
+            }
+        }
+        if (facePreviewInfoList == null || facePreviewInfoList.size == 0) {
+            requestFeatureStatusMap.clear()
+            livenessMap.clear()
+            livenessErrorRetryMap.clear()
+            extractErrorRetryMap.clear()
+            if (getFeatureDelayedDisposables != null) {
+                getFeatureDelayedDisposables.clear()
+            }
+            return
+        }
+        val keys = requestFeatureStatusMap.keys()
+        while (keys.hasMoreElements()) {
+            val key = keys.nextElement()
+            var contained = false
+            for (facePreviewInfo in facePreviewInfoList) {
+                if (facePreviewInfo.trackId === key) {
+                    contained = true
+                    break
+                }
+            }
+            if (!contained) {
+                requestFeatureStatusMap.remove(key)
+                livenessMap.remove(key)
+                livenessErrorRetryMap.remove(key)
+                extractErrorRetryMap.remove(key)
+            }
+        }
+    }
+*/
+
+    /**
+     * 用于存储活体值
+     */
+    private val livenessMap = ConcurrentHashMap<Int, Int>()
+    /* open fun drawPreviewInfo(facePreviewInfoList: List<FacePreviewInfo>) {
+         val drawInfoList: MutableList<DrawInfo> = ArrayList()
+         for (i in facePreviewInfoList.indices) {
+             val name = faceHelper!!.getName(facePreviewInfoList[i].trackId)
+             val liveness: Int? = livenessMap.get(facePreviewInfoList[i].trackId)
+             val recognizeStatus = requestFeatureStatusMap[facePreviewInfoList[i].trackId]
+
+             // 根据识别结果和活体结果设置颜色
+             var color: Int = RecognizeColor.COLOR_UNKNOWN
+             if (recognizeStatus != null) {
+                 if (recognizeStatus === RequestFeatureStatus.FAILED) {
+                     color = RecognizeColor.COLOR_FAILED
+                 }
+                 if (recognizeStatus === RequestFeatureStatus.SUCCEED) {
+                     color = RecognizeColor.COLOR_SUCCESS
+                 }
+             }
+             if (liveness != null && liveness == LivenessInfo.NOT_ALIVE) {
+                 color = RecognizeColor.COLOR_FAILED
+             }
+             drawInfoList.add(
+                 DrawInfo(
+                     drawHelper?.adjustRect(facePreviewInfoList[i].faceInfo.rect),
+                     GenderInfo.UNKNOWN, AgeInfo.UNKNOWN_AGE,
+                     liveness ?: LivenessInfo.UNKNOWN, color,
+                     name ?: java.lang.String.valueOf(facePreviewInfoList[i].trackId)
+                 )
+             )
+         }
+         drawHelper?.draw(faceRectView, drawInfoList)
+     }*/
+
+    var cameraHelper: CameraHelper? = null
+
+
     /**
      * 初始化相机预览
      */
     open fun initCamera() {
-        //星神屏摄像头默认是前置，其他屏都是后置
-        if (BuildConfig.BUILD_TYPE.equals("xingshenDebug") || BuildConfig.BUILD_TYPE.equals("xingshen") || BuildConfig.BUILD_TYPE.equals("yitiji")) {
-            lensFacing = CameraX.LensFacing.FRONT
-            cameraId = 1
+        val metrics = DisplayMetrics().also { textureView?.display!!.getRealMetrics(it) }
+        val screenAspectRatio = Rational(metrics.widthPixels, metrics.heightPixels)
+        var mWindowManager: WindowManager? = null
+        if (lifecycleOwner != null) {
+
+            if (lifecycleOwner is Fragment) {
+                mWindowManager =
+                    (lifecycleOwner as Fragment)?.activity?.windowManager!!
+            } else if (lifecycleOwner is Activity) {
+                mWindowManager =
+                    (lifecycleOwner as Activity)?.windowManager
+            } else {
+
+                return
+            }
+
+
         }
+
+        var cameraListener: CameraListener = object : CameraListener {
+            override fun onCameraOpened(
+                camera: Camera?,
+                cameraId: Int,
+                displayOrientation: Int,
+                isMirror: Boolean
+            ) {
+
+                var lastPreviewSize: Camera.Size? = previewSize
+                previewSize = camera!!.parameters.previewSize
+                previeWidth = previewSize!!.width
+                previeHeight = previewSize!!.height
+                drawHelper = DrawHelper(
+                    previewSize!!.width,
+                    previewSize!!.height,
+                    textureView.getWidth(),
+                    textureView.getHeight(),
+                    displayOrientation,
+                    cameraId,
+                    isMirror
+                )
+                Log.i(TAG, "onCameraOpened: " + drawHelper.toString())// 切换相机的时候可能会导致预览尺寸发生变化
+                // 切换相机的时候可能会导致预览尺寸发生变化
+                if (faceHelper == null || lastPreviewSize == null || lastPreviewSize.width != previewSize!!.width || lastPreviewSize.height != previewSize!!.height) {
+                    var trackedFaceCount: Int? = null
+                    // 记录切换时的人脸序号
+//                    if (faceHelper != null) {
+//                        faceHelper!!.release()
+//                    }
+//                    initFaceHelp()
+                }
+                if (faceHelper == null) {
+                    initFaceHelp()
+                }
+
+            }
+
+            override fun onPreview(nv21: ByteArray?, camera: Camera?) {
+                if (faceRectView != null) {
+                    faceRectView?.clearFaceInfo()
+                }
+//                val facePreviewInfoList: List<FacePreviewInfo>? = faceHelper?.onPreviewFrame(nv21)
+                /*       if (facePreviewInfoList != null && faceRectView != null && drawHelper != null) {
+                           drawPreviewInfo(facePreviewInfoList)//绘制预览信息
+                       }*/
+//            registerFace(nv21, facePreviewInfoList)
+//            clearLeftFace(facePreviewInfoList)
+                try {
+                    if (!singleTask.isShutdown&&nv21!=null) {
+                        singleTask.execute {
+//                            doGetFaceCode(nv21, textureView.width, textureView.height)
+                            doGetFaceCode(nv21,previeWidth, previeHeight)
+                        }
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+
+                }
+
+             /*   if (facePreviewInfoList != null && facePreviewInfoList.size > 0 && previewSize != null) {
+                    Log.d(TAG, "facePreviewInfoList${facePreviewInfoList.size}")
+                    for (i in facePreviewInfoList.indices) {
+                        val status = requestFeatureStatusMap[facePreviewInfoList[i].getTrackId()]
+                        *//**
+                         * 对于每个人脸，若状态为空或者为失败，则请求特征提取（可根据需要添加其他判断以限制特征提取次数），
+                         * 特征提取回传的人脸特征结果在[FaceListener.onFaceFeatureInfoGet]中回传
+                         *//*
+                        if (status == null
+                            || status === RequestFeatureStatus.TO_RETRY
+                        ) {
+                            requestFeatureStatusMap[facePreviewInfoList[i].getTrackId()] =
+                                RequestFeatureStatus.SEARCHING
+                            //                            Log.i(TAG, "onPreview: fr start = " + System.currentTimeMillis() + " trackId = " + facePreviewInfoList.get(i).getTrackedFaceCount());
+                        }
+                    }
+                }*/
+            }
+
+            override fun onCameraClosed() {
+                Log.i(
+                    TAG,
+                    "onCameraClosed: "
+                )
+
+            }
+
+            override fun onCameraError(e: java.lang.Exception?) {
+                Log.i(
+                    TAG,
+                    "onCameraError: " + e!!.message
+                )
+            }
+
+            override fun onCameraConfigurationChanged(cameraID: Int, displayOrientation: Int) {
+                if (drawHelper != null) {
+                    drawHelper!!.setCameraDisplayOrientation(displayOrientation)
+                }
+                Log.i(
+                    TAG,
+                    "onCameraConfigurationChanged: $cameraID  $displayOrientation"
+                )
+            }
+
+        }
+
+
+
+        mWindowManager?.run {
+            cameraHelper = CameraHelper.Builder()
+                .previewViewSize(
+                    Point(
+                        textureView.getMeasuredWidth(),
+                        textureView.getMeasuredHeight()
+                    )
+                )
+                .rotation(defaultDisplay?.rotation!!)
+                .specificCameraId(if (rgbCameraID != null) rgbCameraID else Camera.CameraInfo.CAMERA_FACING_FRONT)
+                .isMirror(false)
+                .previewOn(textureView)
+                .cameraListener(cameraListener)
+                .build()
+            cameraHelper?.init()
+            cameraHelper?.start()
+        }
+
+
+        /*       //星神屏摄像头默认是前置，其他屏都是后置
+               if (BuildConfig.BUILD_TYPE.equals("xingshenDebug") || BuildConfig.BUILD_TYPE.equals("xingshen") || BuildConfig.BUILD_TYPE.equals(
+                       "yitiji"
+                   )
+               ) {
+                   lensFacing = CameraX.LensFacing.FRONT
+                   cameraId = 1
+               }*/
         //相机数量为2则打开1,1则打开0,相机ID 1为前置，0为后置
         //若指定了相机ID且该相机存在，则打开指定的相机
 //        if (specificCameraId != null && specificCameraId <= cameraId) {
@@ -177,11 +421,11 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
 //        }
 
         //没有相机
-        if (cameraId == -1) {
-            Log.e(TAG, "没有相机")
-            return
-        }
-        textureView?.post { startCamera() }
+        /*       if (cameraId == -1) {
+                   Log.e(TAG, "没有相机")
+                   return
+               }*/
+        /*     textureView?.post { startCamera() }*/
 
         textureView?.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
             updateTransform()
@@ -192,7 +436,7 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
     /**
      * 开启相机
      */
-    open fun startCamera() = try {
+/*    open fun startCamera() = try {
         val metrics = DisplayMetrics().also { textureView?.display!!.getRealMetrics(it) }
         val screenAspectRatio = Rational(metrics.widthPixels, metrics.heightPixels)
         Log.d(TAG, "cameraId:${cameraId}")
@@ -225,69 +469,8 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
         e.printStackTrace()
         Log.e(TAG, e.toString())
         Toast.makeText(context, "打开相机失败!", Toast.LENGTH_LONG).show()
-    }
+    }*/
 
-    open fun buildImageAnalysisUseCase(): ImageAnalysis {
-
-        val metrics = DisplayMetrics().also { textureView?.display?.getRealMetrics(it) }
-        val screenAspectRatio = Rational(metrics.widthPixels, metrics.heightPixels)
-        // 分析器配置 Config 的建造者
-        val analyzerThread = HandlerThread("LuminosityAnalysis").apply { start() }
-        val analysisConfig = ImageAnalysisConfig.Builder().apply {
-            setLensFacing(lensFacing)
-            // 分辨率
-//            setTargetResolution(Size(tv_viewFinder.width, tv_viewFinder.height))
-            // 宽高比例
-            setTargetAspectRatio(screenAspectRatio)
-            // 图像渲染模式
-            setImageReaderMode(ImageAnalysis.ImageReaderMode.ACQUIRE_LATEST_IMAGE)
-            // 设置回调的线程
-            setCallbackHandler(Handler(analyzerThread.looper))
-            setTargetRotation(textureView?.display!!.rotation)
-        }.build()
-
-        // 创建分析器 ImageAnalysis 对象
-        val analysis = ImageAnalysis(analysisConfig)
-
-        // setAnalyzer 传入实现了 analyze 接口的类
-        analysis.setAnalyzer { image, _ ->
-            // 可以得到的一些图像信息，参见 ImageProxy 类相关方法
-            temprect = image.cropRect
-//            val type = image.format
-//            previeWidth = image.width
-//            previeHeight = image.height
-            tempWidth = image.width
-            tempHeight = image.height
-            if (firstOne) {
-                firstOne = false
-                previeWidth = tempWidth
-                previeHeight = tempHeight
-                initFaceHelp()
-            }
-
-//            val buffer = image.planes[0].buffer
-//            val bytes = ByteArray(buffer.remaining())
-//            buffer.get(bytes)
-            if (!onPAUSE && !isGetFaceId.get()) {
-                isGetFaceId.set(true)
-
-                tempdata = ImageUtil.getBytesFromImageAsType(image.image, ImageUtil.NV21)
-//                doGetFaceCode(tempdata, tempWidth, tempHeight)
-                try {
-                    if (!singleTask.isShutdown) {
-                        singleTask.execute {
-                            doGetFaceCode(tempdata, previeWidth, previeHeight)
-                        }
-                    }
-                } catch (e: Exception) {
-
-                }
-
-            }
-
-        }
-        return analysis
-    }
 
     open fun updateTransform() {
         val matrix = Matrix()
@@ -378,7 +561,6 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
 
 
         faceRectView.clearFaceInfo()
-
         val facePreviewInfoList = faceHelper?.onPreviewFrame(data)
         if (facePreviewInfoList != null && drawHelper != null) {
             val drawInfoList = ArrayList<DrawInfo>()
@@ -427,8 +609,10 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
     @OnLifecycleEvent(Lifecycle.Event.ON_CREATE)
     fun onCreate(@NotNull owner: LifecycleOwner) {
         lifecycleOwner = owner
+        cameraHelper?.release()
+        Log.d(TAG, "onCreate执行...")
         //使用前释放相机
-        CameraX.unbindAll()
+//        CameraX.unbindAll()
     }
 
     /**
@@ -438,7 +622,7 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
     open fun onResume() {
         onPAUSE = false
         firstOne = true
-        Log.d("ALDL", "onResume...")
+        Log.d(TAG, "onResume...")
         //延迟初始化相机
         Handler().postDelayed({
             initEnvironment()
@@ -453,8 +637,8 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
     @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
     open fun onPAUSE() {
         onPAUSE = true
-        CameraX.unbindAll()
-        Log.d("ALDL", "onResume...")
+//        CameraX.unbindAll()
+        Log.d(TAG, "onResume...")
         //延迟1s释放资源
         Handler().postDelayed({
             if (disposable?.isDisposed == false) {

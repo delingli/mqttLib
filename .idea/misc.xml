@@ -3,7 +3,8 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/IdsApp/app/src/main/res/layout/activity_main.xml" value="0.16233766233766234" />
+        <entry key="..\:/IdsApp/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/IdsApp/app/src/main/res/layout/activity_main2.xml" value="0.14285714285714285" />
         <entry key="..\:/IdsApp/app/src/main/res/layout/activity_test_log.xml" value="0.1375" />
         <entry key="..\:/IdsApp/recordeComponent/src/main/res/drawable/bg_colorful.xml" value="0.19444444444444445" />
         <entry key="..\:/IdsApp/recordeComponent/src/main/res/drawable/bg_input_window.xml" value="0.1" />

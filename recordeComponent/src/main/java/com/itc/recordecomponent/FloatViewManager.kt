@@ -13,9 +13,11 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import com.blankj.utilcode.util.LogUtils
+import com.blankj.utilcode.util.ScreenUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.itc.commoncomponent.network.ResultData
 import com.itc.commoncomponent.network.Results
+import com.petterp.floatingx.assist.Direction
 import com.petterp.floatingx.assist.helper.ScopeHelper
 import com.petterp.floatingx.listener.control.IFxControl
 import com.petterp.floatingx.util.activityToFx
@@ -51,7 +53,10 @@ object FloatViewManager {
                 setLayout(R.layout.lubo_layout)
                 setEnableScrollOutsideScreen(false)
                 setEnableEdgeAdsorption(false)
-//        setEdgeOffset(40f)
+                    .setGravity(Direction.LEFT_OR_BOTTOM)
+                    .setX(20f)
+                    .setY(-30f)
+        setEdgeOffset(40f)
 //        setAnimationImpl(FxAnimationImpl())
                 setEnableAnimation(false)
                 setEnableLog(true)

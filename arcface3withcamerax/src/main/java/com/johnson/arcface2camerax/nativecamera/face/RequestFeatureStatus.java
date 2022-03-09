@@ -1,4 +1,4 @@
-package com.johnson.arcface2camerax.utils.face;
+package com.johnson.arcface2camerax.nativecamera.face;
 
 public class RequestFeatureStatus {
     public static final int SEARCHING = 0;

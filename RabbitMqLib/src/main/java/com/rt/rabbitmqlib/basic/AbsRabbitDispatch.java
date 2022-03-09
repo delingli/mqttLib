@@ -51,16 +51,17 @@ abstract public class AbsRabbitDispatch implements IRabbitDispatch, IRabbitMqRec
 
         void onShutdownSignaled(String consumerTag, String sig);
     }
-/*private boolean canConnect(){
-    ConnectivityManager connectivityManager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-    NetworkInfo info = connectivityManager.getActiveNetworkInfo();
-    if (info != null && info.isAvailable()) {
-        String name = info.getTypeName();
-        Log.i(TAG, "当前网络名称：" + name);
-        return true;
-    } else {
-        Log.i(TAG, "没有可用网络");
-        *//*没有可用网络的时候，延迟30秒再尝试重连*//*
+
+    /*private boolean canConnect(){
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+        if (info != null && info.isAvailable()) {
+            String name = info.getTypeName();
+            Log.i(TAG, "当前网络名称：" + name);
+            return true;
+        } else {
+            Log.i(TAG, "没有可用网络");
+            *//*没有可用网络的时候，延迟30秒再尝试重连*//*
         mHandler.sendEmptyMessageDelayed(1, RECONNECT_TIME);
         return false;
     }
@@ -104,22 +105,30 @@ abstract public class AbsRabbitDispatch implements IRabbitDispatch, IRabbitMqRec
 
     @Override
     public void initConnectFactor() {
-        factory = new ConnectionFactory();
-        factory.setHost(rabbitMqOption.getHost());
-        factory.setUsername(rabbitMqOption.getUsername());
-        factory.setPassword(rabbitMqOption.getPassword());
-        factory.setPort(rabbitMqOption.getPort());
-        factory.setClientProperties(params);
-        factory.setConnectionTimeout(CONNECTIONTIMEOUT);
-        factory.setRequestedHeartbeat(HEARTBEAT);//是否断网
-        factory.setAutomaticRecoveryEnabled(false);
-        //   factory.setNetworkRecoveryInterval(10);// 设置 10s ，重试一次
-        factory.setTopologyRecoveryEnabled(false);// 设置不重新声明交换器，队列等信息。
-        factory.setSharedExecutor(new ThreadPoolExecutor(
-                3, 5,
-                Integer.MAX_VALUE, TimeUnit.SECONDS,
-                new LinkedBlockingQueue<>()
-        ));
+        try {
+            if (factory == null) {
+                factory = new ConnectionFactory();
+                factory.setHost(rabbitMqOption.getHost());
+                factory.setUsername(rabbitMqOption.getUsername());
+                factory.setPassword(rabbitMqOption.getPassword());
+                factory.setPort(rabbitMqOption.getPort());
+                factory.setClientProperties(params);
+                factory.setConnectionTimeout(CONNECTIONTIMEOUT);
+                factory.setRequestedHeartbeat(HEARTBEAT);//是否断网
+                factory.setAutomaticRecoveryEnabled(false);
+                //   factory.setNetworkRecoveryInterval(10);// 设置 10s ，重试一次
+                factory.setTopologyRecoveryEnabled(false);// 设置不重新声明交换器，队列等信息。
+                factory.setSharedExecutor(new ThreadPoolExecutor(
+                        3, 5,
+                        Integer.MAX_VALUE, TimeUnit.SECONDS,
+                        new LinkedBlockingQueue<>()
+                ));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
     private static String QUEUE_NAMES = "ReportQRM";
@@ -174,7 +183,7 @@ abstract public class AbsRabbitDispatch implements IRabbitDispatch, IRabbitMqRec
 //                channel.queueDeclare(devicesn, true, false, false, null);
                 channel.queueDeclare(devicesn, true, false, false, null);
                 consumerTag = channel.basicConsume(devicesn, true, new RabbitConsumer(channel));
-                underDestroy=false;
+                underDestroy = false;
             }
         } catch (IOException e) {
             LogUtils.eTag(TAG, "IOException emitted!");
@@ -246,7 +255,7 @@ abstract public class AbsRabbitDispatch implements IRabbitDispatch, IRabbitMqRec
             LogUtils.dTag(TAG, "lastMsgId:" + lastMsgId + "deliveryTag:" + deliveryTag);
             if (lastMsgId != deliveryTag) {
                 lastMsgId = deliveryTag;
-                LogUtils.dTag(TAG, "lastMsgId!=deliveryTag..." +"underDestroy:"+underDestroy);
+                LogUtils.dTag(TAG, "lastMsgId!=deliveryTag..." + "underDestroy:" + underDestroy);
                 if (!TextUtils.isEmpty(message) && !underDestroy) {
                     LogUtils.dTag(TAG, "message:" + message + "deliveryTag:" + deliveryTag);
                     receiveMessage(message);

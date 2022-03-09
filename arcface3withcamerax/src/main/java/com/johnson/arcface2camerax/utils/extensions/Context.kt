@@ -24,3 +24,4 @@ fun Context.hasPermission(vararg permissions: String): Boolean {
     }
     return true
 }
+

@@ -1,32 +1,45 @@
-package com.example.idsapp;
+package com.example.idsapp
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+import android.os.Bundle
+import android.widget.Button
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import com.johnson.arcface2camerax.NaticeFaceCameraView.Companion.activeFaceEngine
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.johnson.arcface2camerax.NaticeFaceCameraView
+import com.example.idsapp.GlobaConstant
+import com.example.idsapp.SecondActivity
+import com.ldl.mqttlib.impl.CustomMqttService
+import com.ldl.mqttlib.impl.MqttOption
+import com.ldl.mqttlib.utils.DeviceIdUtil
+import com.ldl.upanepochlog.util.LogUtils
+import com.ldl.upanepochlog.util.SDCardUtils
+import com.ldl.upanepochlog.util.Utils
 
-import android.os.Bundle;
-import android.widget.Button;
-import android.widget.TextView;
-
-import com.ldl.mqttlib.impl.CustomMqttService;
-import com.ldl.mqttlib.impl.MqttOption;
-import com.ldl.mqttlib.utils.DeviceIdUtil;
-import com.ldl.upanepochlog.util.SDCardUtils;
-import com.ldl.upanepochlog.util.Utils;
-
-public class MainActivity extends AppCompatActivity {
-    String host = "tcp://10.10.20.200:1883";
-    String topic = "device/" + DeviceIdUtil.getDeviceId(this);
-    String deviceId = DeviceIdUtil.getDeviceId(this);
-    private TextView textView;
-    private LocalBroadcastManager mLocalBroadcastManager;
-    private MyReceiver myReceiver;
-    int i = 0;
-    private Button button3, button4;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+class SecondActivity : AppCompatActivity() {
+    var host = "tcp://10.10.20.200:1883"
+    var topic = "device/" + DeviceIdUtil.getDeviceId(this)
+    var deviceId = DeviceIdUtil.getDeviceId(this)
+    private val textView: TextView? = null
+    private val mLocalBroadcastManager: LocalBroadcastManager? = null
+    private val myReceiver: MyReceiver? = null
+    var i = 0
+    private val button3: Button? = null
+    private val button4: Button? = null
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+        activeFaceEngine(
+            this,
+            GlobaConstant.APP_ID,
+            GlobaConstant.SDK_KEY
+        )
+        val mNaticeFaceCameraView = findViewById<NaticeFaceCameraView>(R.id.faceView)
+        mNaticeFaceCameraView.setBackFaceFeatureListener {
+            LogUtils.dTag("ldl", "得到了"+it.toString())
+        }
+        lifecycle.addObserver(mNaticeFaceCameraView)
+        //        mNaticeFaceCameraView.setBackFaceFeatureListener();
 //        textView = find·ViewById(R.id.textView);
 //        button3 = findViewById(R.id.button3);
 //        button4 = findViewById(R.id.button4);
@@ -125,33 +138,36 @@ public class MainActivity extends AppCompatActivity {
 //        });
     }
 
-    private void toConnectService() {
-        MqttOption option = new MqttOption.MqttOptionBuilder(host)
-                .publish_topid(topic)
-                .response_topid(topic)
-                .username("itc")
-                .clientId(deviceId)
-                .password("itc.pass").build();
-        CustomMqttService.startMqttService(this, option, null);
+    private fun toConnectService() {
+        val option = MqttOption.MqttOptionBuilder(host)
+            .publish_topid(topic)
+            .response_topid(topic)
+            .username("itc")
+            .clientId(deviceId)
+            .password("itc.pass").build()
+        CustomMqttService.startMqttService(this, option, null)
     }
 
-    private static final String FILE_SEP = "/";
-
-    private String getPath() {
-        String mDefaultDir;
-        if (SDCardUtils.isSDCardEnableByEnvironment()
-                && Utils.getApp().getExternalFilesDir(null) != null)
-//            mDefaultDir = Utils.getApp().getExternalFilesDir(null) + FILE_SEP + "Logs" + FILE_SEP + "systemLog" + FILE_SEP+"abc.txt";
-            mDefaultDir = Utils.getApp().getExternalFilesDir(null) + FILE_SEP + "Logs" + FILE_SEP + "systemLog" + FILE_SEP + "abc.txt";
-        else {
-            mDefaultDir = Utils.getApp().getFilesDir() + FILE_SEP + "Logs" + FILE_SEP + "systemLog" + FILE_SEP + "abc.txt";
+    //            mDefaultDir = Utils.getApp().getExternalFilesDir(null) + FILE_SEP + "Logs" + FILE_SEP + "systemLog" + FILE_SEP+"abc.txt";
+    private val path: String
+        private get() {
+            val mDefaultDir: String
+            mDefaultDir = if (SDCardUtils.isSDCardEnableByEnvironment()
+                && Utils.getApp().getExternalFilesDir(null) != null
+            ) //            mDefaultDir = Utils.getApp().getExternalFilesDir(null) + FILE_SEP + "Logs" + FILE_SEP + "systemLog" + FILE_SEP+"abc.txt";
+                Utils.getApp().getExternalFilesDir(null)
+                    .toString() + FILE_SEP + "Logs" + FILE_SEP + "systemLog" + FILE_SEP + "abc.txt" else {
+                Utils.getApp().filesDir.toString() + FILE_SEP + "Logs" + FILE_SEP + "systemLog" + FILE_SEP + "abc.txt"
+            }
+            return mDefaultDir
         }
-        return mDefaultDir;
+
+    override fun onDestroy() {
+        super.onDestroy()
+        //        mLocalBroadcastManager.unregisterReceiver(myReceiver);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-//        mLocalBroadcastManager.unregisterReceiver(myReceiver);
+    companion object {
+        private const val FILE_SEP = "/"
     }
 }

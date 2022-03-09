@@ -42,9 +42,9 @@ class FaceServer {
             val engineCode = faceEngine?.init(
                     context,
                     DetectMode.ASF_DETECT_MODE_VIDEO,
-                    DetectFaceOrientPriority.ASF_OP_0_ONLY,
+                    DetectFaceOrientPriority.ASF_OP_ALL_OUT,
                     16,
-                    1,
+                    10,
                     FaceEngine.ASF_FACE_RECOGNITION or FaceEngine.ASF_FACE_DETECT
             )
             if (engineCode == ErrorInfo.MOK) {

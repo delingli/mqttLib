@@ -11,6 +11,7 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.core.app.JobIntentService;
 
+import com.blankj.utilcode.util.NetworkUtils;
 import com.ldl.mqttlib.impl.MqttOption;
 import com.ldl.mqttlib.impl.OnlineInforOption;
 import com.ldl.mqttlib.utils.DeviceIdUtil;
@@ -131,7 +132,7 @@ AbsMqtt implements IMqtt, MqttActionListener, IMqttReceiveListener {
         mQttAndroidClient = new MqttAndroidClient(mContext, mqttOption.getHost(), mqttOption.getClientid());
         mQttAndroidClient.setCallback(mqttCallback);
         mQttConnectOptions = new MqttConnectOptions();
-        mQttConnectOptions.setCleanSession(false);//清缓存
+        mQttConnectOptions.setCleanSession(true);//清缓存
         mQttConnectOptions.setConnectionTimeout(CLIENTTIMEOUT);//连接超时
         mQttConnectOptions.setKeepAliveInterval(HESRTTIME);//心跳包发送 秒
         mQttConnectOptions.setAutomaticReconnect(true);//当发生网络断开或者异常，心跳包返回异常的时候，会自动进行重连，
@@ -153,9 +154,27 @@ AbsMqtt implements IMqtt, MqttActionListener, IMqttReceiveListener {
         if (connect) {
             toClientConnection();
         }
+        NetworkUtils.registerNetworkStatusChangedListener(onNetworkStatusChangedListener);
 
 
     }
+
+    private NetworkUtils.OnNetworkStatusChangedListener onNetworkStatusChangedListener = new NetworkUtils.OnNetworkStatusChangedListener() {
+        @Override
+        public void onDisconnected() {
+
+        }
+
+        @Override
+        public void onConnected(NetworkUtils.NetworkType networkType) {
+            if (null != mQttAndroidClient && !mQttAndroidClient.isConnected()) {
+                if (null != mHandler) {
+                    mHandler.sendEmptyMessageDelayed(1, RECONNECT_TIME);
+                }
+            }
+
+        }
+    };
 
     @Override
     public void publish(String message, int qos, boolean retained) {
@@ -272,6 +291,7 @@ AbsMqtt implements IMqtt, MqttActionListener, IMqttReceiveListener {
                 mHandler.removeCallbacksAndMessages(null);
                 mHandler = null;
             }
+            NetworkUtils.unregisterNetworkStatusChangedListener(onNetworkStatusChangedListener);
         } catch (MqttException e) {
             e.printStackTrace();
         }

@@ -44,6 +44,7 @@ dependencies {
     implementation project(path: ':UPanEpochLog')
     implementation project(path: ':RabbitMqLib')
     implementation project(path: ':recordeComponent')
+    implementation project(path: ':arcface3withcamerax')
 
 //    implementation 'com.itc.itcsdk:core:3.8.16'
 //    implementation 'com.itc.itcsdk:compiler:3.8.16'
