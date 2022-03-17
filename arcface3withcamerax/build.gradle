@@ -82,7 +82,7 @@ publishing {
         uploadSDK(MavenPublication) {
             artifact "build/outputs/aar/arcface3withcamerax-debug.aar"
             artifactId "arcfaceCamerax"
-            version "1.0.8"
+            version "1.0.9"
         }
     }
 }

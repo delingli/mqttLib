@@ -72,7 +72,7 @@ open class FaceCameraView : RelativeLayout, LifecycleObserver {
         Manifest.permission.READ_EXTERNAL_STORAGE,
         Manifest.permission.WRITE_EXTERNAL_STORAGE
     )
-    open var lensFacing = CameraX.LensFacing.FRONT
+    open var lensFacing = CameraX.LensFacing.BACK
     public open var faceEngine: FaceEngine? = null
     open var afCode = -1
     open val MAX_DETECT_NUM = 5

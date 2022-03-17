@@ -185,13 +185,30 @@ abstract public class AbsRabbitDispatch implements IRabbitDispatch, IRabbitMqRec
                 consumerTag = channel.basicConsume(devicesn, true, new RabbitConsumer(channel));
                 underDestroy = false;
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             LogUtils.eTag(TAG, "IOException emitted!");
             e.printStackTrace();
-            return false;
-        } catch (TimeoutException t) {
-            t.printStackTrace();
+            if (report != null) {
+                try {
+                    report.close();
+                    if (channel != null) {
+                        if (consumerTag != null) {
+                            channel.basicCancel(consumerTag);
+
+                        }
+                        channel.close();
+                    }
+                    if (connection != null) {
+                        connection.close();
+                    }
+                } catch (IOException ioException) {
+                    ioException.printStackTrace();
+                } catch (TimeoutException timeoutException) {
+                    timeoutException.printStackTrace();
+                }
+            }
             LogUtils.eTag(TAG, "TimeoutException emitted!");
+            return false;
         }
         return true;
 

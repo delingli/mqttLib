@@ -21,6 +21,7 @@ import org.eclipse.paho.client.mqttv3.IMqttActionListener;
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.IMqttToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttCallbackExtended;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
@@ -60,7 +61,7 @@ AbsMqtt implements IMqtt, MqttActionListener, IMqttReceiveListener {
         private WeakReference<Callback> reference;
 
         public CustomHandler(Callback callback) {
-            reference = new WeakReference<Handler.Callback>(callback);
+            reference = new WeakReference<Callback>(callback);
         }
 
         @Override
@@ -90,7 +91,30 @@ AbsMqtt implements IMqtt, MqttActionListener, IMqttReceiveListener {
         }
     }
 
-    private MqttCallback mqttCallback = new MqttCallback() {
+    MqttCallbackExtended mqttCallbackExtended = new MqttCallbackExtended() {
+        @Override
+        public void connectComplete(boolean reconnect, String serverURI) {
+            Log.e(tag, "connectComplete;reconnect=" + reconnect + ";serverURI=" + serverURI);
+            if (reconnect){
+                try {
+                    Log.v(tag, "连接成功 2");
+                    if (null != mQttAndroidClient) {
+                        Log.v(tag, "连接成功 2 null != mQttAndroidClient 订阅主题");
+                        mQttAndroidClient.subscribe(mqttOption.getPublish_topid(), qos);//订阅主题，参数：主题、服务质量
+                    }
+                    //发布上线消息;操
+                    if (mqttOption != null) {
+                        Log.v(tag, "连接成功 3 发布上线消息");
+                        String str = getOnlineMessage();
+                        publish(str, qos, mqttOption.getRetained());
+                    }
+
+                } catch (MqttException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         @Override
         public void connectionLost(Throwable cause) {
             Log.e(tag, "连接断开");
@@ -130,7 +154,7 @@ AbsMqtt implements IMqtt, MqttActionListener, IMqttReceiveListener {
         this.mqttOption = option;
         this.onlineInforOption = onlineInforOption;
         mQttAndroidClient = new MqttAndroidClient(mContext, mqttOption.getHost(), mqttOption.getClientid());
-        mQttAndroidClient.setCallback(mqttCallback);
+        mQttAndroidClient.setCallback(mqttCallbackExtended);
         mQttConnectOptions = new MqttConnectOptions();
         mQttConnectOptions.setCleanSession(true);//清缓存
         mQttConnectOptions.setConnectionTimeout(CLIENTTIMEOUT);//连接超时

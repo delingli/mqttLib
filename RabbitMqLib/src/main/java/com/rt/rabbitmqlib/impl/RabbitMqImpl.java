@@ -9,8 +9,7 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import com.blankj.utilcode.util.LogUtils;
 import com.rt.rabbitmqlib.basic.AbsRabbitDispatch;
 
-public
-class RabbitMqImpl extends AbsRabbitDispatch {
+public class RabbitMqImpl extends AbsRabbitDispatch {
     @Override
     public void receiveMessage(String message) {
         Log.d(TAG, "接收的消息为:" + message);
