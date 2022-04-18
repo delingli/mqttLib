@@ -29,7 +29,7 @@ class TestActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.test_recorde_layout)
         var str: String = "255"
-        FloatViewManager.toInit(this, str)
+        FloatViewManager.toInit(this, str,"")
         FloatViewManager.show()
 
     }

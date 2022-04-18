@@ -15,6 +15,7 @@ import com.blankj.utilcode.util.NetworkUtils;
 import com.ldl.mqttlib.impl.MqttOption;
 import com.ldl.mqttlib.impl.OnlineInforOption;
 import com.ldl.mqttlib.utils.DeviceIdUtil;
+import com.ldl.mqttlib.utils.MqttManager;
 
 import org.eclipse.paho.android.service.MqttAndroidClient;
 import org.eclipse.paho.client.mqttv3.IMqttActionListener;
@@ -95,7 +96,7 @@ AbsMqtt implements IMqtt, MqttActionListener, IMqttReceiveListener {
         @Override
         public void connectComplete(boolean reconnect, String serverURI) {
             Log.e(tag, "connectComplete;reconnect=" + reconnect + ";serverURI=" + serverURI);
-            if (reconnect){
+            if (reconnect) {
                 try {
                     Log.v(tag, "连接成功 2");
                     if (null != mQttAndroidClient) {
@@ -167,7 +168,7 @@ AbsMqtt implements IMqtt, MqttActionListener, IMqttReceiveListener {
             JSONObject willJson = new JSONObject();
             //遗愿消息  "{"status":"offline","device_sn":"AB9CDDBDB62D"}"
             willJson.put("status", "offline");
-            willJson.put("device_sn", option.getClientid());
+            willJson.put("device_sn", option.getDevice_sn());
             // //setWill方法，如果项目中需要知道客户端是否掉线可以调用该方法。设置最终端口的通知消息
             mQttConnectOptions.setWill(mqttOption.getPublish_topid(), willJson.toString().getBytes(), qos, false);
         } catch (Exception e) {
@@ -259,7 +260,7 @@ AbsMqtt implements IMqtt, MqttActionListener, IMqttReceiveListener {
         try {
             JSONObject objJson = new JSONObject();
             objJson.put("type", 1);
-            objJson.put("device_sn", mqttOption.getClientid());
+            objJson.put("device_sn", mqttOption.getDevice_sn());
             objJson.put("status", "online");
             objJson.put("resolution", DeviceIdUtil.getScreenHeight(mContext) + "*" + DeviceIdUtil.getScreenWidth(mContext));
             objJson.put("app_version", "1.0");
@@ -308,15 +309,24 @@ AbsMqtt implements IMqtt, MqttActionListener, IMqttReceiveListener {
     @Override
     public void toDisConnect() {
         try {
+            if (null != mqttOption) {
+                JSONObject willJson = new JSONObject();
+                //遗愿消息  "{"status":"offline","device_sn":"AB9CDDBDB62D"}"
+                willJson.put("status", "offline");
+                willJson.put("device_sn", mqttOption.getDevice_sn());
+                MqttManager.getInstance().publish(willJson.toString());
+            }
             if (null != mQttAndroidClient) {
                 mQttAndroidClient.disconnect();
+                mQttAndroidClient.close();
             }
             if (null != mHandler) {
+                mHandler.removeMessages(1);
                 mHandler.removeCallbacksAndMessages(null);
                 mHandler = null;
             }
             NetworkUtils.unregisterNetworkStatusChangedListener(onNetworkStatusChangedListener);
-        } catch (MqttException e) {
+        } catch (MqttException | JSONException e) {
             e.printStackTrace();
         }
     }

@@ -68,6 +68,6 @@ public class CustomMqttService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        MqttManager.getInstance().getiMqtt().toDisConnect();
+//        MqttManager.getInstance().getiMqtt().toDisConnect();
     }
 }

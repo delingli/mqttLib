@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     tools:context=".SecondActivity">
 
-    <com.johnson.arcface2camerax.NaticeFaceCameraView
+    <com.johnson.arcface2camerax.nativeface.NewNativeFaceCameraView
         android:layout_width="match_parent"
         android:id="@+id/faceView"
         android:layout_height="match_parent" />

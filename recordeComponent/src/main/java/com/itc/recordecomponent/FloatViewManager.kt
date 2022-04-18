@@ -17,6 +17,7 @@ import com.blankj.utilcode.util.ScreenUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.itc.commoncomponent.network.ResultData
 import com.itc.commoncomponent.network.Results
+import com.itc.commoncomponent.network.RetrofitClient
 import com.petterp.floatingx.assist.Direction
 import com.petterp.floatingx.assist.helper.ScopeHelper
 import com.petterp.floatingx.listener.control.IFxControl
@@ -38,15 +39,20 @@ object FloatViewManager {
     var mStopJob: Job? = null
     var meeting_id: String? = null
     const val TAG = "FloatViewManager"
+    var customUrl: String? = null
 
-
-    fun toInit(context: Context, meeting_id: String) {
+    fun toInit(context: Context, meeting_id: String, url: String) {
         if (context == null) {
             throw RuntimeException("Context cannot be empty...")
         }
         this.mContext = context
         this.meeting_id = meeting_id
         this.mFloatViewModel = FloatViewModel()
+        customUrl = url
+        customUrl?.run {
+            mFloatViewModel.setUrl(this)
+        }
+
         if (context is FragmentActivity) {
             var act: FragmentActivity = context as FragmentActivity
             mIFxControl = ScopeHelper.build {
@@ -56,7 +62,7 @@ object FloatViewManager {
                     .setGravity(Direction.LEFT_OR_BOTTOM)
                     .setX(20f)
                     .setY(-30f)
-        setEdgeOffset(40f)
+                setEdgeOffset(40f)
 //        setAnimationImpl(FxAnimationImpl())
                 setEnableAnimation(false)
                 setEnableLog(true)
@@ -105,7 +111,7 @@ object FloatViewManager {
                     it.setBase(SystemClock.elapsedRealtime());//计时器清零
                     var hour = ((SystemClock.elapsedRealtime() - it.getBase()) / 1000 / 60) as Long
                     it.setFormat("0" + hour.toString() + ":%s");
-//                    it.start()
+                    it.start()
                     toRequestStart(img, mChronometer)
                 }
             }
@@ -189,17 +195,31 @@ object FloatViewManager {
 
                                             if (results.data.code == 0) {
                                                 //成功了
+
                                             } else {
                                                 //失败
                                                 ToastUtils.showShort("关闭失败,请检察设备")
                                             }
+
+                                            mChronometer?.let {
+                                                it.setBase(SystemClock.elapsedRealtime());//计时器清零
+                                                it.stop()
+                                                mRangeTime = 0
+                                                start = false
+                                            }
+
+
                                             destory()
                                         }
                                         is Results.Error -> {
                                             //失败
                                             destory()
                                             ToastUtils.showShort("关闭失败,请检察设备")
-                                            LogUtils.eTag(TAG, "请求失败")
+                                            LogUtils.eTag(
+                                                TAG,
+                                                "请求失败url " + RetrofitClient.getUrl() + "返回数据"
+                                            )
+
                                         }
                                     }
                                 }
@@ -217,12 +237,12 @@ object FloatViewManager {
             }
             it.updateView {
                 it.getView<Chronometer>(R.id.timer)?.setOnClickListener {
-                    var mChronometer: Chronometer = it as Chronometer
+       /*             var mChronometer: Chronometer = it as Chronometer
                     mChronometer.setBase(SystemClock.elapsedRealtime());//计时器清零
                     val hour =
                         ((SystemClock.elapsedRealtime() - mChronometer.getBase()) / 1000 / 60) as Int
                     mChronometer.setFormat("0" + hour.toString() + ":%s")
-                    mChronometer.start()
+                    mChronometer.start()*/
                 }
             }
         }
@@ -258,7 +278,10 @@ object FloatViewManager {
                             ToastUtils.showShort("开启失败,请检察设备")
                             img?.setImageResource(R.drawable.ic_pause)
                             start = false
-                            LogUtils.eTag(TAG, "请求失败" + results.data.code + results.data.message)
+                            LogUtils.eTag(
+                                TAG,
+                                "请求失败url " + RetrofitClient.getUrl() + "返回数据" + results.data.code + results.data.message
+                            )
 
                         }
                     }
@@ -266,7 +289,7 @@ object FloatViewManager {
                         //失败
                         img?.setImageResource(R.drawable.ic_pause)
                         start = false
-                        LogUtils.eTag(TAG, "请求失败")
+                        LogUtils.eTag(TAG, "请求失败url " + RetrofitClient.getUrl() + "返回数据")
                         ToastUtils.showShort("开启失败,请检察设备")
 
                     }

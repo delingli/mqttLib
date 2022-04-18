@@ -1,14 +1,12 @@
 package com.example.idsapp
 
 import android.os.Bundle
+import android.view.ViewTreeObserver
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.johnson.arcface2camerax.NaticeFaceCameraView.Companion.activeFaceEngine
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
-import com.johnson.arcface2camerax.NaticeFaceCameraView
-import com.example.idsapp.GlobaConstant
-import com.example.idsapp.SecondActivity
+import com.johnson.arcface2camerax.nativeface.NewNativeFaceCameraView
 import com.ldl.mqttlib.impl.CustomMqttService
 import com.ldl.mqttlib.impl.MqttOption
 import com.ldl.mqttlib.utils.DeviceIdUtil
@@ -16,7 +14,7 @@ import com.ldl.upanepochlog.util.LogUtils
 import com.ldl.upanepochlog.util.SDCardUtils
 import com.ldl.upanepochlog.util.Utils
 
-class SecondActivity : AppCompatActivity() {
+class SecondActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayoutListener {
     var host = "tcp://10.10.20.200:1883"
     var topic = "device/" + DeviceIdUtil.getDeviceId(this)
     var deviceId = DeviceIdUtil.getDeviceId(this)
@@ -26,19 +24,31 @@ class SecondActivity : AppCompatActivity() {
     var i = 0
     private val button3: Button? = null
     private val button4: Button? = null
+    var mNaticeFaceCameraView: NewNativeFaceCameraView? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
-        activeFaceEngine(
-            this,
-            GlobaConstant.APP_ID,
-            GlobaConstant.SDK_KEY
-        )
-        val mNaticeFaceCameraView = findViewById<NaticeFaceCameraView>(R.id.faceView)
-        mNaticeFaceCameraView.setBackFaceFeatureListener {
-            LogUtils.dTag("ldl", "得到了"+it.toString())
-        }
-        lifecycle.addObserver(mNaticeFaceCameraView)
+        /*       activeFaceEngine(
+                   this,
+                   GlobaConstant.APP_ID,
+                   GlobaConstant.SDK_KEY
+               )*/
+        mNaticeFaceCameraView = findViewById<NewNativeFaceCameraView>(R.id.faceView)
+/*        mNaticeFaceCameraView?.addOnBackFaceFeatureListener {
+            LogUtils.dTag("TT", it)
+        }*/
+        //在布局结束后才做初始化操作
+        mNaticeFaceCameraView?.viewTreeObserver?.addOnGlobalLayoutListener(this)
+        /*        mNaticeFaceCameraView.setBackFaceFeatureListener {
+                it?.let {
+                    Looper.prepare()
+                    Toast.makeText(this, it.toString(), Toast.LENGTH_SHORT).show()
+                    Looper.loop()
+                }
+
+                LogUtils.dTag("Aldl", "得到了" + it.toString())
+            }*/
+//        lifecycle.addObserver(mNaticeFaceCameraView)
         //        mNaticeFaceCameraView.setBackFaceFeatureListener();
 //        textView = find·ViewById(R.id.textView);
 //        button3 = findViewById(R.id.button3);
@@ -169,5 +179,11 @@ class SecondActivity : AppCompatActivity() {
 
     companion object {
         private const val FILE_SEP = "/"
+    }
+
+    override fun onGlobalLayout() {
+        mNaticeFaceCameraView?.getViewTreeObserver()?.removeOnGlobalLayoutListener(this)
+//        mNaticeFaceCameraView?.initEngine()
+        mNaticeFaceCameraView?.initCamera(windowManager)
     }
 }

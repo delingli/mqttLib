@@ -8,6 +8,7 @@ import android.text.TextUtils
 import android.view.MotionEvent
 import com.example.idsapp.App
 import com.johnson.arcface2camerax.FaceCameraView.Companion.activeFaceEngine
+import com.johnson.arcface2camerax.nativeface.ActiveEngineManager
 import com.ldl.upanepochlog.api.LogParamsOption
 import com.ldl.upanepochlog.api.LogParamsOption.LogParamsOptionBuilder
 import com.ldl.upanepochlog.log.LogUtilManager
@@ -28,7 +29,6 @@ class App : Application() {
         super.onCreate()
         //        Utils.init(this);ad
 //        10.10.20.200:9039
-
         val logParamsOption = LogParamsOptionBuilder("http://" + "10.10.20.200") //地址ip
             .port(9039) //端口
             .dealyTime(60) //运行最长时间，

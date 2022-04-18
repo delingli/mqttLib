@@ -1,0 +1,39 @@
+<resources>
+    <string name="common_name">commonlib</string>
+    <string name="net_state_mobile">当前为移动网络，请点击播放</string>
+    <string name="net_state_mobile_yes">继续播放</string>
+    <string name="net_state_mobile_no">退出播放</string>
+    <string name="monthly_report_tips">应住建部要求，进入施工现场的项目管理人员和建筑工人均需实名制管理。</string>
+    <string name="no_video_permission">该工程未开通此功能</string>
+    <string name="video_error_msg">播放错误</string>
+    <string name="video_net_state_mobile">当前移动网络</string>
+    <string name="video_net_state_mobile_yes">继续播放</string>
+    <string name="video_net_state_mobile_no">取消播放</string>
+    <string name="video_replay_msg">重新播放</string>
+    <string name="video_replay">重新播放</string>
+    <string name="msg_count">99+</string>
+
+    <string name="inputIp_str">请输入IP地址</string>
+    <string name="rabbitmq_ip">IP地址</string>
+    <string name="rabbitmq_port_str">mqtt 端口号</string>
+    <string name="rabbitmq_prot_hint">请输入mqtt 端口号</string>
+    <string name="ip_port">网络地址端口</string>
+    <string name="ip_port_hint">请输入网络端口</string>
+    <string name="rabbitmq_account_str">mqtt 账号</string>
+    <string name="rabbitmq_account_hint">请输入mqtt账号</string>
+    <string name="rabbitmq_psd_str">mqtt 密码</string>
+    <string name="rabbitmq_psd_hint">请输入mqtt 密码</string>
+    <string name="rabbitmq_vhost_hint">请输入mqttvhost</string>
+    <string name="rabbitmq_vhost_str">mqtt vhost</string>
+    <string name="time_string">时间</string>
+    <string name="time_synchronization">时间同步</string>
+    <string name="dispaly">屏显</string>
+    <string name="horizontal_screen">横 屏</string>
+    <string name="vertical_screen">竖 屏</string>
+    <string name="sure">确定</string>
+    <string name="cancel">取消</string>
+
+    <string name="input_psd_hint" >请输入密码</string>
+    <string name="psd_title">密码验证</string>
+    <string name="input_true_psd" >请输入正确的密码</string>
+</resources>

@@ -5,7 +5,7 @@ apply plugin: 'kotlin-kapt'
 apply from: '../upload-aar.gradle'
 def camerax_version = "1.0.0-alpha01"
 def room_version = "2.3.0"
-apply plugin: 'maven'
+//apply plugin: 'maven'
 android {
     compileSdkVersion build_versions.compileSdkVersion
     buildToolsVersion build_versions.build_tools
@@ -22,8 +22,8 @@ android {
             }
         }
         compileOptions {
-            sourceCompatibility JavaVersion.VERSION_1_8
-            targetCompatibility JavaVersion.VERSION_1_8
+            sourceCompatibility JavaVersion.VERSION_11
+            targetCompatibility JavaVersion.VERSION_11
         }
         ndk {
             // 设置支持的 SO 库构架，注意这里要根据你的实际情况来设置
@@ -71,6 +71,7 @@ dependencies {
     testImplementation deps.junit
     androidTestImplementation deps.ext_junit
     androidTestImplementation deps.espresso_core
+    implementation 'com.yanzhenjie:permission:2.0.3'
 }
 repositories {
     mavenCentral()
@@ -82,7 +83,7 @@ publishing {
         uploadSDK(MavenPublication) {
             artifact "build/outputs/aar/arcface3withcamerax-debug.aar"
             artifactId "arcfaceCamerax"
-            version "1.0.9"
+            version "1.1.6"
         }
     }
 }

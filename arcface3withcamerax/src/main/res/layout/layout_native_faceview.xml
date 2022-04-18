@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.johnson.arcface2camerax.widget.RoundTextureView
+        android:id="@+id/single_camera_texture_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.johnson.arcface2camerax.nativeface.FaceRectView
+        android:id="@+id/single_camera_face_rect_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</FrameLayout>

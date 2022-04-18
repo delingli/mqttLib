@@ -11,7 +11,14 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
     private const val DEFAULT_TIME_OUT = 30L
-    const val Base_URL = "http://10.10.20.12:7777"
+    var Base_URL = "http://10.10.20.53:88"
+    fun setUrl(url: String) {
+        Base_URL = url
+    }
+
+    fun getUrl(): String {
+        return Base_URL
+    }
 
     //    var loggingInterceptor: HttpLoggingInterceptor = HttpLoggingInterceptor(object : Logger() {
 //        fun log(message: String) {
@@ -27,12 +34,28 @@ object RetrofitClient {
 //        .addInterceptor(loggingInterceptor)
         .addInterceptor(CommonParamsInterceptor())
         .retryOnConnectionFailure(true);
-    val retrofit = Retrofit.Builder()
-        .baseUrl(Base_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .addConverterFactory(ScalarsConverterFactory.create())//支持字符串
-        .client(okHttpClient.build())
-        .build()
+
+    fun getRetrofit(): Retrofit {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(getUrl())
+            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(ScalarsConverterFactory.create())//支持字符串
+            .client(okHttpClient.build())
+            .build()
+        return retrofit
+
+
+    }
+    fun getRetrofitSS(url: String): Retrofit {
+        val retrofit = Retrofit.Builder()
+            .baseUrl(url)
+            .addConverterFactory(GsonConverterFactory.create())
+            .addConverterFactory(ScalarsConverterFactory.create())//支持字符串
+            .client(okHttpClient.build())
+            .build()
+        return retrofit
+    }
+
 //    val mmService=retrofit.create()
 
 }

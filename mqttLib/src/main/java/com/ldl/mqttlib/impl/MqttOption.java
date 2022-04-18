@@ -11,6 +11,7 @@ public class MqttOption implements Parcelable {
     private String publish_topid;
     private String response_topid;
     private String clientid;
+    private String device_sn;
     private boolean retained;
 
     private MqttOption(MqttOptionBuilder builder) {
@@ -21,6 +22,7 @@ public class MqttOption implements Parcelable {
         this.response_topid = builder.response_topid;
         this.clientid = builder.clientId;
         this.retained = builder.retained;
+        this.device_sn = builder.device_sn;
     }
 
     protected MqttOption(Parcel in) {
@@ -30,6 +32,7 @@ public class MqttOption implements Parcelable {
         publish_topid = in.readString();
         response_topid = in.readString();
         clientid = in.readString();
+        device_sn = in.readString();
         retained = in.readByte() != 0;
     }
 
@@ -44,6 +47,14 @@ public class MqttOption implements Parcelable {
             return new MqttOption[size];
         }
     };
+
+    public String getDevice_sn() {
+        return device_sn;
+    }
+
+    public boolean isRetained() {
+        return retained;
+    }
 
     public String getHost() {
         return host;
@@ -79,16 +90,16 @@ public class MqttOption implements Parcelable {
     }
 
     @Override
-    public void writeToParcel(Parcel parcel, int i) {
-        parcel.writeString(host);
-        parcel.writeString(username);
-        parcel.writeString(password);
-        parcel.writeString(publish_topid);
-        parcel.writeString(response_topid);
-        parcel.writeString(clientid);
-        parcel.writeByte((byte) (retained ? 1 : 0));
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(host);
+        dest.writeString(username);
+        dest.writeString(password);
+        dest.writeString(publish_topid);
+        dest.writeString(response_topid);
+        dest.writeString(clientid);
+        dest.writeString(device_sn);
+        dest.writeByte((byte) (retained ? 1 : 0));
     }
-
 
     public static class MqttOptionBuilder {
         private String host;
@@ -97,6 +108,7 @@ public class MqttOption implements Parcelable {
         private String publish_topid;
         private String response_topid;
         private String clientId;
+        private String device_sn;
         private boolean retained;
 
 
@@ -107,6 +119,11 @@ public class MqttOption implements Parcelable {
 
         public MqttOptionBuilder retained(boolean retained) {
             this.retained = retained;
+            return this;
+        }
+
+        public MqttOptionBuilder device_sn(String device_sn) {
+            this.device_sn = device_sn;
             return this;
         }
 

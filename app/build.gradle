@@ -26,8 +26,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 }
 
@@ -44,6 +44,7 @@ dependencies {
     implementation project(path: ':UPanEpochLog')
     implementation project(path: ':RabbitMqLib')
     implementation project(path: ':recordeComponent')
+    implementation project(path: ':setConfig')
     implementation project(path: ':arcface3withcamerax')
 
 //    implementation 'com.itc.itcsdk:core:3.8.16'
@@ -62,5 +63,7 @@ repositories {
     flatDir {
         dirs 'libs'
     }
-    maven { url 'http://10.10.20.198:8081/nexus/content/groups/IDC/' }//公司私有仓IDC组
+    maven {
+        allowInsecureProtocol = true
+        url 'http://10.10.20.198:8081/nexus/content/groups/IDC/' }//公司私有仓IDC组
 }

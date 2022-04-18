@@ -38,11 +38,13 @@ publishing {
 
     repositories {
         maven {
-            url MAVEN_URL
+            allowInsecureProtocol = true
             credentials {
                 username MAVEN_USERNAME
                 password MAVEN_PASSWORD
             }
+
+            url MAVEN_URL
         }
     }
 

@@ -6,7 +6,7 @@
 ext.deps = [:]
 def versions = [:]
 versions.multidex = "2.0.1"
-versions.android_gradle_plugin_version = '4.0.1'
+versions.android_gradle_plugin_version = '7.0.3'
 versions.kotlin_gradle_plugin_version = '1.4.10'
 versions.android_maven_gradle_plugin = '2.1'
 versions.gradle_bintray_plugin_version = '1.8.1'
@@ -101,9 +101,9 @@ ext.deps = deps
 /**App相关编译构建版本配置start**/
 def build_versions = [:]
 build_versions.min_sdk = 21
-build_versions.target_sdk = 30
-build_versions.compileSdkVersion = 30
-build_versions.build_tools = "30.0.3"
+build_versions.target_sdk = 31
+build_versions.compileSdkVersion = 31
+build_versions.build_tools = "31.0.0"
 
 build_versions.versionCode = 2
 build_versions.versionName = "1.0.3"
@@ -117,7 +117,10 @@ def addRepos(handler) {
     handler.maven { url 'https://maven.aliyun.com/repository/google' }
 //    handler.maven { url 'https://dl.bintray.com/rtlei/rt-library' }
     handler.maven { url "https://jitpack.io" }
-    handler.maven { url 'http://10.10.20.198:8081/nexus/content/groups/IDC/' }//公司私有仓IDC组
+    handler.maven {
+        allowInsecureProtocol = true
+        url 'http://10.10.20.198:8081/nexus/content/groups/IDC/'
+    }//公司私有仓IDC组
     handler.google()
     handler.mavenCentral()
     handler.flatDir {

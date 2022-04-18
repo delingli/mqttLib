@@ -19,6 +19,11 @@ class FloatViewModel(private val defaultDispatcher: CoroutineDispatcher = Dispat
         val TAG = "FloatViewModel"
     }
 
+    private lateinit var mUrl: String
+    fun setUrl(url: String) {
+        mUrl = url;
+    }
+
     fun getSecondTimestampTwo(date: Date?): Int {
         if (null == date) {
             return 0
@@ -50,18 +55,20 @@ class FloatViewModel(private val defaultDispatcher: CoroutineDispatcher = Dispat
             try {
                 // 举例：md5(md5(meeting_id + status + timestamp + "TQcsWgh@fbNM@O&L"))
                 var timestamp: String = getSecondTimestampTwo(Date()).toString()
+                LogUtils.dTag(TAG, "时间戳:${timestamp}")
                 var str = meeting_id + status + timestamp + "TQcsWgh@fbNM@O&L"
                 LogUtils.dTag(TAG, str)
-                var realSign =  getMD5Str(getMD5Str(str))
+                var realSign = getMD5Str(getMD5Str(str))
 
 //                var realSign = EncryptUtils.encryptMD5ToString(EncryptUtils.encryptMD5ToString(str))
                 LogUtils.dTag(TAG, "realSign" + realSign)
                 Results.Sucess(
-                    RetrofitClient.retrofit.create(IFloatViewService::class.java)
+                    RetrofitClient.getRetrofitSS(mUrl).create(IFloatViewService::class.java)
                         .openOff(meeting_id, status, timestamp, realSign)
                 )
             } catch (e: Exception) {
                 e.printStackTrace()
+                LogUtils.dTag(TAG, "realSign" + e.message + e.toString() + e?.message)
                 Results.Error(e)
             }
         }

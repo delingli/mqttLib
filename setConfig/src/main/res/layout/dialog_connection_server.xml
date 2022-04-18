@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:background="@drawable/shape_dialog_ip"
+    android:layout_width="270dp"
+    android:layout_gravity="center"
+    android:layout_height="175dp"
+    tools:ignore="ResourceName">
+
+   <TextView
+       android:layout_width="match_parent"
+       android:layout_height="wrap_content"
+       android:layout_marginTop="22.5dp"
+       android:text="@string/psd_title"
+       android:textColor="#333333"
+       android:textSize="17dp"
+       android:gravity="center"
+       />
+    <RelativeLayout
+        android:layout_width="225dp"
+        android:layout_height="35dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="15dp"
+        android:background="@drawable/shape_login_ip"
+        >
+    <EditText
+        android:id="@+id/et_conServer_address"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:hint="@string/input_psd_hint"
+        android:textSize="15dp"
+        android:digits="0123456789."
+        android:textColorHint="#bbbbbb"
+        android:paddingLeft="15dp"
+        android:layout_centerVertical="true"
+        android:textCursorDrawable="@null"
+        android:focusable="true"
+        android:focusableInTouchMode="true"
+        android:singleLine="true"
+        />
+    </RelativeLayout>
+    <TextView
+        android:layout_marginTop="22.5dp"
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#ececec"
+
+
+        />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+
+        >
+        <TextView
+            android:id="@+id/tv_cancel_conServer"
+            android:layout_width="135dp"
+            android:layout_height="match_parent"
+            android:text="@string/cancel"
+            android:textColor="#333333"
+            android:textSize="17dp"
+            android:gravity="center"
+
+            />
+        <TextView
+            android:layout_width="1dp"
+            android:layout_height="50dp"
+            android:background="#ececec"
+
+
+            android:layout_centerHorizontal="true"
+
+            />
+        <TextView
+            android:id="@+id/tv_save_conServer"
+            android:layout_width="135dp"
+            android:layout_height="match_parent"
+            android:text="@string/sure"
+            android:textColor="#333333"
+            android:gravity="center"
+            android:layout_alignParentRight="true"
+            android:textSize="17dp"
+
+            />
+    </RelativeLayout>
+</LinearLayout>

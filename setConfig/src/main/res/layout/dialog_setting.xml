@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="920pt"
+    android:layout_height="920pt"
+    android:orientation="vertical"
+    android:background="#FF3F454B">
+
+    <RelativeLayout
+        android:id="@+id/tl_title"
+        android:layout_width="match_parent"
+        android:layout_height="90pt"
+        android:background="#80ffffff">
+
+
+        <TextView
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20pt"
+            android:textColor="#171717"
+            android:textSize="40pt"
+            android:text="配置中心"
+            tools:text="配置中心" />
+    </RelativeLayout>
+
+    <include
+        android:id="@+id/layout_seeting"
+        layout="@layout/layout_setting"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tl_title" />
+
+
+</LinearLayout>
