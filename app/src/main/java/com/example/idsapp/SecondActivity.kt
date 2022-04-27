@@ -1,26 +1,15 @@
 package com.example.idsapp
 
 import android.os.Bundle
+import android.util.Log
 import android.view.ViewTreeObserver
 import android.widget.Button
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import com.arcsoft.face.enums.DetectFaceOrientPriority
 import com.johnson.arcface2camerax.nativeface.NewNativeFaceCameraView
-import com.ldl.mqttlib.impl.CustomMqttService
-import com.ldl.mqttlib.impl.MqttOption
-import com.ldl.mqttlib.utils.DeviceIdUtil
-import com.ldl.upanepochlog.util.LogUtils
-import com.ldl.upanepochlog.util.SDCardUtils
-import com.ldl.upanepochlog.util.Utils
-
 class SecondActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayoutListener {
-    var host = "tcp://10.10.20.200:1883"
-    var topic = "device/" + DeviceIdUtil.getDeviceId(this)
-    var deviceId = DeviceIdUtil.getDeviceId(this)
     private val textView: TextView? = null
-    private val mLocalBroadcastManager: LocalBroadcastManager? = null
-    private val myReceiver: MyReceiver? = null
     var i = 0
     private val button3: Button? = null
     private val button4: Button? = null
@@ -34,11 +23,16 @@ class SecondActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayoutListe
                    GlobaConstant.SDK_KEY
                )*/
         mNaticeFaceCameraView = findViewById<NewNativeFaceCameraView>(R.id.faceView)
-/*        mNaticeFaceCameraView?.addOnBackFaceFeatureListener {
-            LogUtils.dTag("TT", it)
-        }*/
-        //在布局结束后才做初始化操作
+//        removeOnGlobalLayoutListener
         mNaticeFaceCameraView?.viewTreeObserver?.addOnGlobalLayoutListener(this)
+        mNaticeFaceCameraView?.addOnBackFaceFeatureListener(object :
+            NewNativeFaceCameraView.OnBackFaceFeatureListener {
+            override fun onReceive(trackId: Int, result: ByteArray?) {
+                Log.d("OOP", "trackId" + trackId + ":ByteArray:" + result)
+            }
+        })
+        //在布局结束后才做初始化操作
+//        mNaticeFaceCameraView?.viewTreeObserver?.addOnGlobalLayoutListener(this)
         /*        mNaticeFaceCameraView.setBackFaceFeatureListener {
                 it?.let {
                     Looper.prepare()
@@ -148,29 +142,6 @@ class SecondActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayoutListe
 //        });
     }
 
-    private fun toConnectService() {
-        val option = MqttOption.MqttOptionBuilder(host)
-            .publish_topid(topic)
-            .response_topid(topic)
-            .username("itc")
-            .clientId(deviceId)
-            .password("itc.pass").build()
-        CustomMqttService.startMqttService(this, option, null)
-    }
-
-    //            mDefaultDir = Utils.getApp().getExternalFilesDir(null) + FILE_SEP + "Logs" + FILE_SEP + "systemLog" + FILE_SEP+"abc.txt";
-    private val path: String
-        private get() {
-            val mDefaultDir: String
-            mDefaultDir = if (SDCardUtils.isSDCardEnableByEnvironment()
-                && Utils.getApp().getExternalFilesDir(null) != null
-            ) //            mDefaultDir = Utils.getApp().getExternalFilesDir(null) + FILE_SEP + "Logs" + FILE_SEP + "systemLog" + FILE_SEP+"abc.txt";
-                Utils.getApp().getExternalFilesDir(null)
-                    .toString() + FILE_SEP + "Logs" + FILE_SEP + "systemLog" + FILE_SEP + "abc.txt" else {
-                Utils.getApp().filesDir.toString() + FILE_SEP + "Logs" + FILE_SEP + "systemLog" + FILE_SEP + "abc.txt"
-            }
-            return mDefaultDir
-        }
 
     override fun onDestroy() {
         super.onDestroy()
@@ -182,8 +153,10 @@ class SecondActivity : AppCompatActivity(), ViewTreeObserver.OnGlobalLayoutListe
     }
 
     override fun onGlobalLayout() {
-        mNaticeFaceCameraView?.getViewTreeObserver()?.removeOnGlobalLayoutListener(this)
-//        mNaticeFaceCameraView?.initEngine()
+        mNaticeFaceCameraView?.getViewTreeObserver()?.removeOnGlobalLayoutListener(this);
+        mNaticeFaceCameraView?.initEngine(DetectFaceOrientPriority.ASF_OP_ALL_OUT)
         mNaticeFaceCameraView?.initCamera(windowManager)
     }
+
+
 }

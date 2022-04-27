@@ -34,8 +34,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 
-public abstract class
-AbsMqtt implements IMqtt, MqttActionListener, IMqttReceiveListener {
+public abstract class AbsMqtt implements IMqtt, MqttActionListener, IMqttReceiveListener {
     public static String tag = "MqttImpl";
     private MqttAndroidClient mQttAndroidClient;
     public static int CLIENTTIMEOUT = 30;
@@ -314,11 +313,12 @@ AbsMqtt implements IMqtt, MqttActionListener, IMqttReceiveListener {
                 //遗愿消息  "{"status":"offline","device_sn":"AB9CDDBDB62D"}"
                 willJson.put("status", "offline");
                 willJson.put("device_sn", mqttOption.getDevice_sn());
-                MqttManager.getInstance().publish(willJson.toString());
+                MqttManager.getInstance().publish(willJson.toString(), false);
             }
             if (null != mQttAndroidClient) {
                 mQttAndroidClient.disconnect();
-                mQttAndroidClient.close();
+//                mQttAndroidClient.close();
+
             }
             if (null != mHandler) {
                 mHandler.removeMessages(1);

@@ -36,26 +36,13 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
-//    implementation project(path: ':hermesLib')
-//    implementation 'com.idc.idcsdk:hermesLib:1.0.2'
-    implementation 'com.idc.idcsdk:mqttLib:1.0.0'
-//    implementation project(path: ':mqttLib')
-    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
-    implementation project(path: ':UPanEpochLog')
-    implementation project(path: ':RabbitMqLib')
-    implementation project(path: ':recordeComponent')
-    implementation project(path: ':setConfig')
-    implementation project(path: ':arcface3withcamerax')
-
+    api 'com.yanzhenjie:permission:2.0.3'
+    implementation project(':arcface3withcamerax')
 //    implementation 'com.itc.itcsdk:core:3.8.16'
 //    implementation 'com.itc.itcsdk:compiler:3.8.16'
     testImplementation deps.junit
     androidTestImplementation deps.ext_junit
     androidTestImplementation deps.espresso_core
-//    implementation project(path: ':idsSDK')
-//    implementation 'com.idc.idcsdk:layoutManagerLib:1.0.0@aar'
-//    api 'com.idc.idcsdk:idsSDK:1.0.1@aar'
-//    implementation 'com.idc.idcsdk:itclogs:1.0.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
 //    https://blog.csdn.net/wang295689649/article/details/105219587
 }
@@ -65,5 +52,6 @@ repositories {
     }
     maven {
         allowInsecureProtocol = true
-        url 'http://10.10.20.198:8081/nexus/content/groups/IDC/' }//公司私有仓IDC组
+        url 'http://10.10.20.198:8081/nexus/content/groups/IDC/'
+    }//公司私有仓IDC组
 }

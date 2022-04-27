@@ -267,6 +267,8 @@ public class FaceHelper {
                     }
                     if (frCode == ErrorInfo.MOK) {
 //                        Log.i(TAG, "run: fr costTime = " + (System.currentTimeMillis() - frStartTime) + "ms");
+                        Log.d("LFL", "IDS获取人脸成功:" + faceFeature.getFeatureData()+"trackId:" + trackId);
+
                         faceListener.onFaceFeatureInfoGet(faceFeature, trackId, frCode);
                     } else {
                         faceListener.onFaceFeatureInfoGet(null, trackId, frCode);

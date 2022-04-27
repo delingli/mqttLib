@@ -30,9 +30,9 @@ public class MqttManager {
     private MqttManager() {
     }
 
-    public void init(Context context,MqttOption mqttOption, OnlineInforOption onlineInforOption) {
+    public void init(Context context, MqttOption mqttOption, OnlineInforOption onlineInforOption) {
         iMqtt = new MqttImpl();
-        iMqtt.init(context.getApplicationContext(),mqttOption,onlineInforOption);
+        iMqtt.init(context.getApplicationContext(), mqttOption, onlineInforOption);
     }
 
 
@@ -49,6 +49,12 @@ public class MqttManager {
     public void publish(String message, @IntRange(from = 0, to = 2) int qos, boolean retained) {
         if (null != iMqtt && !TextUtils.isEmpty(message)) {
             iMqtt.publish(message, qos, retained);
+        }
+    }
+
+    public void publish(String message, boolean retained) {
+        if (!TextUtils.isEmpty(message) && null != iMqtt) {
+            iMqtt.publish(message, 2, retained);
         }
     }
 

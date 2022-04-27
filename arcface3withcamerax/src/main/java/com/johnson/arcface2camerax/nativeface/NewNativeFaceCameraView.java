@@ -98,7 +98,7 @@ class NewNativeFaceCameraView extends FrameLayout implements ViewTreeObserver.On
     /**
      * 出错重试最大次数
      */
-    private static final int MAX_RETRY_TIME = 3;
+    private static final int MAX_RETRY_TIME = 5;
     /**
      * 用于特征提取的引擎
      */
@@ -436,12 +436,9 @@ class NewNativeFaceCameraView extends FrameLayout implements ViewTreeObserver.On
                         }
                     }
 
-                }
-                //特征提取失败
-                else {
+                } else { //特征提取失败
                     if (increaseAndGetValue(extractErrorRetryMap, requestId) > MAX_RETRY_TIME) {
                         extractErrorRetryMap.put(requestId, 0);
-
                         String msg;
                         // 传入的FaceInfo在指定的图像上无法解析人脸，此处使用的是RGB人脸数据，一般是人脸模糊
                         if (errorCode != null && errorCode == ErrorInfo.MERR_FSDK_FACEFEATURE_LOW_CONFIDENCE_LEVEL) {
@@ -458,6 +455,7 @@ class NewNativeFaceCameraView extends FrameLayout implements ViewTreeObserver.On
                     }
                 }
             }
+
 
             @Override
             public void onFaceLivenessInfoGet(@Nullable LivenessInfo livenessInfo, final Integer requestId, Integer errorCode) {
@@ -562,8 +560,12 @@ class NewNativeFaceCameraView extends FrameLayout implements ViewTreeObserver.On
                          * 对于每个人脸，若状态为空或者为失败，则请求特征提取（可根据需要添加其他判断以限制特征提取次数），
                          * 特征提取回传的人脸特征结果在{@link FaceListener#onFaceFeatureInfoGet(FaceFeature, Integer, Integer)}中回传
                          */
+                        if (status != null) {
+                            Log.d(TAG, "status:" + status);
+                        }
+
                         if (status == null
-                                || status == RequestFeatureStatus.TO_RETRY) {
+                                || status == RequestFeatureStatus.TO_RETRY || status == RequestFeatureStatus.FAILED) {
                             requestFeatureStatusMap.put(facePreviewInfoList.get(i).getTrackId(), RequestFeatureStatus.SEARCHING);
                             faceHelper.requestFaceFeature(nv21, facePreviewInfoList.get(i).getFaceInfo(), previewSize.width, previewSize.height, FaceEngine.CP_PAF_NV21, facePreviewInfoList.get(i).getTrackId());
 //                            Log.i(TAG, "onPreview: fr start = " + System.currentTimeMillis() + " trackId = " + facePreviewInfoList.get(i).getTrackedFaceCount());
@@ -594,7 +596,7 @@ class NewNativeFaceCameraView extends FrameLayout implements ViewTreeObserver.On
                 .previewViewSize(new Point(mPreviewView.getMeasuredWidth(), mPreviewView.getMeasuredHeight()))
                 .rotation(windowManager.getDefaultDisplay().getRotation())
                 .specificCameraId(rgbCameraID != null ? rgbCameraID : Camera.CameraInfo.CAMERA_FACING_FRONT)
-//                .isMirror(false)
+                .isMirror(false)
                 .additionalRotation(0)
                 .previewOn(mPreviewView)
                 .cameraListener(cameraListener)
