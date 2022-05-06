@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="GradleMigrationSettings" migrationVersion="1" />
+  <component name="GradleSettings">
+    <option name="linkedExternalProjectsSettings">
+      <GradleProjectSettings>
+        <option name="testRunner" value="GRADLE" />
+        <option name="distributionType" value="DEFAULT_WRAPPED" />
+        <option name="externalProjectPath" value="$PROJECT_DIR$" />
+        <option name="gradleHome" value="$USER_HOME$/.gradle" />
+        <option name="gradleJvm" value="#JAVA_HOME" />
+        <option name="modules">
+          <set>
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/ItcWeigetModul" />
+            <option value="$PROJECT_DIR$/RabbitMqLib" />
+            <option value="$PROJECT_DIR$/UPanEpochLog" />
+            <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/arcface3withcamerax" />
+            <option value="$PROJECT_DIR$/commonComponent" />
+            <option value="$PROJECT_DIR$/filedownload" />
+            <option value="$PROJECT_DIR$/hermesLib" />
+            <option value="$PROJECT_DIR$/idsSDK" />
+            <option value="$PROJECT_DIR$/layoutmanagerLib" />
+            <option value="$PROJECT_DIR$/mqttLib" />
+            <option value="$PROJECT_DIR$/openSdkLib" />
+            <option value="$PROJECT_DIR$/owt_baseLib" />
+            <option value="$PROJECT_DIR$/owt_conferenceLib" />
+            <option value="$PROJECT_DIR$/recordeComponent" />
+            <option value="$PROJECT_DIR$/setConfig" />
+            <option value="$PROJECT_DIR$/switchDeviceComponent" />
+            <option value="$PROJECT_DIR$/vlcLib" />
+          </set>
+        </option>
+        <option name="resolveModulePerSourceSet" value="false" />
+      </GradleProjectSettings>
+    </option>
+  </component>
+</project>

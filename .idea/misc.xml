@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/IdsApp/recordeComponent/src/main/res/layout/lubo_layout.xml" value="0.6" />
+        <entry key="..\:/IdsApp/setConfig/src/main/res/layout/dialog_setting.xml" value="0.6298932384341637" />
+        <entry key="..\:/IdsApp/setConfig/src/main/res/layout/layout_setting.xml" value="0.536" />
+      </map>
+    </option>
+  </component>
+  <component name="ExternalStorageConfigurationManager" enabled="true" />
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK" />
+</project>
