@@ -1,0 +1,4 @@
+<resources>
+    <string name="has_root">Device manager enable</string>
+    <string name="no_root">Device manager is not enabled</string>
+</resources>
