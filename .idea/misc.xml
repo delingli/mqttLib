@@ -3,12 +3,18 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
-        <entry key="..\:/IdsApp/recordeComponent/src/main/res/layout/lubo_layout.xml" value="0.6" />
-        <entry key="..\:/IdsApp/setConfig/src/main/res/layout/dialog_setting.xml" value="0.6298932384341637" />
-        <entry key="..\:/IdsApp/setConfig/src/main/res/layout/layout_setting.xml" value="0.536" />
+        <entry key="..\:/IdsApp/app/src/main/res/drawable/selected_ic_baseline_accessible_forward_24.xml" value="0.114" />
+        <entry key="..\:/IdsApp/app/src/main/res/drawable/unselected_ic_baseline_accessible_forward_24.xml" value="0.224" />
+        <entry key="..\:/IdsApp/app/src/main/res/layout/activity_test_open_close_device.xml" value="0.25263157894736843" />
+        <entry key="..\:/IdsApp/app/src/main/res/layout/item_selected.xml" value="0.23452768729641693" />
+        <entry key="..\:/IdsApp/app/src/main/res/layout/single_selected_layout.xml" value="0.2465753424657534" />
       </map>
     </option>
   </component>
-  <component name="ExternalStorageConfigurationManager" enabled="true" />
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="11" project-jdk-type="JavaSDK" />
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+    <output url="file://$PROJECT_DIR$/build/classes" />
+  </component>
+  <component name="ProjectType">
+    <option name="id" value="Android" />
+  </component>
 </project>

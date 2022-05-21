@@ -13,8 +13,6 @@ android {
     defaultConfig {
         minSdkVersion build_versions.min_sdk
         targetSdkVersion build_versions.target_sdk
-        versionCode build_versions.versionCode
-        versionName build_versions.versionName
         multiDexEnabled false
         kapt {
             arguments {

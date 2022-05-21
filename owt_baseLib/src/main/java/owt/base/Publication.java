@@ -4,7 +4,6 @@
  */
 package owt.base;
 
-import org.webrtc.MediaStream;
 import org.webrtc.RTCStatsReport;
 
 public abstract class Publication {

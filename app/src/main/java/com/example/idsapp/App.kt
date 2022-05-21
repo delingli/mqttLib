@@ -6,9 +6,10 @@ import android.os.Bundle
 import android.os.Process
 import android.text.TextUtils
 import android.view.MotionEvent
+import com.blankj.utilcode.util.LogUtils
 import com.example.idsapp.App
-import com.johnson.arcface2camerax.FaceCameraView.Companion.activeFaceEngine
-import com.johnson.arcface2camerax.nativeface.ActiveEngineManager
+import com.itc.switchdevicecomponent.DeviceOptManager
+
 
 import java.io.BufferedReader
 import java.io.File
@@ -24,6 +25,8 @@ class App : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        LogUtils.getConfig().setLog2FileSwitch(true)
+        DeviceOptManager.toInit(this)
     }
 
     companion object {

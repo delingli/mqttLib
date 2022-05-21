@@ -7,8 +7,6 @@ android {
     defaultConfig {
         minSdkVersion build_versions.min_sdk
         targetSdkVersion build_versions.target_sdk
-        versionCode build_versions.versionCode
-        versionName build_versions.versionName
         ndk {
 //            moduleName "pro_screen"
             // abiFilters "arm64-v8a", "armeabi-v7a", "x86", "x86_64"
@@ -53,7 +51,7 @@ dependencies {
     testImplementation deps.junit
     androidTestImplementation deps.ext_junit
     androidTestImplementation deps.espresso_core
-    api 'com.idc.idcsdk:owtBaseLib:1.0.2@aar'//    api project(':owt_baseLib')
+    api 'com.idc.idcsdk:owtBaseLib:1.0.6@aar'//    api project(':owt_baseLib')
 
 }
 
@@ -63,7 +61,7 @@ publishing {
         uploadSDK(MavenPublication) {
             artifact "build/outputs/aar/owt_conferenceLib-debug.aar"
             artifactId "owtConferenceLib"
-            version android.defaultConfig.versionName
+            version "1.0.6"
         }
     }
 }

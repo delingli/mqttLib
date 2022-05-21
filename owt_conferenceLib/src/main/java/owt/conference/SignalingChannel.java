@@ -4,6 +4,10 @@
  */
 package owt.conference;
 
+import static owt.base.CheckCondition.DCHECK;
+import static owt.base.CheckCondition.RCHECK;
+import static owt.base.Const.LOG_TAG;
+
 import android.util.Base64;
 import android.util.Log;
 
@@ -22,10 +26,6 @@ import io.socket.client.Socket;
 import io.socket.emitter.Emitter.Listener;
 import okhttp3.OkHttpClient;
 import owt.base.Const;
-
-import static owt.base.CheckCondition.DCHECK;
-import static owt.base.CheckCondition.RCHECK;
-import static owt.base.Const.LOG_TAG;
 
 final class SignalingChannel {
 
@@ -71,7 +71,6 @@ final class SignalingChannel {
 
     // Socket.IO events.
     private final Listener connectedCallback = args -> callbackExecutor.execute(() -> {
-        Log.d(LOG_TAG, "args. " +args);
         Log.d(LOG_TAG, "Socket connected.");
         if (loggedIn) {
             relogin();
@@ -179,15 +178,13 @@ final class SignalingChannel {
 
             boolean isSecure = jsonToken.getBoolean("secure");
             String host = jsonToken.getString("host");
-          final String url = (isSecure ? "http" : "http") + "://" + host;
-
-
+            final String url = (isSecure ? "https" : "http") + "://" + host;
 
             IO.Options opt = new IO.Options();
             opt.forceNew = true;
             opt.reconnection = true;
             opt.reconnectionAttempts = MAX_RECONNECT_ATTEMPTS;
-            opt.secure = false;
+            opt.secure = isSecure;
             OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
             if (configuration.sslContext != null) {
                 clientBuilder.sslSocketFactory(configuration.sslContext.getSocketFactory());

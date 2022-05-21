@@ -19,3 +19,6 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+-keep class com.itc.switchdevicecomponent.annation.**{*;}
+-keep class com.itc.switchdevicecomponent.receiver.**{*;}
+-keep public class com.itc.switchdevicecomponent.DeviceOptManager{*;}

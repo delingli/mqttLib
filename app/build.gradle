@@ -25,6 +25,10 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    packagingOptions {
+        exclude 'classes.dex'
+        exclude '**.**'
+    }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
@@ -36,14 +40,18 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
+    implementation 'com.blankj:utilcode:1.30.6'
+
     api 'com.yanzhenjie:permission:2.0.3'
-    implementation project(':arcface3withcamerax')
+    implementation project(':switchDeviceComponent')
 //    implementation 'com.itc.itcsdk:core:3.8.16'
 //    implementation 'com.itc.itcsdk:compiler:3.8.16'
+//    implementation 'com.idc.idcsdk:deviceOptComponent:1.0.4'
     testImplementation deps.junit
     androidTestImplementation deps.ext_junit
     androidTestImplementation deps.espresso_core
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation 'com.contrarywind:Android-PickerView:4.1.9'
 //    https://blog.csdn.net/wang295689649/article/details/105219587
 }
 repositories {

@@ -8,13 +8,17 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
-import androidx.annotation.NonNull
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.arcsoft.face.enums.DetectFaceOrientPriority
-import com.johnson.arcface2camerax.nativeface.ActiveEngineManager
+import androidx.work.*
+import com.blankj.utilcode.util.LogUtils
+import com.itc.switchdevicecomponent.DeviceOptManager
+import com.itc.switchdevicecomponent.annation.DeviceType
+import com.itc.switchdevicecomponent.work.RebotWork
 import com.yanzhenjie.permission.Action
 import com.yanzhenjie.permission.AndPermission
+import java.text.SimpleDateFormat
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 class MainActivity2 : AppCompatActivity() {
     private val ACTION_REQUEST_PERMISSIONS = 0x001
@@ -22,21 +26,7 @@ class MainActivity2 : AppCompatActivity() {
 
 
     fun afterRequestPermission(requestCode: Int, isAllGranted: Boolean) {
-        if (requestCode == ACTION_REQUEST_PERMISSIONS) {
-            if (isAllGranted) {
-                var mIntent: Intent = Intent()
-                mIntent.run {
-                    setClass(this@MainActivity2, SecondActivity::class.java)
-                }
-                startActivity(mIntent)
-            } else {
-                Toast.makeText(this, getString(R.string.permission_denied), Toast.LENGTH_LONG)
-            }
-        } else if (requestCode == ACTION_REQUEST_PERMISSIONSS) {
-            ActiveEngineManager.getInstance()
-                .activeEngine(this, GlobaConstant.APP_ID, GlobaConstant.SDK_KEY)
 
-        }
     }
 
     private var NEEDED_PERMISSIONS = arrayOf(
@@ -61,11 +51,6 @@ class MainActivity2 : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-
-        ActiveEngineManager.getInstance()
-            .activeEngine(this, GlobaConstant.APP_ID, GlobaConstant.SDK_KEY)
-
         /*     if (!checkPermissions(NEEDED_PERMISSIONS_HONGRUAN)) {
                  ActivityCompat.requestPermissions(
                      this,
@@ -77,27 +62,47 @@ class MainActivity2 : AppCompatActivity() {
 
              }*/
         setContentView(R.layout.activity_main2)
-        findViewById<Button>(R.id.button).setOnClickListener(View.OnClickListener {
-            AndPermission.with(this)
-                .runtime()
-                .permission(NEEDED_PERMISSIONS)
-                .onGranted(Action { permissions: List<String?>? ->
-                    var intent: Intent = Intent()
-                    intent.setClass(this,SecondActivity::class.java)
-                    startActivity(intent)
-                })
-                .onDenied(Action { permissions: List<String?>? ->
-                    //权限禁止
-                    if (AndPermission.hasAlwaysDeniedPermission(
-                            this,
-                            permissions
-                        )
-                    ) {
-                        //是否永久拒绝了权限
-                        Toast.makeText(this, "永久拒绝了权限", Toast.LENGTH_SHORT).show();
-                    }
-                })
-                .start()
+        findViewById<Button>(R.id.btn_goto).setOnClickListener(View.OnClickListener {
+            WorkManager.getInstance(this).cancelAllWorkByTag(RebotWork.TAG_OUTPUT)
+
+            val currentDate = Calendar.getInstance()
+            val dueDate = Calendar.getInstance()
+            currentDate.timeInMillis
+
+// 设置在大约 05:00:00 AM 执行
+            dueDate.set(Calendar.HOUR_OF_DAY, 14)
+            dueDate.set(Calendar.MINUTE, 47)
+            dueDate.set(Calendar.SECOND, 0)
+
+            if (dueDate.before(currentDate)) {
+                dueDate.add(Calendar.HOUR_OF_DAY, 24)
+                LogUtils.dTag("RebotWork", "执行了before")
+            }
+            val timeDiff = dueDate.timeInMillis - currentDate.timeInMillis
+            var dates = Date()
+            dates.time = dueDate.timeInMillis
+            var mSimpleDateFormate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+            var str = mSimpleDateFormate.format(dates)
+            LogUtils.dTag("RebotWork", "${str}时间开始执行")
+
+//            val timeDiff = dueDate.timeInMillis — currentDate.timeInMillis
+//            val timeDiff = dueDate.timeInMillis — currentDate.timeInMillis
+            val constraints = Constraints.Builder().setRequiresCharging(true).build()
+            val dailyWorkRequest = OneTimeWorkRequestBuilder<RebotWork>()
+                .setConstraints(constraints).setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
+                .addTag(RebotWork.TAG_OUTPUT).build()
+            WorkManager.getInstance(this).enqueueUniqueWork(
+                RebotWork.TAG_OUTPUT,
+                ExistingWorkPolicy.KEEP,
+                dailyWorkRequest
+            )
+//            WorkManager.getInstance(this).enqueue(dailyWorkRequest)
+
+        })
+        findViewById<Button>(R.id.btn_cancel).setOnClickListener(View.OnClickListener {
+            WorkManager.getInstance(this).cancelAllWorkByTag("TAG_OUTPUT")
+
+
         })
     }
 

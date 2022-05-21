@@ -4,6 +4,10 @@
  */
 package owt.base;
 
+import static owt.base.ContextInitialization.context;
+import static owt.base.ContextInitialization.localContext;
+import static owt.base.ContextInitialization.remoteContext;
+
 import android.annotation.SuppressLint;
 
 import org.webrtc.DefaultVideoDecoderFactory;
@@ -12,15 +16,12 @@ import org.webrtc.PeerConnectionFactory;
 import org.webrtc.VideoDecoderFactory;
 import org.webrtc.VideoEncoderFactory;
 import org.webrtc.audio.AudioDeviceModule;
-
-import static owt.base.ContextInitialization.context;
-import static owt.base.ContextInitialization.localContext;
-import static owt.base.ContextInitialization.remoteContext;
+import org.webrtc.audio.JavaAudioDeviceModule;
 
 final class PCFactoryProxy {
     static int networkIgnoreMask = 0;
     // Enable H.264 high profile by default.
-    static String fieldTrials = "/WebRTC-H264HighProfile/Enabled/";
+    static String fieldTrials = "WebRTC-H264HighProfile/Enabled/";
 
     static VideoEncoderFactory encoderFactory = null;
     static VideoDecoderFactory decoderFactory = null;
@@ -39,7 +40,7 @@ final class PCFactoryProxy {
             options.networkIgnoreMask = networkIgnoreMask;
             peerConnectionFactory = PeerConnectionFactory.builder()
                     .setOptions(options)
-                 //   .setAudioDeviceModule(adm == null ? new LegacyAudioDeviceModule() : adm)
+                    .setAudioDeviceModule(adm == null ? JavaAudioDeviceModule.builder(context).createAudioDeviceModule() : adm)
                     .setVideoEncoderFactory(
                             encoderFactory == null
                                     ? new DefaultVideoEncoderFactory(localContext, true, true)

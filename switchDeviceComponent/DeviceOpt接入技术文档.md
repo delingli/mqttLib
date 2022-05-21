@@ -26,6 +26,8 @@
     ISendredOpt  //红外操作
     ISwitchMachineOpt  //开关机操作
 
+
+
 公共接口:
 
 > 红外操作:

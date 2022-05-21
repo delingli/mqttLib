@@ -304,7 +304,6 @@ public abstract class AbsMqtt implements IMqtt, MqttActionListener, IMqttReceive
         }
         mHandler.sendEmptyMessageDelayed(1, RECONNECT_TIME);
     }
-
     @Override
     public void toDisConnect() {
         try {

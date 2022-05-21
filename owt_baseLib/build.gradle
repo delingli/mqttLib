@@ -7,8 +7,6 @@ android {
     defaultConfig {
         minSdkVersion build_versions.min_sdk
         targetSdkVersion build_versions.target_sdk
-        versionCode build_versions.versionCode
-        versionName build_versions.versionName
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
@@ -38,7 +36,7 @@ dependencies {
 //    androidTestImplementation 'com.android.support.test:runner:1.0.2'
 //    androidTestImplementation 'com.android.support.test:rules:1.0.2'
     //api files('libs/libwebrtc.jar')
-    api files('libs/weblibs.jar')
+    api files('libs/webrtc.jar')
     testImplementation deps.junit
     androidTestImplementation deps.ext_junit
     androidTestImplementation deps.espresso_core
@@ -50,7 +48,7 @@ publishing {
         uploadSDK(MavenPublication) {
             artifact "build/outputs/aar/owt_baseLib-debug.aar"
             artifactId "owtBaseLib"
-            version android.defaultConfig.versionName
+            version "1.0.6"
         }
     }
 }

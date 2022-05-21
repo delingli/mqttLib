@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
+    id 'kotlin-kapt'
 }
 apply from: '../upload-aar.gradle'
 android {
@@ -9,16 +10,19 @@ android {
     defaultConfig {
         minSdk 21
         targetSdk 32
-        versionCode 1
-        versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
 
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            minifyEnabled true
+            zipAlignEnabled true
+//            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -32,6 +36,7 @@ android {
 }
 
 dependencies {
+    def work_version = "2.7.1"
     implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
     implementation 'androidx.core:core-ktx:1.3.2'
     implementation 'androidx.appcompat:appcompat:1.4.1'
@@ -40,13 +45,27 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation 'com.blankj:utilcode:1.30.6'
+    implementation project(path: ':commonComponent')
+    api "androidx.work:work-runtime-ktx:$work_version"
+    androidTestImplementation "androidx.work:work-testing:$work_version"
+    implementation 'androidx.room:room-runtime:2.3.0'
+    implementation 'androidx.room:room-ktx:2.3.0'
+    kapt 'androidx.room:room-compiler:2.3.0'
+/*    api("androidx.work:work-runtime-ktx:2.7.1") {
+        exclude module: 'kotlinx-coroutines-android'
+        exclude module: 'kotlinx-coroutines-core-jvm'
+        exclude module: 'kotlin-stdlib-jdk8'
+
+        exclude module: 'lifecycle-livedata'
+        exclude module: 'room-runtime'
+    }*/
 }
 publishing {
     publications {
         uploadSDK(MavenPublication) {
             artifact "build/outputs/aar/switchDeviceComponent-debug.aar"
             artifactId "deviceOptComponent"
-            version "1.0.2"
+            version "1.0.4"
         }
     }
 }

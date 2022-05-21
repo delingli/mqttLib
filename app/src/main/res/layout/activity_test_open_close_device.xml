@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".TestOpenCloseDeviceActivity">
+
+    <LinearLayout
+        android:id="@+id/ll_top_containear"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="注意:关机时间必须早于开机时间，且重启时间必须在开机时间范围内，否则程序将拒绝执行"
+            android:textColor="#E80808"
+            android:textSize="14dp" />
+
+        <TextView
+            android:id="@+id/tv_closeDevice"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="#79CCCCCC"
+            android:gravity="center"
+            android:hint="点击选择关机时间"
+            android:textColor="#EB090000"
+            android:textColorHint="#1B0505"
+            android:textSize="18dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#4AFFFFFF" />
+
+        <TextView
+            android:id="@+id/tv_OpenDevice"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="#79CCCCCC"
+            android:gravity="center"
+            android:hint="点击选择开机时间"
+            android:textColor="#EB090000"
+            android:textColorHint="#1B0505"
+            android:textSize="18dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#4AFFFFFF" />
+
+        <TextView
+            android:id="@+id/tv_restartDevice"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="#79CCCCCC"
+            android:gravity="center"
+            android:hint="点击选择重启时间"
+            android:textColor="#EB090000"
+            android:textColorHint="#1B0505"
+            android:textSize="18dp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_selectDevice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="当前为精鑫屏"
+        android:layout_marginTop="24dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ll_top_containear" />
+
+    <Button
+        android:id="@+id/btn_config"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#C0D7DA"
+        android:text="执行配置"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_selectDevice" />
+
+    <Button
+        android:id="@+id/btn_cancel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#C0D7DA"
+        android:text="取消配置"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btn_config" />
+</androidx.constraintlayout.widget.ConstraintLayout>
