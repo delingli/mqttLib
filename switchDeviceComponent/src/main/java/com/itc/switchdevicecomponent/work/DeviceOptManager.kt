@@ -13,10 +13,10 @@ import com.itc.switchdevicecomponent.impl.*
 import com.itc.switchdevicecomponent.rooms.RebootDataSingle
 import com.itc.switchdevicecomponent.rooms.RebootOptDB
 import kotlinx.coroutines.*
-import java.lang.RuntimeException
 import java.util.concurrent.TimeUnit
 
 object DeviceOptManager {
+
     var mCancelRestart: Job? = null
     var mcancelOpenCloseJob: Job? = null
     var mSwitchDeviceOption: SwitchDeviceOption? = null
@@ -25,6 +25,8 @@ object DeviceOptManager {
     var mIAndroidHeziDeviceOptImpl: IAndroidHeziDeviceOpt? = null
     var mIJingXinDeviceOptImpl: IJingXinDeviceOpt? = null
     var mISHRGDeviceOptImpl: ISHRGDeviceOpt? = null
+
+
     fun getI0830BDeviceOptImpl(): I0830BDeviceOpt? {
         checkNotNull()
         return mI0830BDeviceOptImpl
@@ -55,34 +57,32 @@ object DeviceOptManager {
         }
     }
 
-    fun toInit(context: Context, mSwitchDeviceOption: SwitchDeviceOption) {
+    fun toInit(context: Context?, mSwitchDeviceOption: SwitchDeviceOption?) {
         this.mSwitchDeviceOption = mSwitchDeviceOption
         this.mContext = context
         checkNotNull()
-        mI0830BDeviceOptImpl = I0830BDeviceOptImpl(mContext)
-        mIAndroidHeziDeviceOptImpl = IAndroidHeziDeviceOptImpl(mContext)
-        mIJingXinDeviceOptImpl = IJingXinDeviceOptImpl(mContext)
-        mISHRGDeviceOptImpl = ISHRGDeviceOptImpl(mContext)
-        SPUtils.getInstance().put(SwitchMachineWork.deviceType, mSwitchDeviceOption.deviceType())
+        this.mI0830BDeviceOptImpl = I0830BDeviceOptImpl(mContext)
+        this.mIAndroidHeziDeviceOptImpl = IAndroidHeziDeviceOptImpl(mContext)
+        this.mIJingXinDeviceOptImpl = IJingXinDeviceOptImpl(mContext)
+        this.mISHRGDeviceOptImpl = ISHRGDeviceOptImpl(mContext)
+        SPUtils.getInstance().put(SwitchMachineWork.deviceType, mSwitchDeviceOption?.deviceType())
     }
-
     fun hasInited(): Boolean {
-        if (mContext != null && mSwitchDeviceOption != null) {
+        if (this.mContext != null && this.mSwitchDeviceOption != null) {
             return true
         } else {
             return false
         }
 
     }
-
     fun flushDeviceTime() {
-        if (mSwitchDeviceOption == null) {
+        if (this.mSwitchDeviceOption == null) {
             throw RuntimeException("you must call toInit(context: Context, mSwitchDeviceOption: SwitchDeviceOption) to init ")
         }
-        if (mContext == null) {
+        if (this.mContext == null) {
             throw RuntimeException("mContext can not be null ")
         }
-        mContext?.let {
+        this.mContext?.let {
             val constraints = Constraints.Builder().setRequiresCharging(true)
                 .setRequiredNetworkType(NetworkType.CONNECTED).build()
             val dailyWorkRequest = OneTimeWorkRequestBuilder<SwitchMachineWork>()
@@ -97,7 +97,6 @@ object DeviceOptManager {
 
 
     }
-
     fun cancelRestartDevice(
         @DeviceType.DeviceType deviceType: String?
     ) {
@@ -113,17 +112,15 @@ object DeviceOptManager {
         }
 
     }
-
     fun unInit() {
-        mCancelRestart?.cancel()
-        mcancelOpenCloseJob?.cancel()
+        this.mCancelRestart?.cancel()
+        this.mcancelOpenCloseJob?.cancel()
     }
-
     fun cancelOpenCloseTime(
         @DeviceType.DeviceType deviceType: String?
     ) {
         checkNotNull()
-        mcancelOpenCloseJob = GlobalScope.launch {
+        this.mcancelOpenCloseJob = GlobalScope.launch {
             withContext(Dispatchers.Default) {
                 var mRebootOptDBs: RebootOptDB? =
                     RebootDataSingle.instance.getDao(mContext!!).mRebootOptDao.selectOptData(

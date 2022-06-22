@@ -21,4 +21,4 @@
 #-renamesourcefileattribute SourceFile
 -keep class com.itc.switchdevicecomponent.annation.**{*;}
 -keep class com.itc.switchdevicecomponent.receiver.**{*;}
--keep public class com.itc.switchdevicecomponent.DeviceOptManager{*;}
+-keep public class com.itc.switchdevicecomponent.work.**{*;}

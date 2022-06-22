@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply from: '../upload-aar.gradle'
 android {
     compileSdkVersion build_versions.compileSdkVersion
@@ -29,6 +30,8 @@ dependencies {
     testImplementation deps.junit
     androidTestImplementation deps.ext_junit
     androidTestImplementation deps.espresso_core
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 //这里maven配置
 publishing {
@@ -39,4 +42,7 @@ publishing {
             version android.defaultConfig.versionName
         }
     }
+}
+repositories {
+    mavenCentral()
 }

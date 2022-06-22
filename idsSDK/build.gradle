@@ -5,6 +5,7 @@ plugins {
     id 'kotlin-kapt'
 }
 apply from: '../upload-aar.gradle'
+apply plugin: 'kotlin-android'
 android {
     compileSdkVersion build_versions.compileSdkVersion
     buildToolsVersion build_versions.build_tools
@@ -45,6 +46,8 @@ dependencies {
     testImplementation deps.junit
     androidTestImplementation deps.ext_junit
     androidTestImplementation deps.espresso_core
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 
 //这里maven配置
@@ -67,5 +70,8 @@ allprojects {
 
             url 'http://10.10.20.198:8081/nexus/content/groups/IDC/' }//公司私有仓IDC组
     }
+}
+repositories {
+    mavenCentral()
 }
 

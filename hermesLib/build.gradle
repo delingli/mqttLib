@@ -43,6 +43,8 @@ dependencies {
     implementation 'org.greenrobot:eventbus:3.0.0'
     implementation 'xiaofei.library:hermes:0.7.0'
     implementation 'xiaofei.library:concurrent-utils:0.1.4'
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
 }
 repositories {

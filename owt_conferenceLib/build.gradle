@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply from: '../upload-aar.gradle'
 
 android {
@@ -51,7 +52,10 @@ dependencies {
     testImplementation deps.junit
     androidTestImplementation deps.ext_junit
     androidTestImplementation deps.espresso_core
-    api 'com.idc.idcsdk:owtBaseLib:1.0.9@aar'//    api project(':owt_baseLib')
+    api 'com.idc.idcsdk:owtBaseLib:1.0.9@aar'
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    //    api project(':owt_baseLib')
 
 }
 

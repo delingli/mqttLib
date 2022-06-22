@@ -9,7 +9,7 @@ import android.widget.Button
 import androidx.core.content.ContextCompat
 import androidx.work.*
 import com.blankj.utilcode.util.LogUtils
-import com.itc.commoncomponent.Test
+
 import com.itc.switchdevicecomponent.work.DeviceOptManager
 import com.itc.switchdevicecomponent.work.RebotWork
 import java.text.SimpleDateFormat
@@ -58,8 +58,9 @@ class MainActivity2 : AppCompatActivity() {
 
              }*/
 
-        DeviceOptManager.mSwitchDeviceOption
 
+//DeviceOptManager.instance.mI0830BDeviceOptImpl
+//        DeviceOptManagerTest
 
 
         setContentView(R.layout.activity_main2)

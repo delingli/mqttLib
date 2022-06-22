@@ -3,11 +3,9 @@ package com.itc.switchdevicecomponent.work
 import android.content.Context
 import androidx.work.*
 import com.blankj.utilcode.util.*
-import com.itc.commoncomponent.network.ResultData
 import com.itc.commoncomponent.network.Results
 import com.itc.switchdevicecomponent.annation.DeviceType
 import com.itc.switchdevicecomponent.annation.OptType
-import com.itc.switchdevicecomponent.impl.DeviceExecute
 import com.itc.switchdevicecomponent.impl.DeviceOptModel
 import com.itc.switchdevicecomponent.rooms.RebootDataSingle
 import com.itc.switchdevicecomponent.rooms.RebootOptDB
@@ -40,6 +38,7 @@ class SwitchMachineWork(appContext: Context, workerParams: WorkerParameters) :
     lateinit var mDeviceOptModel: DeviceOptModel
 
     override suspend fun doWork(): Result {
+        DeviceOptManager.hasInited()
         mDeviceOptModel = DeviceOptModel()
         var result = mDeviceOptModel.flushDeviceTime()
         if (result != null) {

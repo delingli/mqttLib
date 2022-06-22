@@ -1,6 +1,5 @@
 package com.itc.switchdevicecomponent.impl
 
-import com.blankj.utilcode.util.EncryptUtils
 import com.blankj.utilcode.util.LogUtils
 import com.itc.commoncomponent.network.ResultData
 import com.itc.commoncomponent.network.Results
@@ -9,11 +8,6 @@ import com.itc.switchdevicecomponent.work.DeviceOptManager
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.io.UnsupportedEncodingException
-import java.math.BigInteger
-import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
-import java.util.*
 
 class DeviceOptModel(private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default) {
     companion object {

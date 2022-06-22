@@ -1,4 +1,5 @@
 apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
 apply from: '../upload-aar.gradle'
 
 android {
@@ -49,11 +50,14 @@ dependencies {
         exclude module: 'support-v4'
     }
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 repositories {
     maven {
         url "https://repo.eclipse.org/content/repositories/paho-snapshots/"
     }
+    mavenCentral()
 }
 //这里maven配置
 publishing {

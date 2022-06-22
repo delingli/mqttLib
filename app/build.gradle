@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'kotlin-android'
 }
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion build_versions.compileSdkVersion
@@ -46,13 +47,14 @@ dependencies {
 //    implementation project(':switchDeviceComponent')
 //    implementation 'com.itc.itcsdk:core:3.8.16'
 //    implementation 'com.itc.itcsdk:compiler:3.8.16'
-//    implementation 'com.idc.idcsdk:deviceOptComponent:1.0.4'
     implementation 'com.idc.idcsdk:deviceOptComponent:1.0.7'
     testImplementation deps.junit
     androidTestImplementation deps.ext_junit
     androidTestImplementation deps.espresso_core
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'com.contrarywind:Android-PickerView:4.1.9'
+    implementation "androidx.core:core-ktx:+"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 //    https://blog.csdn.net/wang295689649/article/details/105219587
 }
 repositories {
@@ -62,5 +64,6 @@ repositories {
     maven {
         allowInsecureProtocol = true
         url 'http://10.10.20.198:8081/nexus/content/groups/IDC/'
-    }//公司私有仓IDC组
+    }
+    mavenCentral()//公司私有仓IDC组
 }
