@@ -6,14 +6,14 @@ package owt.conference;
 
 import static owt.base.CheckCondition.RCHECK;
 
+import owt.base.AudioCodecParameters;
+import owt.base.VideoCodecParameters;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import owt.base.AudioCodecParameters;
-import owt.base.VideoCodecParameters;
 
 /**
  * Options for subscribing a RemoteStream. Subscribing a RemoteStream with the SubscribeOptions that

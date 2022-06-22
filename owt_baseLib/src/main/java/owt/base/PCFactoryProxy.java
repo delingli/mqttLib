@@ -16,12 +16,12 @@ import org.webrtc.PeerConnectionFactory;
 import org.webrtc.VideoDecoderFactory;
 import org.webrtc.VideoEncoderFactory;
 import org.webrtc.audio.AudioDeviceModule;
-import org.webrtc.audio.JavaAudioDeviceModule;
+//import org.webrtc.audio.LegacyAudioDeviceModule;
 
 final class PCFactoryProxy {
     static int networkIgnoreMask = 0;
     // Enable H.264 high profile by default.
-    static String fieldTrials = "WebRTC-H264HighProfile/Enabled/";
+    static String fieldTrials = "/WebRTC-H264HighProfile/Enabled/";
 
     static VideoEncoderFactory encoderFactory = null;
     static VideoDecoderFactory decoderFactory = null;
@@ -40,7 +40,7 @@ final class PCFactoryProxy {
             options.networkIgnoreMask = networkIgnoreMask;
             peerConnectionFactory = PeerConnectionFactory.builder()
                     .setOptions(options)
-                    .setAudioDeviceModule(adm == null ? JavaAudioDeviceModule.builder(context).createAudioDeviceModule() : adm)
+                    .setAudioDeviceModule(/*adm == null ? new LegacyAudioDeviceModule() :*/ adm)
                     .setVideoEncoderFactory(
                             encoderFactory == null
                                     ? new DefaultVideoEncoderFactory(localContext, true, true)

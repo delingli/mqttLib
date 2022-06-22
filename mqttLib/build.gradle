@@ -35,9 +35,19 @@ dependencies {
     testImplementation deps.junit
     androidTestImplementation deps.ext_junit
     androidTestImplementation deps.espresso_core
-    implementation 'com.blankj:utilcode:1.30.6'
-    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0'
-    implementation 'org.eclipse.paho:org.eclipse.paho.android.service:1.1.1'
+    implementation 'com.blankj:utilcodex:1.31.0'
+    implementation('org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.1.0') {
+        exclude module: 'appcompat'
+        exclude module: 'support-annotations'
+        exclude module: 'support-compat'
+        exclude module: 'support-v4'
+    }
+    implementation('org.eclipse.paho:org.eclipse.paho.android.service:1.1.1') {
+        exclude module: 'appcompat'
+        exclude module: 'support-annotations'
+        exclude module: 'support-compat'
+        exclude module: 'support-v4'
+    }
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
 }
 repositories {
@@ -51,7 +61,7 @@ publishing {
         uploadSDK(MavenPublication) {
             artifact "build/outputs/aar/mqttLib-debug.aar"
             artifactId "mqttLib"
-            version "1.1.4"
+            version "1.1.7"
         }
     }
 }

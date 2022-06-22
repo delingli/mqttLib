@@ -8,7 +8,6 @@ import androidx.work.testing.TestListenableWorkerBuilder
 import com.itc.switchdevicecomponent.annation.DeviceType
 import com.itc.switchdevicecomponent.work.RebotWork
 import kotlinx.coroutines.runBlocking
-import org.hamcrest.MatcherAssert
 
 import org.junit.Test
 import org.junit.runner.RunWith
@@ -46,16 +45,16 @@ class ExampleInstrumentedTest {
 
     private fun testSwitch() {
         val appContext = InstrumentationRegistry.getInstrumentation().targetContext
-        DeviceOptManager.toInit(appContext)
+  /*      IDeviceOptManager.toInit(appContext)
         //        assertEquals("com.itc.switchdevicecomponent.test", appContext.packageName)
-        DeviceOptManager.getSwitchMachineOpt()?.setEndBootForHra()
-        DeviceOptManager.getSwitchMachineOpt()?.handlerOpt(
+        IDeviceOptManager.getSwitchMachineOpt()?.setEndBootForHra()
+        IDeviceOptManager.getSwitchMachineOpt()?.handlerOpt(
             DeviceType.MODULE_HEZI,
             "2022-5-6",
             100,
             1,
             true
 
-        )
+        )*/
     }
 }

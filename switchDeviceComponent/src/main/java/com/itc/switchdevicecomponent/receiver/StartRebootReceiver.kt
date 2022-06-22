@@ -27,7 +27,7 @@ open class StartRebootReceiver : BroadcastReceiver() {
                     out.flush()
                 } catch (e: IOException) {
                     e.printStackTrace()
-                    LogUtils.dTag(TAG, "重启执行失败:" + e.message)
+                    LogUtils.eTag(TAG, "重启执行失败:" + e.message)
                 }
             }
 

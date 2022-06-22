@@ -10,8 +10,9 @@ import com.blankj.utilcode.util.LogUtils
 import com.blankj.utilcode.util.SPUtils
 import com.blankj.utilcode.util.ToastUtils
 import com.example.idsapp.databinding.ActivityTestOpenCloseDeviceBinding
-import com.itc.switchdevicecomponent.DeviceOptManager
+//import com.itc.switchdevicecomponent.IDeviceOptManager
 import com.itc.switchdevicecomponent.annation.DeviceType
+import com.itc.switchdevicecomponent.work.DeviceOptManager
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -26,6 +27,9 @@ class TestOpenCloseDeviceActivity : AppCompatActivity() {
         setContentView(mBinding.root)
         val sdfs = SimpleDateFormat("yyyy-MM-dd HH:mm")
         val booleanS = booleanArrayOf(true, true, true, true, true, true)
+        DeviceOptManager.getSwitchDeviceOption()
+//        DeviceOptManager.flushDeviceTime()
+//        DeviceOptManager.flushDeviceTime()
         mBinding.tvCloseDevice.setOnClickListener {
             if (mCloseDeviceTime == null) {
                 mCloseDeviceTime = TimePickerBuilder(this, object : OnTimeSelectListener {
@@ -101,9 +105,9 @@ class TestOpenCloseDeviceActivity : AppCompatActivity() {
         }
         mBinding.btnCancel.setOnClickListener {
             var deviceTypes: String? = getDeviceType()
-            DeviceOptManager.cancelOpenCloseTime(
-                DeviceType.MODULE_SHRG
-            )
+//            IDeviceOptManager.cancelOpenCloseTime(
+//                DeviceType.MODULE_SHRG
+//            )
         }
         mBinding.btnConfig.setOnClickListener {
             if (mBinding.tvCloseDevice.text.isNullOrEmpty()) {
@@ -132,17 +136,17 @@ class TestOpenCloseDeviceActivity : AppCompatActivity() {
                 }
 
                 var deviceTypes: String? = getDeviceType()
-                DeviceOptManager.addRestartDevice(
-                    mBinding.tvRestartDevice.text.toString(),
-                    deviceTypes
-                )
+//                IDeviceOptManager.addRestartDevice(
+//                    mBinding.tvRestartDevice.text.toString(),
+//                    deviceTypes
+//                )
             }
             var deviceTypes: String? = getDeviceType()
-            DeviceOptManager.addOpenCloseTime(
-                mBinding.tvOpenDevice.text.toString(),
-                mBinding.tvCloseDevice.text.toString(),
-                DeviceType.MODULE_SHRG
-            )
+//            IDeviceOptManager.addOpenCloseTime(
+//                mBinding.tvOpenDevice.text.toString(),
+//                mBinding.tvCloseDevice.text.toString(),
+//                DeviceType.MODULE_SHRG
+//            )
 
         }
         var defaultSelectId = SPUtils.getInstance().getInt(SingleSelectedDialog.KEY_SELECT, -1)

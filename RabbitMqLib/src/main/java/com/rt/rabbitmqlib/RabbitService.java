@@ -10,6 +10,7 @@ import android.os.IBinder;
 import android.os.Parcelable;
 
 import androidx.annotation.Nullable;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.blankj.utilcode.util.LogUtils;
 import com.blankj.utilcode.util.NetworkUtils;
@@ -134,8 +135,18 @@ public class RabbitService extends Service implements AbsRabbitDispatch.RabbitEv
             dispatcher.destroyDispatcher();
             LogUtils.iTag(tag, "Start Rabbit dispatcher failed, recreate it after 5s." + ret);
             dispatcherHandler.postDelayed(runner, reConnectTime);
+            LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
+            Intent intent = new Intent(RabitMqAction.ACTION_CONNECT_STATE);
+            intent.putExtra(RabitMqAction.KEY_CONNECT_STATE, false);
+            intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+            localBroadcastManager.sendBroadcast(intent);
         } else {
             LogUtils.iTag(tag, "Start Rabbit dispatcher successful.");
+            LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
+            Intent intent = new Intent(RabitMqAction.ACTION_CONNECT_STATE);
+            intent.putExtra(RabitMqAction.KEY_CONNECT_STATE, true);
+            intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+            localBroadcastManager.sendBroadcast(intent);
         }
         return ret;
 
@@ -181,8 +192,14 @@ public class RabbitService extends Service implements AbsRabbitDispatch.RabbitEv
     public void onShutdownSignaled(String consumerTag, String sig) {
         LogUtils.dTag(tag, "onShutdownSignaled: " + consumerTag + " " + sig);
         LogUtils.dTag(tag, "On shutdown signaled，recreate dispatcher resources.");
-        if(NetworkUtils.isConnected()){
+        if (NetworkUtils.isConnected()) {
             dispatcherHandler.postDelayed(runner, reConnectTime);
+        } else {
+            LocalBroadcastManager localBroadcastManager = LocalBroadcastManager.getInstance(getApplicationContext());
+            Intent intent = new Intent(RabitMqAction.ACTION_CONNECT_STATE);
+            intent.putExtra(RabitMqAction.KEY_CONNECT_STATE, false);
+            intent.addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+            localBroadcastManager.sendBroadcast(intent);
         }
     }
 }

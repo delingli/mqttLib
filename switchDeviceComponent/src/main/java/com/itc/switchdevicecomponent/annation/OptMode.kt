@@ -4,7 +4,7 @@ import android.annotation.SuppressLint
 import androidx.annotation.IntDef
 
 //操作模式，单次，每天，自定义周期
-@Deprecated("废弃暂时不用")
+@Deprecated("废弃...")
 class OptMode {
     companion object {
         const val SINGLE = 1     //单次

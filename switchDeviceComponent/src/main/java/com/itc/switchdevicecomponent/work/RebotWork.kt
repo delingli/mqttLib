@@ -1,24 +1,12 @@
 package com.itc.switchdevicecomponent.work
 
-import android.app.Notification
 import android.content.Context
-import android.text.TextUtils
 import androidx.work.*
-import com.blankj.utilcode.util.AppUtils
 import com.blankj.utilcode.util.LogUtils
-import com.blankj.utilcode.util.TimeUtils
-import com.itc.switchdevicecomponent.DeviceOptManager
 import com.itc.switchdevicecomponent.annation.DeviceType
 import com.itc.switchdevicecomponent.annation.OptType
-import com.itc.switchdevicecomponent.impl.IAndroidHeziDeviceOptImpl
 import com.itc.switchdevicecomponent.rooms.RebootDataSingle
 import com.itc.switchdevicecomponent.rooms.RebootOptDB
-
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import java.text.SimpleDateFormat
-import java.util.*
-import java.util.concurrent.TimeUnit
 
 /**
  * 重启设备
@@ -36,7 +24,7 @@ class RebotWork(appContext: Context, workerParams: WorkerParameters) :
     }*/
 
     companion object {
-        const val TAG = "RebotWork"
+        const val REBORT_TAG = "RebotWork"
         const val TAG_OUTPUT = "TAG_OUTPUT"
     }
 
@@ -53,7 +41,7 @@ class RebotWork(appContext: Context, workerParams: WorkerParameters) :
                 )
 
             mRebootOptDB?.let {
-                LogUtils.dTag(TAG, "执行一次重启设备娃哈哈..." + "")
+                LogUtils.dTag(REBORT_TAG, "执行一次重启设备娃哈哈..." + "")
                 when (it.deviceType) {
                     DeviceType.MODULE_ANDROID_HE_ZI -> {
                         DeviceOptManager.getAndroidHeziDeviceOptImpl()?.systemReset()

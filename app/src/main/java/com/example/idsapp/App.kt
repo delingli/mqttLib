@@ -1,14 +1,10 @@
 package com.example.idsapp
 
-import android.app.Activity
 import android.app.Application
-import android.os.Bundle
 import android.os.Process
 import android.text.TextUtils
-import android.view.MotionEvent
 import com.blankj.utilcode.util.LogUtils
-import com.example.idsapp.App
-import com.itc.switchdevicecomponent.DeviceOptManager
+
 
 
 import java.io.BufferedReader
@@ -26,7 +22,7 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         LogUtils.getConfig().setLog2FileSwitch(true)
-        DeviceOptManager.toInit(this)
+
     }
 
     companion object {

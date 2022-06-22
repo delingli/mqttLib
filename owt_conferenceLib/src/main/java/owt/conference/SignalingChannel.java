@@ -11,6 +11,9 @@ import static owt.base.Const.LOG_TAG;
 import android.util.Base64;
 import android.util.Log;
 
+import okhttp3.OkHttpClient;
+import owt.base.Const;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,8 +27,6 @@ import io.socket.client.Ack;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter.Listener;
-import okhttp3.OkHttpClient;
-import owt.base.Const;
 
 final class SignalingChannel {
 
@@ -109,7 +110,16 @@ final class SignalingChannel {
     // MCU events.
     private final Listener progressCallback = (Object... args) -> callbackExecutor.execute(() -> {
         JSONObject msg = (JSONObject) args[0];
-        observer.onProgressMessage(msg);
+        if (msg != null) {
+            Log.d("Signaling-->", msg.toString());
+            try {
+                String id = msg.getString("id");
+                if (id != null)
+                    observer.onProgressMessage(msg);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
     });
     private final Listener participantCallback = (Object... args) -> callbackExecutor.execute(
             () -> {
@@ -178,13 +188,16 @@ final class SignalingChannel {
 
             boolean isSecure = jsonToken.getBoolean("secure");
             String host = jsonToken.getString("host");
-            final String url = (isSecure ? "https" : "http") + "://" + host;
+//            final String url = (isSecure ? "https" : "http") + "://" + host;
+//            final String url = "https://qt.unitsyscloud.com:3020";
+            final String url = "http://10.10.20.234:9090";
 
             IO.Options opt = new IO.Options();
             opt.forceNew = true;
             opt.reconnection = true;
             opt.reconnectionAttempts = MAX_RECONNECT_ATTEMPTS;
             opt.secure = isSecure;
+
             OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
             if (configuration.sslContext != null) {
                 clientBuilder.sslSocketFactory(configuration.sslContext.getSocketFactory());
@@ -223,6 +236,8 @@ final class SignalingChannel {
     }
 
     void sendMsg(String type, JSONObject msg, Ack ack) {
+        if (type.equals("subscribe") || type.equals("soac"))
+            Log.d("------------->", type + "/////" + msg.toString());
         if (!socketClient.connected()) {
             HashMap<String, Object> msg2cache = new HashMap<>();
             msg2cache.put("type", type);
@@ -318,7 +333,7 @@ final class SignalingChannel {
                 }));
     }
 
-    private void onReconnectionTicket(String ticket){
+    private void onReconnectionTicket(String ticket) {
         try {
             reconnectionTicket = ticket;
             JSONObject jsonTicketTicket = new JSONObject(
@@ -327,12 +342,12 @@ final class SignalingChannel {
             String expiredStr = jsonTicketTicket.getString("notAfter");
             long delay = Long.parseLong(expiredStr) - System.currentTimeMillis();
 
-            if (delay < 0){
-                delay = 5*60*1000;
+            if (delay < 0) {
+                delay = 5 * 60 * 1000;
             }
 
             long finalDelay = delay;
-            refreshExecutor.execute(()->{
+            refreshExecutor.execute(() -> {
                 try {
                     Thread.sleep(finalDelay);
                 } catch (InterruptedException e) {

@@ -13,7 +13,6 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.AudioTrack;
-import org.webrtc.CandidatePairChangeEvent;
 import org.webrtc.DataChannel;
 import org.webrtc.IceCandidate;
 import org.webrtc.MediaConstraints;
@@ -24,7 +23,6 @@ import org.webrtc.RTCStatsReport;
 import org.webrtc.RtpParameters;
 import org.webrtc.RtpReceiver;
 import org.webrtc.RtpSender;
-import org.webrtc.RtpTransceiver;
 import org.webrtc.SdpObserver;
 import org.webrtc.SessionDescription;
 import org.webrtc.VideoTrack;
@@ -192,7 +190,15 @@ public abstract class PeerConnectionChannel
             if (disposed()) {
                 return;
             }
-            peerConnection.setRemoteDescription(PeerConnectionChannel.this, remoteDescription);
+            SessionDescription remoteSdp = remoteDescription;
+            if (audioCodecs != null) {
+                remoteSdp = preferCodecs(remoteSdp, false);
+            }
+
+            if (videoCodecs != null) {
+                remoteSdp = preferCodecs(remoteSdp, true);
+            }
+            peerConnection.setRemoteDescription(PeerConnectionChannel.this, remoteSdp);
         });
     }
 
@@ -388,7 +394,7 @@ public abstract class PeerConnectionChannel
     }
 
     private void setMaxBitrate(RtpSender sender, Integer bitrate) {
-        if (sender == null || bitrate == null || bitrate.intValue() <= 0) {
+        if (sender == null) {
             return;
         }
         RtpParameters rtpParameters = sender.getParameters();
@@ -397,10 +403,10 @@ public abstract class PeerConnectionChannel
             return;
         }
         for (RtpParameters.Encoding encoding : rtpParameters.encodings) {
-            encoding.maxBitrateBps = bitrate * 1000;
+            encoding.maxBitrateBps = bitrate == null ? null : bitrate * 1000;
         }
         if (!sender.setParameters(rtpParameters)) {
-            Log.e(LOG_TAG, "Failed to configure max audio/video bitrate");
+            Log.e(LOG_TAG, "Failed to configure max video bitrate");
         }
     }
 
@@ -469,18 +475,6 @@ public abstract class PeerConnectionChannel
     abstract public void onSignalingChange(PeerConnection.SignalingState signalingState);
 
     @Override
-    public void onStandardizedIceConnectionChange(PeerConnection.IceConnectionState newState) {
-    }
-        
-    @Override
-    public void onConnectionChange(PeerConnection.PeerConnectionState newState) {
-    }
-    
-    @Override
-    public void onSelectedCandidatePairChanged(CandidatePairChangeEvent event) {
-    }
-        
-    @Override
     abstract public void onIceConnectionChange(
             PeerConnection.IceConnectionState iceConnectionState);
 
@@ -493,7 +487,7 @@ public abstract class PeerConnectionChannel
     }
 
     @Override
-    abstract public void onIceCandidate(IceCandidate iceCandidate); 
+    abstract public void onIceCandidate(IceCandidate iceCandidate);
 
     @Override
     abstract public void onIceCandidatesRemoved(IceCandidate[] iceCandidates);
@@ -521,11 +515,7 @@ public abstract class PeerConnectionChannel
     @Override
     public void onAddTrack(RtpReceiver rtpReceiver, MediaStream[] mediaStreams) {
     }
-        
-    @Override
-    public void onTrack(RtpTransceiver transceiver) {
-    }
-        
+
     //DataChannel.Observer interface
     @Override
     public void onBufferedAmountChange(long l) {

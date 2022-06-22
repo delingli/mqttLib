@@ -1,9 +1,14 @@
 ### MqttLib技术文档
 一.接入方式:
+
+
+
   ### 1.  引进 implementation 'com.idc.idcsdk:mqttLib:1.0.4'
 
 
   -----
+
+
 
 ###  2.  在Application oncreate()中调用
            String host = "tcp://10.10.20.200:1883";

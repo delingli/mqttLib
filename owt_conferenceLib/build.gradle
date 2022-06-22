@@ -51,7 +51,7 @@ dependencies {
     testImplementation deps.junit
     androidTestImplementation deps.ext_junit
     androidTestImplementation deps.espresso_core
-    api 'com.idc.idcsdk:owtBaseLib:1.0.6@aar'//    api project(':owt_baseLib')
+    api 'com.idc.idcsdk:owtBaseLib:1.0.9@aar'//    api project(':owt_baseLib')
 
 }
 
@@ -61,7 +61,7 @@ publishing {
         uploadSDK(MavenPublication) {
             artifact "build/outputs/aar/owt_conferenceLib-debug.aar"
             artifactId "owtConferenceLib"
-            version "1.0.6"
+            version "1.0.9"
         }
     }
 }

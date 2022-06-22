@@ -48,7 +48,7 @@ publishing {
         uploadSDK(MavenPublication) {
             artifact "build/outputs/aar/owt_baseLib-debug.aar"
             artifactId "owtBaseLib"
-            version "1.0.6"
+            version "1.0.9"
         }
     }
 }

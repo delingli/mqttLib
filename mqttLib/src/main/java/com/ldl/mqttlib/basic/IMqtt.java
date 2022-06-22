@@ -23,6 +23,8 @@ public interface IMqtt {
 
     void subscribe(String topid, int qos);
 
+    boolean isConnected();
+
     //断开连接
     void toDisConnect();
 

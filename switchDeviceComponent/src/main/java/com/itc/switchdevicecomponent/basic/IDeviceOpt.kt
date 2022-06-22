@@ -20,12 +20,7 @@ interface IDeviceOpt {
             startCalas.time = startData
             var closeCala = Calendar.getInstance()
             closeCala.time = closeData
-            if (closeCala.before(startCalas)) {
-                return true
-            } else {
-                return false
-            }
-
+            return closeCala.before(startCalas)
         }
     }
 }

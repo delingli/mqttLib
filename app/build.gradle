@@ -41,12 +41,13 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
     implementation 'com.blankj:utilcode:1.30.6'
-
+    api 'com.idc.idcsdk:rabbitmq:1.1.7'
     api 'com.yanzhenjie:permission:2.0.3'
-    implementation project(':switchDeviceComponent')
+//    implementation project(':switchDeviceComponent')
 //    implementation 'com.itc.itcsdk:core:3.8.16'
 //    implementation 'com.itc.itcsdk:compiler:3.8.16'
 //    implementation 'com.idc.idcsdk:deviceOptComponent:1.0.4'
+    implementation 'com.idc.idcsdk:deviceOptComponent:1.0.7'
     testImplementation deps.junit
     androidTestImplementation deps.ext_junit
     androidTestImplementation deps.espresso_core

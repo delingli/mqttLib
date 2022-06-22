@@ -9,17 +9,17 @@ import static owt.conference.JsonUtils.getInt;
 import static owt.conference.JsonUtils.getObj;
 import static owt.conference.JsonUtils.getString;
 
+import owt.base.AudioCodecParameters;
+import owt.base.MediaCodecs.AudioCodec;
+import owt.base.MediaCodecs.VideoCodec;
+import owt.base.VideoCodecParameters;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import owt.base.AudioCodecParameters;
-import owt.base.MediaCodecs.AudioCodec;
-import owt.base.MediaCodecs.VideoCodec;
-import owt.base.VideoCodecParameters;
 
 /**
  * The settings for a publication.

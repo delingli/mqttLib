@@ -36,6 +36,15 @@ public class MqttManager {
         iMqtt.init(context.getApplicationContext(), mqttOption, onlineInforOption);
     }
 
+    public Boolean isConnected() {
+        if (iMqtt != null) {
+            return iMqtt.isConnected();
+        } else {
+            return false;
+        }
+
+    }
+
 
     /**
      * @param message

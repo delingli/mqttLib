@@ -6,6 +6,14 @@ package owt.conference;
 
 import static owt.base.CheckCondition.DCHECK;
 
+import owt.base.AudioCodecParameters;
+import owt.base.AudioEncodingParameters;
+import owt.base.LocalStream;
+import owt.base.PeerConnectionChannel;
+import owt.base.Stream;
+import owt.base.VideoCodecParameters;
+import owt.base.VideoEncodingParameters;
+
 import org.webrtc.IceCandidate;
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnection;
@@ -14,14 +22,6 @@ import org.webrtc.RtpReceiver;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-
-import owt.base.AudioCodecParameters;
-import owt.base.AudioEncodingParameters;
-import owt.base.LocalStream;
-import owt.base.PeerConnectionChannel;
-import owt.base.Stream;
-import owt.base.VideoCodecParameters;
-import owt.base.VideoEncodingParameters;
 
 final class ConferencePeerConnectionChannel extends PeerConnectionChannel {
     private final List<IceCandidate> queuedLocalCandidates;

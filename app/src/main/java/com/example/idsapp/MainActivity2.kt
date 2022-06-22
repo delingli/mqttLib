@@ -1,21 +1,17 @@
 package com.example.idsapp
 
 import android.Manifest
-import android.content.Intent
 import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Button
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.work.*
 import com.blankj.utilcode.util.LogUtils
-import com.itc.switchdevicecomponent.DeviceOptManager
-import com.itc.switchdevicecomponent.annation.DeviceType
+import com.itc.commoncomponent.Test
+import com.itc.switchdevicecomponent.work.DeviceOptManager
 import com.itc.switchdevicecomponent.work.RebotWork
-import com.yanzhenjie.permission.Action
-import com.yanzhenjie.permission.AndPermission
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -61,6 +57,11 @@ class MainActivity2 : AppCompatActivity() {
                  ActiveEngineManager.getInstance().activeEngine(this,GlobaConstant.APP_ID,GlobaConstant.SDK_KEY)
 
              }*/
+
+        DeviceOptManager.mSwitchDeviceOption
+
+
+
         setContentView(R.layout.activity_main2)
         findViewById<Button>(R.id.btn_goto).setOnClickListener(View.OnClickListener {
             WorkManager.getInstance(this).cancelAllWorkByTag(RebotWork.TAG_OUTPUT)

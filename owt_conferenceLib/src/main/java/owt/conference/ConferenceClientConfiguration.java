@@ -4,12 +4,12 @@
  */
 package owt.conference;
 
+import owt.base.ClientConfiguration;
+
 import org.webrtc.PeerConnection;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
-
-import owt.base.ClientConfiguration;
 
 /**
  * Configuration for ConferenceClient.

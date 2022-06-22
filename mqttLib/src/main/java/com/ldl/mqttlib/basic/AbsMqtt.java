@@ -46,6 +46,14 @@ public abstract class AbsMqtt implements IMqtt, MqttActionListener, IMqttReceive
     protected Context mContext;
     private Integer qos = 2;
 
+    @Override
+    public boolean isConnected() {
+        if (null != mQttAndroidClient) {
+            return mQttAndroidClient.isConnected();
+        }
+        return false;
+    }
+
     private Handler.Callback mCallBack = new Handler.Callback() {
         @Override
         public boolean handleMessage(@NonNull Message msg) {
@@ -304,6 +312,7 @@ public abstract class AbsMqtt implements IMqtt, MqttActionListener, IMqttReceive
         }
         mHandler.sendEmptyMessageDelayed(1, RECONNECT_TIME);
     }
+
     @Override
     public void toDisConnect() {
         try {

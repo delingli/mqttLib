@@ -77,7 +77,8 @@ public abstract class Stream {
      */
     public void disableVideo() {
         if (hasVideo()) {
-            mediaStream.videoTracks.get(0).setEnabled(false);
+//            if (mediaStream.videoTracks.get(0).enabled())
+                mediaStream.videoTracks.get(0).setEnabled(false);
         }
     }
 
@@ -86,7 +87,8 @@ public abstract class Stream {
      */
     public void enableVideo() {
         if (hasVideo()) {
-            mediaStream.videoTracks.get(0).setEnabled(true);
+//            if (!mediaStream.videoTracks.get(0).enabled())
+                mediaStream.videoTracks.get(0).setEnabled(true);
         }
     }
 
@@ -95,7 +97,8 @@ public abstract class Stream {
      */
     public void disableAudio() {
         if (hasAudio()) {
-            mediaStream.audioTracks.get(0).setEnabled(false);
+//            if (mediaStream.audioTracks.get(0).enabled())
+                mediaStream.audioTracks.get(0).setEnabled(false);
         }
     }
 
@@ -104,7 +107,8 @@ public abstract class Stream {
      */
     public void enableAudio() {
         if (hasAudio()) {
-            mediaStream.audioTracks.get(0).setEnabled(true);
+//            if (!mediaStream.audioTracks.get(0).enabled())
+                mediaStream.audioTracks.get(0).setEnabled(true);
         }
     }
 
@@ -119,7 +123,7 @@ public abstract class Stream {
             return;
         }
         RCHECK(videoSink);
-        CheckCondition.RCHECK(!mediaStream.videoTracks.isEmpty());
+        RCHECK(!mediaStream.videoTracks.isEmpty());
         mediaStream.videoTracks.get(0).addSink(videoSink);
     }
 
@@ -133,7 +137,7 @@ public abstract class Stream {
             return;
         }
         RCHECK(videoSink);
-        CheckCondition.RCHECK(!mediaStream.videoTracks.isEmpty());
+        RCHECK(!mediaStream.videoTracks.isEmpty());
         mediaStream.videoTracks.get(0).removeSink(videoSink);
     }
 
@@ -152,13 +156,14 @@ public abstract class Stream {
         return null;
     }
 
-    /**
-     * Check if the Stream is disposed
-     * @return true if Stream is disposed; otherwise, false.
-     */
-    public boolean disposed() {
-        return mediaStream == null;
-    }
+
+//    public String getVideoStatus(){
+//        if (hasAudio()) {
+//            return mediaStream.videoTracks.get(0).kind();
+//        }
+//        return null;
+//    }
+
 
     /**
      * Information of the source of a Stream.

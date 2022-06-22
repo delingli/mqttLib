@@ -60,8 +60,8 @@ public final class ConferenceClient implements SignalingChannel.SignalingChannel
          * Called upon receiving a message.
          *
          * @param message message received.
-         * @param from id of the message sender.
-         * @param to receiver of this message, values: 'all', 'me'.
+         * @param from    id of the message sender.
+         * @param to      receiver of this message, values: 'all', 'me'.
          */
         void onMessageReceived(String message, String from, String to);
 
@@ -69,6 +69,11 @@ public final class ConferenceClient implements SignalingChannel.SignalingChannel
          * Called upon server disconnected.
          */
         void onServerDisconnected();
+
+        /**
+         * 2020-8-15,徐-自增
+         */
+        void onStreamUpdated(String id, JSONObject updateInfo);
     }
 
     // All callbacks need to be triggered on |callbackExecutor|.
@@ -144,10 +149,10 @@ public final class ConferenceClient implements SignalingChannel.SignalingChannel
     /**
      * Join a conference specified by |token|.
      *
-     * @param token token issued by conference server (nuve).
+     * @param token    token issued by conference server (nuve).
      * @param callback ActionCallback.onSuccess will be invoked with the ConferenceInfo when
-     * succeeds to join the conference room. Otherwise when fails to do so, ActionCallback
-     * .onFailure will be invoked with the corresponding OwtError.
+     *                 succeeds to join the conference room. Otherwise when fails to do so, ActionCallback
+     *                 .onFailure will be invoked with the corresponding OwtError.
      */
     public synchronized void join(String token, ActionCallback<ConferenceInfo> callback) {
         if (!checkRoomStatus(RoomStates.DISCONNECTED)) {
@@ -182,9 +187,9 @@ public final class ConferenceClient implements SignalingChannel.SignalingChannel
      * Publish a LocalStream to the conference.
      *
      * @param localStream LocalStream to be published.
-     * @param callback ActionCallback.onSuccess will be invoked with the Publication when
-     * succeeds to publish the LocalStream. Otherwise when fails to do so, ActionCallback
-     * .onFailure will be invoked with the corresponding OwtError.
+     * @param callback    ActionCallback.onSuccess will be invoked with the Publication when
+     *                    succeeds to publish the LocalStream. Otherwise when fails to do so, ActionCallback
+     *                    .onFailure will be invoked with the corresponding OwtError.
      */
     public void publish(LocalStream localStream, ActionCallback<Publication> callback) {
         publish(localStream, null, callback);
@@ -194,13 +199,13 @@ public final class ConferenceClient implements SignalingChannel.SignalingChannel
      * Publish a LocalStream to the conference.
      *
      * @param localStream LocalStream to be published.
-     * @param options PublishOptions for publishing this LocalStream.
-     * @param callback ActionCallback.onSuccess will be invoked with the Publication when
-     * succeeds to publish the LocalStream. Otherwise when fails to do so, ActionCallback
-     * .onFailure will be invoked with the corresponding OwtError.
+     * @param options     PublishOptions for publishing this LocalStream.
+     * @param callback    ActionCallback.onSuccess will be invoked with the Publication when
+     *                    succeeds to publish the LocalStream. Otherwise when fails to do so, ActionCallback
+     *                    .onFailure will be invoked with the corresponding OwtError.
      */
     public synchronized void publish(final LocalStream localStream, final PublishOptions options,
-            final ActionCallback<Publication> callback) {
+                                     final ActionCallback<Publication> callback) {
         RCHECK(localStream);
         if (!checkRoomStatus(RoomStates.CONNECTED)) {
             triggerCallback(callback, new OwtError("Wrong room status."));
@@ -247,10 +252,6 @@ public final class ConferenceClient implements SignalingChannel.SignalingChannel
             sendSignalingMessage("publish", publishMsg, args -> {
                 if (extractMsg(0, args).equals("ok")) {
                     try {
-                        if(localStream.disposed()) {
-                            triggerCallback(callback, new OwtError("Local stream disposed on publish."));
-                            return;
-                        }
                         JSONObject result = (JSONObject) args[1];
                         // Do not receive video and audio for publication cpcc.
                         ConferencePeerConnectionChannel pcChannel =
@@ -305,9 +306,9 @@ public final class ConferenceClient implements SignalingChannel.SignalingChannel
      * Subscribe a RemoteStream from the conference.
      *
      * @param remoteStream RemoteStream to be subscribed.
-     * @param callback ActionCallback.onSuccess will be invoked with the Subscription when
-     * succeeds to subscribe the RemoteStream. Otherwise when fails to do so, ActionCallback
-     * .onFailure will be invoked with the corresponding OwtError.
+     * @param callback     ActionCallback.onSuccess will be invoked with the Subscription when
+     *                     succeeds to subscribe the RemoteStream. Otherwise when fails to do so, ActionCallback
+     *                     .onFailure will be invoked with the corresponding OwtError.
      */
     public void subscribe(RemoteStream remoteStream, ActionCallback<Subscription> callback) {
         subscribe(remoteStream, null, callback);
@@ -317,20 +318,19 @@ public final class ConferenceClient implements SignalingChannel.SignalingChannel
      * Subscribe a RemoteStream from the conference.
      *
      * @param remoteStream RemoteStream to be subscribed.
-     * @param options SubscribeOptions for subscribing the RemoteStream.
-     * @param callback ActionCallback.onSuccess will be invoked with the Subscription when
-     * succeeds to subscribe the RemoteStream. Otherwise when fails to do so, ActionCallback
-     * .onFailure will be invoked with the corresponding OwtError.
+     * @param options      SubscribeOptions for subscribing the RemoteStream.
+     * @param callback     ActionCallback.onSuccess will be invoked with the Subscription when
+     *                     succeeds to subscribe the RemoteStream. Otherwise when fails to do so, ActionCallback
+     *                     .onFailure will be invoked with the corresponding OwtError.
      */
     public synchronized void subscribe(final RemoteStream remoteStream,
-            final SubscribeOptions options, final ActionCallback<Subscription> callback) {
+                                       final SubscribeOptions options, final ActionCallback<Subscription> callback) {
         RCHECK(remoteStream);
         if (!checkRoomStatus(RoomStates.CONNECTED)) {
             triggerCallback(callback, new OwtError("Wrong room status."));
             return;
         }
 
-        final String remoteStreamId = remoteStream.id();
         final boolean subVideo = options == null || options.videoOption != null;
         final boolean subAudio = options == null || options.audioOption != null;
 
@@ -338,7 +338,7 @@ public final class ConferenceClient implements SignalingChannel.SignalingChannel
             JSONObject media = new JSONObject();
             if (subVideo) {
                 JSONObject video = new JSONObject();
-                video.put("from", remoteStreamId);
+                video.put("from", remoteStream.id());
                 if (options != null) {
                     video.put("parameters", options.videoOption.generateOptionsMsg());
                     if (options.videoOption.rid != null) {
@@ -351,7 +351,7 @@ public final class ConferenceClient implements SignalingChannel.SignalingChannel
             }
             if (subAudio) {
                 JSONObject audio = new JSONObject();
-                audio.put("from", remoteStreamId);
+                audio.put("from", remoteStream.id());
                 media.put("audio", audio);
             } else {
                 media.put("audio", false);
@@ -363,15 +363,7 @@ public final class ConferenceClient implements SignalingChannel.SignalingChannel
             sendSignalingMessage("subscribe", subscribeMsg, args -> {
                 if (extractMsg(0, args).equals("ok")) {
                     for (ConferencePeerConnectionChannel pcChannel : pcChannels.values()) {
-                        if(pcChannel.stream == null) {
-                            Log.w(LOG_TAG, "Peer connection channel stream is null.");
-                            continue;
-                        }
-                        if(pcChannel.stream.disposed()) {
-                            Log.w(LOG_TAG, "Peer connection channel stream is disposed.");
-                            continue;
-                        }
-                        if (pcChannel.stream.id().equals(remoteStreamId)) {
+                        if (pcChannel.stream.id().equals(remoteStream.id())) {
                             triggerCallback(callback,
                                     new OwtError("Remote stream has been subscribed."));
                             return;
@@ -428,10 +420,10 @@ public final class ConferenceClient implements SignalingChannel.SignalingChannel
     /**
      * Send a text message to all participants in the conference.
      *
-     * @param message message to be sent.
+     * @param message  message to be sent.
      * @param callback ActionCallback.onSuccess will be invoked succeeds to send the message.
-     * Otherwise when fails to do so, ActionCallback.onFailure will be invoked with the
-     * corresponding OwtError.
+     *                 Otherwise when fails to do so, ActionCallback.onFailure will be invoked with the
+     *                 corresponding OwtError.
      */
     public void send(String message, ActionCallback<Void> callback) {
         send(null, message, callback);
@@ -441,13 +433,13 @@ public final class ConferenceClient implements SignalingChannel.SignalingChannel
      * Send a text message to a specific participant in the conference.
      *
      * @param participantId id of Participant the message to be sent to.
-     * @param message message to be sent.
-     * @param callback ActionCallback.onSuccess will be invoked succeeds to send the message.
-     * Otherwise when fails to do so, ActionCallback.onFailure will be invoked with the
-     * corresponding OwtError.
+     * @param message       message to be sent.
+     * @param callback      ActionCallback.onSuccess will be invoked succeeds to send the message.
+     *                      Otherwise when fails to do so, ActionCallback.onFailure will be invoked with the
+     *                      corresponding OwtError.
      */
     public synchronized void send(String participantId, String message,
-            final ActionCallback<Void> callback) {
+                                  final ActionCallback<Void> callback) {
         RCHECK(message);
         if (!checkRoomStatus(RoomStates.CONNECTED)) {
             triggerCallback(callback, new OwtError(0, "Wrong status"));
@@ -520,7 +512,7 @@ public final class ConferenceClient implements SignalingChannel.SignalingChannel
     }
 
     private ConferencePeerConnectionChannel getPeerConnection(String id, boolean receiveVideo,
-            boolean receiveAudio) {
+                                                              boolean receiveAudio) {
         if (pcChannels.containsKey(id)) {
             return pcChannels.get(id);
         }
@@ -649,6 +641,10 @@ public final class ConferenceClient implements SignalingChannel.SignalingChannel
         DCHECK(msg);
         try {
             // Do not check pcChannels.contain(id) here. Let is throw exception in debug mode.
+            /*2020-8-12添加此判断，防止抛出异常Wrong condition.*/
+            if (!pcChannels.containsKey(msg.getString("id"))) {
+                return;
+            }
             ConferencePeerConnectionChannel pcChannel = getPeerConnection(msg.getString("id"));
             switch (msg.getString("status")) {
                 case "soac":
@@ -720,12 +716,10 @@ public final class ConferenceClient implements SignalingChannel.SignalingChannel
                 switch (field) {
                     case "video.layout":
                         synchronized (infoLock) {
-                            if(conferenceInfo != null) {
-                                for (RemoteStream remoteStream : conferenceInfo.remoteStreams) {
-                                    if (remoteStream.id().equals(id)) {
-                                        ((RemoteMixedStream) remoteStream).updateRegions(
-                                                updateInfo.getJSONArray("value"));
-                                    }
+                            for (RemoteStream remoteStream : conferenceInfo.remoteStreams) {
+                                if (remoteStream.id().equals(id)) {
+                                    ((RemoteMixedStream) remoteStream).updateRegions(
+                                            updateInfo.getJSONArray("value"));
                                 }
                             }
                         }
@@ -735,42 +729,38 @@ public final class ConferenceClient implements SignalingChannel.SignalingChannel
                         for (ConferencePeerConnectionChannel pcChannel : pcChannels.values()) {
                             // For subscription id will be the RemoteStream id, for publication
                             // the id will be publication id which is pc.key.
-                            if(pcChannel.stream == null || pcChannel.stream.disposed()) {
-                                continue;
-                            }
                             if (pcChannel.stream.id().equals(id) || pcChannel.key.equals(id)) {
                                 TrackKind trackKind = field.equals("audio.status")
                                         ? TrackKind.AUDIO : TrackKind.VIDEO;
                                 boolean active = updateInfo.getString("value").equals("active");
                                 if (pcChannel.publication != null) {
                                     pcChannel.publication.onStatusUpdated(trackKind, active);
-                                } else if (pcChannel.subscription != null){
+                                } else {
                                     pcChannel.subscription.onStatusUpdated(trackKind, active);
                                 }
                             }
                         }
+//                        synchronized (infoLock) {
+                            for (ConferenceClientObserver observer : observers) {
+                                observer.onStreamUpdated(id, updateInfo);
+                            }
+//                        }
                         break;
                     case "activeInput":
                         synchronized (infoLock) {
-                            if(conferenceInfo != null) {
-                                for (RemoteStream remoteStream : conferenceInfo.remoteStreams) {
-                                    if (remoteStream.id().equals(id)) {
-                                        ((RemoteMixedStream) remoteStream).updateActiveInput(
-                                                updateInfo.getString("value"));
-                                    }
+                            for (RemoteStream remoteStream : conferenceInfo.remoteStreams) {
+                                if (remoteStream.id().equals(id)) {
+                                    ((RemoteMixedStream) remoteStream).updateActiveInput(
+                                            updateInfo.getString("value"));
                                 }
                             }
                         }
                         break;
                     case ".":
-                        synchronized (infoLock) {
-                            if (conferenceInfo != null) {
-                                for (RemoteStream remoteStream : conferenceInfo.remoteStreams) {
-                                    if (remoteStream.id().equals(id)) {
-                                        JSONObject streamInfo = updateInfo.getJSONObject("value");
-                                        remoteStream.updateStreamInfo(streamInfo, true);
-                                    }
-                                }
+                        for (RemoteStream remoteStream : conferenceInfo.remoteStreams) {
+                            if (remoteStream.id().equals(id)) {
+                                JSONObject streamInfo = updateInfo.getJSONObject("value");
+                                remoteStream.updateStreamInfo(streamInfo, true);
                             }
                         }
                         break;
@@ -915,8 +905,9 @@ public final class ConferenceClient implements SignalingChannel.SignalingChannel
             if (pcChannel.key.equals(id)) {
                 if (pcChannel.publication != null) {
                     pcChannel.publication.onError(error);
-                } else if (pcChannel.subscription != null){
-                    pcChannel.subscription.onError(error);
+                } else {
+                    if (pcChannel.subscription != null)
+                        pcChannel.subscription.onError(error);
                 }
             }
         }
@@ -925,7 +916,7 @@ public final class ConferenceClient implements SignalingChannel.SignalingChannel
 
     @Override
     public void onAddStream(final String key,
-            final owt.base.RemoteStream remoteStream) {
+                            final owt.base.RemoteStream remoteStream) {
 
     }
 

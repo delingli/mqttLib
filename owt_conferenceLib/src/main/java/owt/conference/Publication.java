@@ -4,6 +4,12 @@
  */
 package owt.conference;
 
+import static owt.base.CheckCondition.DCHECK;
+
+import owt.base.ActionCallback;
+import owt.base.OwtError;
+import owt.base.MediaConstraints.TrackKind;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.RTCStatsReport;
@@ -12,9 +18,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.socket.client.Ack;
-import owt.base.ActionCallback;
-import owt.base.MediaConstraints.TrackKind;
-import owt.base.OwtError;
 
 /**
  * Publication handles the actions on a LocalStream published by a ConferenceClient.
