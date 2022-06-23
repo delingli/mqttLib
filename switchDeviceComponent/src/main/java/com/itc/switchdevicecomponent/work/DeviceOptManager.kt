@@ -42,6 +42,7 @@ object DeviceOptManager {
         return mIJingXinDeviceOptImpl
     }
 
+
     fun getISHRGDeviceOpt(): ISHRGDeviceOpt? {
         checkNotNull()
         return mISHRGDeviceOptImpl

@@ -135,7 +135,9 @@ class SwitchMachineWork(appContext: Context, workerParams: WorkerParameters) :
             val restartDateCala = Calendar.getInstance()
             currentDateCala.time = TimeUtils.getNowDate()
             restartDateCala.time = restartDate
-            if (currentDateCala.before(restartDate)) {
+            LogUtils.dTag(TAG, "读取数据库后的时间重启时间${it.restartDeviceTime}，parse后的时间${restartDate} 当前时间是:${TimeUtils.getNowString()}")
+
+            if (currentDateCala.before(restartDateCala)) {
                 val timeDiff = restartDateCala.timeInMillis - currentDateCala.timeInMillis
                 val constraints = Constraints.Builder().setRequiresCharging(true).build()
                 val dailyWorkRequest = OneTimeWorkRequestBuilder<RebotWork>()
