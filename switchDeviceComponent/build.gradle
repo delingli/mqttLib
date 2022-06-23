@@ -3,12 +3,12 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply from: '../upload-aar.gradle'
 android {
-    compileSdkVersion build_versions.compileSdkVersion
-    buildToolsVersion build_versions.build_tools
+    compileSdkVersion 30
+    buildToolsVersion "30.0.3"
 
     defaultConfig {
-        minSdkVersion build_versions.min_sdk
-        targetSdkVersion build_versions.target_sdk
+        minSdkVersion 21
+        targetSdkVersion 30
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -26,25 +26,50 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
+    }
+    /* configurations.all {
+         resolutionStrategy.eachDependency { DependencyResolveDetails details ->
+             def requested = details.requested
+             if (requested.module == 'core-ktx') {
+                 force 'androidx.core:core-ktx:1.6.0'
+             }
+         }
+     }
+ */
+}
+configurations.all {
+    resolutionStrategy {
+        force 'androidx.core:core:1.6.0'
+        force 'androidx.core:core-ktx:1.6.0'
     }
 }
-
 dependencies {
-    def work_version = "2.7.1"
+//    def work_version = "2.7.1"
+    def work_version = "2.6.0"
     implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
-    implementation 'androidx.core:core-ktx:1.3.2'
+    implementation('com.idc.idcsdk:commonComponent:1.0.6') {
+        exclude module: 'appcompat'
+        exclude module: 'core-ktx'
+        exclude module: 'kotlin-stdlib'
+        exclude module: 'kotlin-stdlib-common'
+        exclude module: 'kotlin-stdlib-jdk8'
+    }
+
     implementation 'androidx.appcompat:appcompat:1.4.1'
-//    implementation 'com.google.android.material:material:1.5.0'
     testImplementation 'junit:junit:4.+'
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     implementation 'com.blankj:utilcodex:1.31.0'
+    implementation(deps.androidz.core_ktx) {
+        exclude module: 'support-annotations'
+        exclude module: 'support-compat'
+    }
 //    implementation project(path: ':commonComponent')
-    implementation 'com.idc.idcsdk:commonComponent:1.0.5'
-    api "androidx.work:work-runtime-ktx:$work_version"
-    androidTestImplementation "androidx.work:work-testing:$work_version"
+
+    api "androidx.work:work-runtime-ktx:2.6.0"
+    androidTestImplementation "androidx.work:work-testing:2.6.0"
     implementation 'androidx.room:room-runtime:2.3.0'
     implementation 'androidx.room:room-ktx:2.3.0'
     kapt 'androidx.room:room-compiler:2.3.0'
@@ -62,7 +87,7 @@ publishing {
         uploadSDK(MavenPublication) {
             artifact "build/outputs/aar/switchDeviceComponent-debug.aar"
             artifactId "deviceOptComponent"
-            version "1.0.7"
+            version "1.1.4"
         }
     }
 }

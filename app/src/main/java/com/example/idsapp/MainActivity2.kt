@@ -59,7 +59,6 @@ class MainActivity2 : AppCompatActivity() {
              }*/
 
 
-//DeviceOptManager.instance.mI0830BDeviceOptImpl
 //        DeviceOptManagerTest
 
 

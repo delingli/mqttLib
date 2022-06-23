@@ -61,7 +61,10 @@ dependencies {
     implementation "io.reactivex.rxjava2:rxjava:2.2.12"
     implementation 'com.squareup.retrofit2:retrofit:2.6.0'
     implementation 'com.squareup.retrofit2:converter-scalars:2.6.0'
-    implementation "androidx.core:core-ktx:+"
+    implementation(deps.androidz.core_ktx) {
+        exclude module: 'support-annotations'
+        exclude module: 'support-compat'
+    }
     implementation "org.jetbrains.kotlin:kotlin-stdlib:1.4.10"
 
     testImplementation deps.junit

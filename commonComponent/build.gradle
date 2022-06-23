@@ -61,7 +61,7 @@ publishing {
         uploadSDK(MavenPublication) {
             artifact "build/outputs/aar/commonComponent-debug.aar"
             artifactId "commonComponent"
-            version "1.0.5"
+            version "1.0.6"
         }
     }
 }

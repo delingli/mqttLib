@@ -9,14 +9,13 @@ import static owt.base.CheckCondition.RCHECK;
 import static owt.base.Const.LOG_TAG;
 
 import android.util.Log;
-
+import org.webrtc.MediaConstraints;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.AudioTrack;
 import org.webrtc.DataChannel;
 import org.webrtc.IceCandidate;
-import org.webrtc.MediaConstraints;
-import org.webrtc.MediaConstraints.KeyValuePair;
+
 import org.webrtc.MediaStream;
 import org.webrtc.PeerConnection;
 import org.webrtc.RTCStatsReport;
@@ -82,9 +81,9 @@ public abstract class PeerConnectionChannel
         queuedMessage = new ArrayList<>();
         sdpConstraints = new MediaConstraints();
         sdpConstraints.mandatory.add(
-                new KeyValuePair("OfferToReceiveAudio", String.valueOf(receiveAudio)));
+                new org.webrtc.MediaConstraints.KeyValuePair("OfferToReceiveAudio", String.valueOf(receiveAudio)));
         sdpConstraints.mandatory.add(
-                new KeyValuePair("OfferToReceiveVideo", String.valueOf(receiveVideo)));
+                new org.webrtc.MediaConstraints.KeyValuePair("OfferToReceiveVideo", String.valueOf(receiveVideo)));
         peerConnection = PCFactoryProxy.instance().createPeerConnection(configuration, this);
         RCHECK(peerConnection);
         signalingState = peerConnection.signalingState();

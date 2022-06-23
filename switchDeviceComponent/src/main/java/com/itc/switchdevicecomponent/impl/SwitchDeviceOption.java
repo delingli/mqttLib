@@ -81,5 +81,9 @@ public class SwitchDeviceOption implements Parcelable {
             return this;
         }
 
+        public SwitchDeviceOption build() {
+            return new SwitchDeviceOption(this);
+        }
+
     }
 }

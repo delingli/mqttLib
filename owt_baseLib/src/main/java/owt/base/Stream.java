@@ -77,8 +77,7 @@ public abstract class Stream {
      */
     public void disableVideo() {
         if (hasVideo()) {
-//            if (mediaStream.videoTracks.get(0).enabled())
-                mediaStream.videoTracks.get(0).setEnabled(false);
+            mediaStream.videoTracks.get(0).setEnabled(false);
         }
     }
 
@@ -87,8 +86,7 @@ public abstract class Stream {
      */
     public void enableVideo() {
         if (hasVideo()) {
-//            if (!mediaStream.videoTracks.get(0).enabled())
-                mediaStream.videoTracks.get(0).setEnabled(true);
+            mediaStream.videoTracks.get(0).setEnabled(true);
         }
     }
 
@@ -97,8 +95,7 @@ public abstract class Stream {
      */
     public void disableAudio() {
         if (hasAudio()) {
-//            if (mediaStream.audioTracks.get(0).enabled())
-                mediaStream.audioTracks.get(0).setEnabled(false);
+            mediaStream.audioTracks.get(0).setEnabled(false);
         }
     }
 
@@ -107,8 +104,7 @@ public abstract class Stream {
      */
     public void enableAudio() {
         if (hasAudio()) {
-//            if (!mediaStream.audioTracks.get(0).enabled())
-                mediaStream.audioTracks.get(0).setEnabled(true);
+            mediaStream.audioTracks.get(0).setEnabled(true);
         }
     }
 
@@ -123,7 +119,7 @@ public abstract class Stream {
             return;
         }
         RCHECK(videoSink);
-        RCHECK(!mediaStream.videoTracks.isEmpty());
+        CheckCondition.RCHECK(!mediaStream.videoTracks.isEmpty());
         mediaStream.videoTracks.get(0).addSink(videoSink);
     }
 
@@ -137,7 +133,7 @@ public abstract class Stream {
             return;
         }
         RCHECK(videoSink);
-        RCHECK(!mediaStream.videoTracks.isEmpty());
+        CheckCondition.RCHECK(!mediaStream.videoTracks.isEmpty());
         mediaStream.videoTracks.get(0).removeSink(videoSink);
     }
 
@@ -155,15 +151,6 @@ public abstract class Stream {
         }
         return null;
     }
-
-
-//    public String getVideoStatus(){
-//        if (hasAudio()) {
-//            return mediaStream.videoTracks.get(0).kind();
-//        }
-//        return null;
-//    }
-
 
     /**
      * Information of the source of a Stream.

@@ -53,7 +53,10 @@ dependencies {
     androidTestImplementation deps.ext_junit
     androidTestImplementation deps.espresso_core
     api 'com.idc.idcsdk:owtBaseLib:1.0.9@aar'
-    implementation "androidx.core:core-ktx:+"
+    implementation(deps.androidz.core_ktx) {
+        exclude module: 'support-annotations'
+        exclude module: 'support-compat'
+    }
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     //    api project(':owt_baseLib')
 
@@ -65,7 +68,7 @@ publishing {
         uploadSDK(MavenPublication) {
             artifact "build/outputs/aar/owt_conferenceLib-debug.aar"
             artifactId "owtConferenceLib"
-            version "1.0.9"
+            version "1.1.0"
         }
     }
 }

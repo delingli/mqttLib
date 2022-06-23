@@ -30,7 +30,10 @@ dependencies {
     testImplementation deps.junit
     androidTestImplementation deps.ext_junit
     androidTestImplementation deps.espresso_core
-    implementation "androidx.core:core-ktx:+"
+    implementation(deps.androidz.core_ktx) {
+        exclude module: 'support-annotations'
+        exclude module: 'support-compat'
+    }
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 //这里maven配置

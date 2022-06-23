@@ -4,16 +4,15 @@
  */
 package owt.conference;
 
-
-import owt.base.Stream.StreamSourceInfo.AudioSourceInfo;
-import owt.base.Stream.StreamSourceInfo.VideoSourceInfo;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.webrtc.MediaStream;
 
 import java.util.HashMap;
 import java.util.Iterator;
+
+import owt.base.Stream.StreamSourceInfo.AudioSourceInfo;
+import owt.base.Stream.StreamSourceInfo.VideoSourceInfo;
 
 /**
  * RemoteStream represent the stream published by other endpoints in the conference.

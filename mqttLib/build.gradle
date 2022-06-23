@@ -50,7 +50,10 @@ dependencies {
         exclude module: 'support-v4'
     }
     implementation 'androidx.gridlayout:gridlayout:1.0.0'
-    implementation "androidx.core:core-ktx:+"
+    api(deps.androidz.core_ktx) {
+        exclude module: 'support-annotations'
+        exclude module: 'support-compat'
+    }
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 }
 repositories {

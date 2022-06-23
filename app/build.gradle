@@ -35,6 +35,12 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
 }
+configurations.all {
+    resolutionStrategy {
+        force 'androidx.core:core:1.6.0'
+        force 'androidx.core:core-ktx:1.6.0'
+    }
+}
 
 dependencies {
 
@@ -47,13 +53,16 @@ dependencies {
 //    implementation project(':switchDeviceComponent')
 //    implementation 'com.itc.itcsdk:core:3.8.16'
 //    implementation 'com.itc.itcsdk:compiler:3.8.16'
-    implementation 'com.idc.idcsdk:deviceOptComponent:1.0.7'
+//    implementation 'com.idc.idcsdk:deviceOptComponent:1.1.0‘
     testImplementation deps.junit
     androidTestImplementation deps.ext_junit
     androidTestImplementation deps.espresso_core
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'com.contrarywind:Android-PickerView:4.1.9'
-    implementation "androidx.core:core-ktx:+"
+    implementation(deps.androidz.core_ktx) {
+        exclude module: 'support-annotations'
+        exclude module: 'support-compat'
+    }
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 //    https://blog.csdn.net/wang295689649/article/details/105219587
 }

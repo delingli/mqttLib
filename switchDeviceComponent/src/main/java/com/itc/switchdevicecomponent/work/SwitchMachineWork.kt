@@ -31,7 +31,7 @@ class SwitchMachineWork(appContext: Context, workerParams: WorkerParameters) :
         const val TAG = "CustomRebotWork"
         const val CustomRebotWork = "CustomRebotWork"
         val sdfs = SimpleDateFormat("yyyy-MM-dd HH:mm")
-        val deviceType ="deviceType"
+        val deviceType = "deviceType"
 
     }
 
@@ -63,8 +63,8 @@ class SwitchMachineWork(appContext: Context, workerParams: WorkerParameters) :
                             if (it.start_date_time != null && it.end_date_time != null) {
                                 var mRebootOptDB = RebootOptDB()
                                 mRebootOptDB.mOptType = OptType.TASKTYPE_SWITCH_MACHINE
-                                mRebootOptDB.startDeviceTime = it.start_date_time
-                                mRebootOptDB.closeDeviceTime = it.end_date_time
+                                mRebootOptDB.startDeviceTime = it.end_date_time//开机
+                                mRebootOptDB.closeDeviceTime = it.start_date_time//关机
                                 mRebootOptDB.deviceType =
                                     SPUtils.getInstance().getString(SwitchMachineWork.deviceType)
                                 RebootDataSingle.instance.getDao(getApplicationContext()).mRebootOptDao.insert(
@@ -72,7 +72,7 @@ class SwitchMachineWork(appContext: Context, workerParams: WorkerParameters) :
                                 )
                                 LogUtils.dTag(
                                     TAG,
-                                    "开关机时间为${it.start_date_time}关机:${it.end_date_time}"
+                                    "关机时间为${it.start_date_time}开机:${it.end_date_time}"
                                 )
                             } else {
                                 LogUtils.dTag(TAG, "开关机时间为空，不做处理")

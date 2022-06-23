@@ -6,11 +6,11 @@ package owt.conference;
 
 import static owt.base.CheckCondition.RCHECK;
 
-import owt.base.AudioEncodingParameters;
-import owt.base.VideoEncodingParameters;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import owt.base.AudioEncodingParameters;
+import owt.base.VideoEncodingParameters;
 
 /**
  * Options for publishing a LocalStream to the conference.
