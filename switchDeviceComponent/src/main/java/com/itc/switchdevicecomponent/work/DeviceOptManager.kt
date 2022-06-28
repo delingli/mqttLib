@@ -5,10 +5,7 @@ import androidx.work.*
 import com.blankj.utilcode.util.SPUtils
 import com.itc.switchdevicecomponent.annation.DeviceType
 import com.itc.switchdevicecomponent.annation.OptType
-import com.itc.switchdevicecomponent.basic.I0830BDeviceOpt
-import com.itc.switchdevicecomponent.basic.IAndroidHeziDeviceOpt
-import com.itc.switchdevicecomponent.basic.IJingXinDeviceOpt
-import com.itc.switchdevicecomponent.basic.ISHRGDeviceOpt
+import com.itc.switchdevicecomponent.basic.*
 import com.itc.switchdevicecomponent.impl.*
 import com.itc.switchdevicecomponent.rooms.RebootDataSingle
 import com.itc.switchdevicecomponent.rooms.RebootOptDB
@@ -25,7 +22,11 @@ object DeviceOptManager {
     var mIAndroidHeziDeviceOptImpl: IAndroidHeziDeviceOpt? = null
     var mIJingXinDeviceOptImpl: IJingXinDeviceOpt? = null
     var mISHRGDeviceOptImpl: ISHRGDeviceOpt? = null
-
+    var mISKDeviceOpt: ISKDeviceOpt? = null
+    fun getSkDeviceOpt(): ISKDeviceOpt? {
+        checkNotNull()
+        return mISKDeviceOpt
+    }
 
     fun getI0830BDeviceOptImpl(): I0830BDeviceOpt? {
         checkNotNull()
@@ -66,8 +67,10 @@ object DeviceOptManager {
         this.mIAndroidHeziDeviceOptImpl = IAndroidHeziDeviceOptImpl(mContext)
         this.mIJingXinDeviceOptImpl = IJingXinDeviceOptImpl(mContext)
         this.mISHRGDeviceOptImpl = ISHRGDeviceOptImpl(mContext)
+        this.mISKDeviceOpt = ISKDeviceOptImpl(mContext)
         SPUtils.getInstance().put(SwitchMachineWork.deviceType, mSwitchDeviceOption?.deviceType())
     }
+
     fun hasInited(): Boolean {
         if (this.mContext != null && this.mSwitchDeviceOption != null) {
             return true
@@ -76,6 +79,7 @@ object DeviceOptManager {
         }
 
     }
+
     fun flushDeviceTime() {
         if (this.mSwitchDeviceOption == null) {
             throw RuntimeException("you must call toInit(context: Context, mSwitchDeviceOption: SwitchDeviceOption) to init ")
@@ -99,6 +103,7 @@ object DeviceOptManager {
 
 
     }
+
     fun cancelRestartDevice(
         @DeviceType.DeviceType deviceType: String?
     ) {
@@ -114,10 +119,12 @@ object DeviceOptManager {
         }
 
     }
+
     fun unInit() {
         this.mCancelRestart?.cancel()
         this.mcancelOpenCloseJob?.cancel()
     }
+
     fun cancelOpenCloseTime(
         @DeviceType.DeviceType deviceType: String?
     ) {
@@ -130,6 +137,12 @@ object DeviceOptManager {
                     )
                 mRebootOptDBs?.let {
                     when (deviceType) {
+                        DeviceType.MODULE_SK -> {
+                            getSkDeviceOpt()?.cancelStartCloseDevice(
+                                it.startDeviceTime,
+                                it.closeDeviceTime
+                            )
+                        }
                         DeviceType.MODULE_ANDROID_HE_ZI -> {
                             getAndroidHeziDeviceOptImpl()?.cancelStartCloseDevice()
                         }

@@ -1,6 +1,8 @@
 package com.itc.switchdevicecomponent.basic
 
 import android.content.Context
+import com.blankj.utilcode.util.LogUtils
+import com.blankj.utilcode.util.TimeUtils
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -26,7 +28,31 @@ interface IDeviceOpt {
             startCalas.time = startData
             var closeCala = Calendar.getInstance()
             closeCala.time = closeData
-            return closeCala.before(startCalas)
+            var nowCale = Calendar.getInstance()
+            nowCale.time = TimeUtils.getNowDate()
+            if (closeCala.before(startCalas) && nowCale.before(closeCala)) {
+                return true
+            } else {
+                false
+            }
+            return false
         }
+
+        /**
+         * 处理时间
+         */
+        fun handlerTime(str: String): List<String>? {
+            if (!str.isNullOrEmpty()) {
+                val s: String = str.replace(" ".toRegex(), "-")
+                val newstartDeviceTime = s.replace(":".toRegex(), "-")
+                LogUtils.dTag(TAG, "处理时间 sucess:${newstartDeviceTime}")
+
+                return newstartDeviceTime.split("-")
+            }
+            LogUtils.dTag(TAG, "处理时间 error")
+            return null
+
+        }
+
     }
 }

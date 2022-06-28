@@ -73,7 +73,7 @@ class IJingXinDeviceOptImpl(override var context: Context?) : IJingXinDeviceOpt 
 
         val s2: String = closeDeviceTime.replace(" ".toRegex(), "-")
         val newcloseDeviceTime = s2.replace(":".toRegex(), "-")
-        var newcloseDeviceTimeArray = newcloseDeviceTime.split("-")
+        var newcloseDeviceTimeArray:List<String> = newcloseDeviceTime.split("-")
         var timeOn = IntArray(5)
         var timeoff = IntArray(5)
 

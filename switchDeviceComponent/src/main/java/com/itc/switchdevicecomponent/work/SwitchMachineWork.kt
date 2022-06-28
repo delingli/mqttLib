@@ -113,6 +113,10 @@ class SwitchMachineWork(appContext: Context, workerParams: WorkerParameters) :
             )
         mswitchDB?.let {
             when (it.deviceType) {
+                DeviceType.MODULE_SK -> {
+                    DeviceOptManager.getSkDeviceOpt()
+                        ?.startCloseDevice(it.startDeviceTime, it.closeDeviceTime)
+                }
                 DeviceType.MODULE_ANDROID_HE_ZI -> {
                     DeviceOptManager.getAndroidHeziDeviceOptImpl()
                         ?.startCloseDevice(it.startDeviceTime, it.closeDeviceTime)

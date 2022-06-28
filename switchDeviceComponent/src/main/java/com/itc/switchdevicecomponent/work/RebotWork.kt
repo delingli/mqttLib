@@ -43,6 +43,10 @@ class RebotWork(appContext: Context, workerParams: WorkerParameters) :
             mRebootOptDB?.let {
                 LogUtils.dTag(REBORT_TAG, "执行一次重启设备娃哈哈..." + "")
                 when (it.deviceType) {
+                    DeviceType.MODULE_SK -> {
+                        DeviceOptManager.getSkDeviceOpt()
+                            ?.systemReset()
+                    }
                     DeviceType.MODULE_ANDROID_HE_ZI -> {
                         DeviceOptManager.getAndroidHeziDeviceOptImpl()?.systemReset()
                     }
