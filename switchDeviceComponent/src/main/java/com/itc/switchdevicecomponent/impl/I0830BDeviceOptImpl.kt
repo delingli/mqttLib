@@ -37,8 +37,8 @@ class I0830BDeviceOptImpl(override var context: Context?) : I0830BDeviceOpt {
         val day = split[2].toInt()
         val hour = split[3].toInt()
         val minute = split[4].toInt()
-        val second = split[5].toInt()
-        LogUtils.dTag(TAG, "0830b开机时间配置${split[0]}+${month}+${day}+${hour}+${minute}+${second}")
+//        val second = split[5].toInt() 精确到分没有秒
+        LogUtils.dTag(TAG, "0830b开机时间配置${split[0]}+${month}+${day}+${hour}+${minute}")
         setTime("[key]")
         for (i in split.indices) {
             when (i) {

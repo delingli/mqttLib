@@ -20,10 +20,28 @@ android {
     viewBinding {
         enabled = true
     }
+
+    signingConfigs {
+        debug {
+            keyAlias 'system_signature'
+            keyPassword '123456'
+            storeFile file('../key/system_signature.jks')
+            storePassword '123456'
+            v1SigningEnabled true
+            v2SigningEnabled true
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+
+        debug {
+            minifyEnabled false
+            jniDebuggable = true
+            signingConfig signingConfigs.debug
         }
     }
     packagingOptions {
@@ -48,9 +66,9 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.0.1'
     implementation 'com.blankj:utilcode:1.30.6'
-    api 'com.idc.idcsdk:rabbitmq:1.1.7'
+//    api 'com.idc.idcsdk:rabbitmq:1.1.7'
     api 'com.yanzhenjie:permission:2.0.3'
-//    implementation project(':switchDeviceComponent')
+    implementation project(':switchDeviceComponent')
 //    implementation 'com.itc.itcsdk:core:3.8.16'
 //    implementation 'com.itc.itcsdk:compiler:3.8.16'
 //    implementation 'com.idc.idcsdk:deviceOptComponent:1.1.0‘

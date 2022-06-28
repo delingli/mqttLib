@@ -10,7 +10,6 @@ import androidx.core.content.ContextCompat
 import androidx.work.*
 import com.blankj.utilcode.util.LogUtils
 
-import com.itc.switchdevicecomponent.work.DeviceOptManager
 import com.itc.switchdevicecomponent.work.RebotWork
 import java.text.SimpleDateFormat
 import java.util.*

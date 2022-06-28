@@ -84,7 +84,8 @@ object DeviceOptManager {
             throw RuntimeException("mContext can not be null ")
         }
         this.mContext?.let {
-            val constraints = Constraints.Builder().setRequiresCharging(true)
+            val constraints = Constraints.Builder()
+//                .setRequiresCharging(true)
                 .setRequiredNetworkType(NetworkType.CONNECTED).build()
             val dailyWorkRequest = OneTimeWorkRequestBuilder<SwitchMachineWork>()
                 .setConstraints(constraints).setInitialDelay(200, TimeUnit.MILLISECONDS)

@@ -20,7 +20,8 @@ open class BootBroadCastReceiver : BroadcastReceiver() {
             intent?.let {
                 if (it.action.equals(Intent.ACTION_BOOT_COMPLETED)) {  //开机广播
                     LogUtils.dTag(TAG, "开机的广播")
-                    val constraints = Constraints.Builder().setRequiresCharging(true)
+                    val constraints = Constraints.Builder()
+//                        .setRequiresCharging(true)
                         .setRequiredNetworkType(NetworkType.CONNECTED).build()
                     val dailyWorkRequest = OneTimeWorkRequestBuilder<SwitchMachineWork>()
                         .setConstraints(constraints).setInitialDelay(200, TimeUnit.MILLISECONDS)

@@ -11,7 +11,7 @@ import java.util.concurrent.TimeUnit
 
 object RetrofitClient {
     private const val DEFAULT_TIME_OUT = 30L
-    var Base_URL = "http://10.10.20.53:88"
+    var Base_URL = "http://10.10.20.53:88/"
     fun setUrl(url: String) {
         Base_URL = url
     }

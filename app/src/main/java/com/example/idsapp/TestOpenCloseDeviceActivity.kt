@@ -12,6 +12,7 @@ import com.blankj.utilcode.util.ToastUtils
 import com.example.idsapp.databinding.ActivityTestOpenCloseDeviceBinding
 //import com.itc.switchdevicecomponent.IDeviceOptManager
 import com.itc.switchdevicecomponent.annation.DeviceType
+import com.itc.switchdevicecomponent.impl.SwitchDeviceOption
 import com.itc.switchdevicecomponent.work.DeviceOptManager
 import java.text.SimpleDateFormat
 import java.util.*
@@ -27,8 +28,13 @@ class TestOpenCloseDeviceActivity : AppCompatActivity() {
         setContentView(mBinding.root)
         val sdfs = SimpleDateFormat("yyyy-MM-dd HH:mm")
         val booleanS = booleanArrayOf(true, true, true, true, true, true)
-        DeviceOptManager.getSwitchDeviceOption()
-//        DeviceOptManager.flushDeviceTime()
+        var mSwitchDeviceOption =
+            SwitchDeviceOption.SwitchDeviceOptionBuilder(DeviceType.MODULE_ANDROID_HE_ZI)
+                .device_sn("2AF01F1E243D13314B2268ADBD03F83BD")
+                .url("http://10.10.20.91/api/device/device_execute_time")
+                .build()
+        DeviceOptManager.toInit(this, mSwitchDeviceOption)
+//        DeviceOptManager.flushDeviceTime()DeviceOptManager
 //        DeviceOptManager.flushDeviceTime()
         mBinding.tvCloseDevice.setOnClickListener {
             if (mCloseDeviceTime == null) {
@@ -90,17 +96,21 @@ class TestOpenCloseDeviceActivity : AppCompatActivity() {
         }
         var mSingleSelectedDialog = SingleSelectedDialog()
         mBinding.btnSelectDevice.setOnClickListener {
-            if (mSingleSelectedDialog == null) {
-                mSingleSelectedDialog = SingleSelectedDialog()
-            }
-            mSingleSelectedDialog?.let {
-                if (it.isShow()) {
-                    it.destory()
-                } else {
-                    it.show(supportFragmentManager, "mSingleSelectedDialog")
-                }
+//            yyyy-MM-dd HH:mm
+            DeviceOptManager.getAndroidHeziDeviceOptImpl()?.startCloseDevice("2022-06-25 10:55","2022-06-25 10:52")
+//            DeviceOptManager.getAndroidHeziDeviceOptImpl()?.closeDevice("2022-06-25 10:05")
+//            DeviceOptManager.flushDeviceTime()
+            /*         if (mSingleSelectedDialog == null) {
+                         mSingleSelectedDialog = SingleSelectedDialog()
+                     }
+                     mSingleSelectedDialog?.let {
+                         if (it.isShow()) {
+                             it.destory()
+                         } else {
+                             it.show(supportFragmentManager, "mSingleSelectedDialog")
+                         }
 
-            }
+                               }*/
 
         }
         mBinding.btnCancel.setOnClickListener {

@@ -14,6 +14,12 @@ interface IDeviceOpt {
         const val TAG = "IDeviceOpt"
         val sdfs = SimpleDateFormat("yyyy-MM-dd HH:mm")
         fun checkTime(startDeviceTime: String, closeDeviceTime: String): Boolean {
+            if (startDeviceTime.equals("NULL") || closeDeviceTime.equals("NULL") || startDeviceTime.equals(
+                    "null"
+                ) || closeDeviceTime.equals("null") || startDeviceTime.isNullOrEmpty() || closeDeviceTime.isNullOrEmpty()
+            ) {
+                return false
+            }
             var startData = sdfs.parse(startDeviceTime)
             var closeData = sdfs.parse(closeDeviceTime)
             var startCalas = Calendar.getInstance()

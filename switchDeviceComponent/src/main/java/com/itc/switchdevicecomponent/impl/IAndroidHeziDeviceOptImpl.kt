@@ -44,6 +44,7 @@ class IAndroidHeziDeviceOptImpl(override var context: Context?) : IAndroidHeziDe
         LogUtils.dTag(TAG, "智微Android盒子转换后的:开机时间${newstartDeviceTime}关机时间:${newcloseDeviceTime}")
         val startSplit = newstartDeviceTime.split("-").toTypedArray()
         val closeSplit = newcloseDeviceTime.split("-").toTypedArray()
+        LogUtils.d(TAG, "智微开机:日${startSplit.get(2).toInt() }时:${  startSplit.get(3).toInt()}分${  startSplit.get(4).toInt()}")
         val startResult = SpiritSysCtrl.getInstance(Utils.getApp()).setAlarmPoweron(
             startSplit.get(2).toInt(),
             startSplit.get(3).toInt(),
@@ -54,6 +55,8 @@ class IAndroidHeziDeviceOptImpl(override var context: Context?) : IAndroidHeziDe
             closeSplit.get(3).toInt(),
             closeSplit.get(4).toInt()
         )
+        LogUtils.d(TAG, "智微关机:日${closeSplit.get(2).toInt() }时${  closeSplit.get(3).toInt()}分${  closeSplit.get(4).toInt()}")
+
         LogUtils.dTag(TAG, "智微Android盒子转换后的:开机执行result${startResult}")
 
     }

@@ -38,7 +38,6 @@ class SwitchMachineWork(appContext: Context, workerParams: WorkerParameters) :
     lateinit var mDeviceOptModel: DeviceOptModel
 
     override suspend fun doWork(): Result {
-        DeviceOptManager.hasInited()
         mDeviceOptModel = DeviceOptModel()
         var result = mDeviceOptModel.flushDeviceTime()
         if (result != null) {
@@ -46,7 +45,10 @@ class SwitchMachineWork(appContext: Context, workerParams: WorkerParameters) :
                 is Results.Sucess -> {
                     if (result?.data?.code == 0) {
                         result?.data?.data?.let {
-                            if (it.restart_date_time != null) {
+                            if (it.restart_date_time != null && !it.restart_date_time.isNullOrEmpty() && !it.restart_date_time.equals(
+                                    "null"
+                                )
+                            ) {
                                 var mRebootOptDB = RebootOptDB()
                                 mRebootOptDB.mOptType = OptType.TASKTYPE_REBOOT
                                 mRebootOptDB.restartDeviceTime = it.restart_date_time
@@ -60,7 +62,10 @@ class SwitchMachineWork(appContext: Context, workerParams: WorkerParameters) :
                             } else {
                                 LogUtils.dTag(TAG, "重启时间为空，不做处理")
                             }
-                            if (it.start_date_time != null && it.end_date_time != null) {
+                            if (!it.start_date_time.isNullOrEmpty() && !it.end_date_time.isNullOrEmpty() && !it.start_date_time.equals(
+                                    "null"
+                                ) && !it.end_date_time.equals("null")
+                            ) {
                                 var mRebootOptDB = RebootOptDB()
                                 mRebootOptDB.mOptType = OptType.TASKTYPE_SWITCH_MACHINE
                                 mRebootOptDB.startDeviceTime = it.end_date_time//开机
@@ -135,11 +140,16 @@ class SwitchMachineWork(appContext: Context, workerParams: WorkerParameters) :
             val restartDateCala = Calendar.getInstance()
             currentDateCala.time = TimeUtils.getNowDate()
             restartDateCala.time = restartDate
-            LogUtils.dTag(TAG, "读取数据库后的时间重启时间${it.restartDeviceTime}，parse后的时间${restartDate} 当前时间是:${TimeUtils.getNowString()}")
+            LogUtils.dTag(
+                TAG,
+                "读取数据库后的时间重启时间${it.restartDeviceTime}，parse后的时间${restartDate} 当前时间是:${TimeUtils.getNowString()}"
+            )
 
             if (currentDateCala.before(restartDateCala)) {
                 val timeDiff = restartDateCala.timeInMillis - currentDateCala.timeInMillis
-                val constraints = Constraints.Builder().setRequiresCharging(true).build()
+                val constraints = Constraints.Builder()
+                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                    .build()
                 val dailyWorkRequest = OneTimeWorkRequestBuilder<RebotWork>()
                     .setConstraints(constraints).setInitialDelay(timeDiff, TimeUnit.MILLISECONDS)
                     .addTag(RebotWork.TAG_OUTPUT).build()
