@@ -23,6 +23,18 @@ object DeviceOptManager {
     var mIJingXinDeviceOptImpl: IJingXinDeviceOpt? = null
     var mISHRGDeviceOptImpl: ISHRGDeviceOpt? = null
     var mISKDeviceOpt: ISKDeviceOpt? = null
+    var mIHK8305DeviceOpt: IHK8305DeviceOpt? = null
+    var mHKBasicDeviceOpt: IHKBasicDeviceOpt? = null
+    fun getHK8305DeviceOpt(): IHK8305DeviceOpt? {
+        checkNotNull()
+        return mIHK8305DeviceOpt
+    }
+
+    fun getHKBasicDeviceOpt(): IHKBasicDeviceOpt? {
+        checkNotNull()
+        return mHKBasicDeviceOpt
+    }
+
     fun getSkDeviceOpt(): ISKDeviceOpt? {
         checkNotNull()
         return mISKDeviceOpt
@@ -68,6 +80,8 @@ object DeviceOptManager {
         this.mIJingXinDeviceOptImpl = IJingXinDeviceOptImpl(mContext)
         this.mISHRGDeviceOptImpl = ISHRGDeviceOptImpl(mContext)
         this.mISKDeviceOpt = ISKDeviceOptImpl(mContext)
+        this.mIHK8305DeviceOpt = IHK8305DeviceOptImpl(mContext)
+        this.mHKBasicDeviceOpt = IHKBasicDeviceOptImpl(mContext)
         SPUtils.getInstance().put(SwitchMachineWork.deviceType, mSwitchDeviceOption?.deviceType())
     }
 
@@ -137,6 +151,12 @@ object DeviceOptManager {
                     )
                 mRebootOptDBs?.let {
                     when (deviceType) {
+                        DeviceType.MODULE_HKBASIC -> {
+                            getHKBasicDeviceOpt()?.cancelStartCloseDevice()
+                        }
+                        DeviceType.MODULE_HK8305 -> {
+                            getI0830BDeviceOptImpl()?.cancelStartCloseDevice()
+                        }
                         DeviceType.MODULE_SK -> {
                             getSkDeviceOpt()?.cancelStartCloseDevice(
                                 it.startDeviceTime,

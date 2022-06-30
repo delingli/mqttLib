@@ -29,7 +29,7 @@ class TestOpenCloseDeviceActivity : AppCompatActivity() {
         val sdfs = SimpleDateFormat("yyyy-MM-dd HH:mm")
         val booleanS = booleanArrayOf(true, true, true, true, true, true)
         var mSwitchDeviceOption =
-            SwitchDeviceOption.SwitchDeviceOptionBuilder(DeviceType.MODULE_SK)
+            SwitchDeviceOption.SwitchDeviceOptionBuilder(DeviceType.MODULE_HK8305)
                 .device_sn("2AF01F1E243D13314B2268ADBD03F83BD")
                 .url("http://10.10.20.91/api/device/device_execute_time")
                 .build()
@@ -97,7 +97,9 @@ class TestOpenCloseDeviceActivity : AppCompatActivity() {
         var mSingleSelectedDialog = SingleSelectedDialog()
         mBinding.btnSelectDevice.setOnClickListener {
 //            yyyy-MM-dd HH:mm
-            DeviceOptManager.getSkDeviceOpt()?.startCloseDevice("2022-06-28 14:55","2022-06-28 14:52")
+
+            DeviceOptManager.getHK8305DeviceOpt()?.closeDevice("2022-06-30 14:05")
+            DeviceOptManager.getHK8305DeviceOpt()?.startDevice("2022-06-30 14:10")
 //            DeviceOptManager.getSkDeviceOpt()?.cancelStartCloseDevice("2022-06-28 14:55","2022-06-28 14:50")
 //            DeviceOptManager.getSkDeviceOpt()?.systemReset()
 //            DeviceOptManager.getAndroidHeziDeviceOptImpl()?.closeDevice("2022-06-25 10:05")
@@ -117,6 +119,8 @@ class TestOpenCloseDeviceActivity : AppCompatActivity() {
         }
         mBinding.btnCancel.setOnClickListener {
             var deviceTypes: String? = getDeviceType()
+            DeviceOptManager.getHK8305DeviceOpt()?.cancelStartCloseDevice()
+
 //            IDeviceOptManager.cancelOpenCloseTime(
 //                DeviceType.MODULE_SHRG
 //            )

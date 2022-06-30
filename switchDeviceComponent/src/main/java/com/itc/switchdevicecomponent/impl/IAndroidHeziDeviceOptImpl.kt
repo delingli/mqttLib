@@ -35,7 +35,6 @@ class IAndroidHeziDeviceOptImpl(override var context: Context?) : IAndroidHeziDe
         }
         LogUtils.dTag(TAG, "智微Android盒子配置开关机...开机${startDeviceTime} 关机:${closeDeviceTime}")
 //        var newStr = sdfs.format(parse)
-        LogUtils.dTag(TAG, "当前SDK版本:${Build.VERSION.RELEASE}")
         val s: String = startDeviceTime.replace(" ".toRegex(), "-")
         val newstartDeviceTime = s.replace(":".toRegex(), "-")
         val s2: String = closeDeviceTime.replace(" ".toRegex(), "-")

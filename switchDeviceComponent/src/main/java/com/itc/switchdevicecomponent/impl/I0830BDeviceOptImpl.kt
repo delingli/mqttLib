@@ -9,6 +9,7 @@ import android.os.Environment
 import com.blankj.utilcode.util.LogUtils
 import com.itc.switchdevicecomponent.basic.I0830BDeviceOpt
 import com.itc.switchdevicecomponent.basic.IDeviceOpt.Companion.TAG
+import com.itc.switchdevicecomponent.basic.IDeviceOpt.Companion.checkOpenCloseTime
 import com.itc.switchdevicecomponent.basic.IDeviceOpt.Companion.sdfs
 import com.itc.switchdevicecomponent.receiver.StartRebootReceiver
 import java.io.*
@@ -22,6 +23,11 @@ class I0830BDeviceOptImpl(override var context: Context?) : I0830BDeviceOpt {
      * 年月日时分 yyyy-MM-dd HH:mm
      */
     override fun startDevice(startDeviceTime: String) {
+        if (!checkOpenCloseTime(startDeviceTime)) {
+            LogUtils.dTag(TAG, "0830B 设备开机时间配置不对，请检查配置")
+            return
+        }
+
         var parse: Date? = null
         LogUtils.dTag(TAG, "当前SDK版本:${Build.VERSION.RELEASE}")
         try {
@@ -72,6 +78,10 @@ class I0830BDeviceOptImpl(override var context: Context?) : I0830BDeviceOpt {
      * 年月日时分 yyyy-MM-dd HH:mm
      */
     override fun closeDevice(closeDeviceTime: String) {
+        if (!checkOpenCloseTime(closeDeviceTime)) {
+            LogUtils.dTag(TAG, "0830B 设备关机时间配置不对，请检查配置")
+            return
+        }
         var parse: Date? = null
         try {
             parse = sdfs.parse(closeDeviceTime)

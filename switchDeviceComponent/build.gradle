@@ -88,7 +88,7 @@ publishing {
         uploadSDK(MavenPublication) {
             artifact "build/outputs/aar/switchDeviceComponent-debug.aar"
             artifactId "deviceOptComponent"
-            version "1.1.9"
+            version "1.2.0"
         }
     }
 }

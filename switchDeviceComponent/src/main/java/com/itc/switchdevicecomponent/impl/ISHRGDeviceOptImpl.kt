@@ -14,7 +14,6 @@ class ISHRGDeviceOptImpl(override var context: Context?) : ISHRGDeviceOpt {
             LogUtils.dTag(IDeviceOpt.TAG, "深海瑞格配置开关机时间不对，关机时间必须在开机时间之前，后端去查验")
             return
         }
-        LogUtils.dTag(TAG, "当前SDK版本:${Build.VERSION.RELEASE}")
         val s: String = startDeviceTime.replace(" ".toRegex(), "-")
         val newstartDeviceTime = s.replace(":".toRegex(), "-")
         var newstartDeviceTimeArray = newstartDeviceTime.split("-")
