@@ -41,6 +41,7 @@ interface IDeviceOpt {
         }
 
         fun checkOpenCloseTime(time: String): Boolean {
+
             LogUtils.dTag(TAG, "当前SDK版本:${Build.VERSION.RELEASE}")
             if (time.equals("NULL") || time.equals(
                     "null"

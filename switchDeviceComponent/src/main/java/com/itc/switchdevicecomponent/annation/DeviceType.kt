@@ -9,7 +9,6 @@ class DeviceType {
         const val MODULE_SHRG = "SHRG"  //深海瑞格
         const val MODULE_ANDROID_HE_ZI = "ANDROID_HE_ZI"  //智微Android盒子
         const val MODULE_SK = "ANDROID_SK"  //视拓
-
         const val MODULE_HK8305 = "HK_8305"  //华科8305
 
         @Deprecated("已废弃,不在适配华科不保证准确有效性")

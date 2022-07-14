@@ -52,7 +52,7 @@ androidz.material = "com.google.android.material:material:$versions.material"
 androidz.core_ktx = "androidx.core:core-ktx:$versions.core_ktx"
 androidz.kotlin_stdlib = "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin_gradle_plugin_version"
 androidz.kotlinx_coroutines_android = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.kotlinx_coroutines_android"
-androidz.kotlinx_coroutines_core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.kotlinx_coroutines_android"
+androidz.kotlinx_coroutines_core = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.kotli nx_coroutines_android"
 androidz.viewmodel_ktx = "androidx.lifecycle:lifecycle-viewmodel-ktx:$versions.livedata_ktx"
 androidz.livedata_ktx = "androidx.lifecycle:lifecycle-livedata-ktx:$versions.livedata_ktx"
 

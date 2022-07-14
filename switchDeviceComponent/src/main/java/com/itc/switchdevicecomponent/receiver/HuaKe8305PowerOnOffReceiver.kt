@@ -21,13 +21,15 @@ class HuaKe8305PowerOnOffReceiver : BroadcastReceiver() {
             return
         }
         val action = intent.action
-        LogUtils.dTag(javaClass.simpleName, "监听到的广播动作:$action")
+        LogUtils.dTag("IDeviceOpt", "监听到的广播动作:$action")
         if (StringUtils.isEmpty(action)) {
             return
         }
         if (StringUtils.equals(action, HUA_KE_8305_ACTION)) {
             val powerManager = PowerManager(context)
             powerManager.shutdown(false, false)
+            LogUtils.dTag("IDeviceOpt", "执行了关机...")
+
         }
     }
 }

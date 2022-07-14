@@ -118,10 +118,8 @@ class SwitchMachineWork(appContext: Context, workerParams: WorkerParameters) :
                     DeviceOptManager.getHKBasicDeviceOpt()?.closeDevice(it.closeDeviceTime)//配置关机
                 }
                 DeviceType.MODULE_HK8305 -> {
-                    DeviceOptManager.getI0830BDeviceOptImpl()?.startDevice(it.startDeviceTime)
-                    DeviceOptManager.getI0830BDeviceOptImpl()?.closeDevice(it.closeDeviceTime)
-//                    DeviceOptManager.getHK8305DeviceOpt()?.startDevice(it.startDeviceTime)//配置开机
-//                    DeviceOptManager.getHK8305DeviceOpt()?.closeDevice(it.closeDeviceTime)//配置关机
+                    DeviceOptManager.getHK8305DeviceOpt()?.startDevice(it.startDeviceTime)//配置开机
+                    DeviceOptManager.getHK8305DeviceOpt()?.closeDevice(it.closeDeviceTime)//配置关机
                 }
                 DeviceType.MODULE_SK -> {
                     DeviceOptManager.getSkDeviceOpt()

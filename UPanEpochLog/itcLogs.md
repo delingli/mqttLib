@@ -1,17 +1,18 @@
 ## 日志收集方案第一版接入文档
-  ## 第一步：
+
+###  1.引进方式
 
 
               implementation   'com.idc.idcsdk:itclogs:1.0.8'
 
 
 
-## 第二步:
+###  2.接入方式
 
 
+> 全局初始化:
 
-     全局初始化:
-     LogParamsOption logParamsOption = new LogParamsOption.LogParamsOptionBuilder("http://10.10.20.200")//地址ip
+       LogParamsOption logParamsOption = new   LogParamsOption.LogParamsOptionBuilder("http://10.10.20.200")//地址ip
            .port(9039)  //端口
            .dealyTime(5)  //运行最长时间，
            .device_sn("abcdefg")//设备id 注意要跟业务中mqtt或者rabbitmq获取的保持一致，服务器做了数据库查询比对;
@@ -21,7 +22,7 @@
 
 
 
-##  第三步:业务代码基础功能接口
+###  3.:业务代码基础功能接口
 
 
 
@@ -36,7 +37,7 @@
   默认单位是Mb;可以不传不调;根据服务器配置传递;
 
 
-##  详细细节说明:
+### 5. 详细细节说明:
     *    submit上传成功组件会主动关闭服务;服务器也会默认更改状态
 
     *   支持失败上传，无网络或者其它原因倒是操作上传失败，组件不做任何操作，等待客户第二次操作上传，上传上次的zip包;

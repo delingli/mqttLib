@@ -155,7 +155,7 @@ object DeviceOptManager {
                             getHKBasicDeviceOpt()?.cancelStartCloseDevice()
                         }
                         DeviceType.MODULE_HK8305 -> {
-                            getI0830BDeviceOptImpl()?.cancelStartCloseDevice()
+                            getHK8305DeviceOpt()?.cancelStartCloseDevice()
                         }
                         DeviceType.MODULE_SK -> {
                             getSkDeviceOpt()?.cancelStartCloseDevice(

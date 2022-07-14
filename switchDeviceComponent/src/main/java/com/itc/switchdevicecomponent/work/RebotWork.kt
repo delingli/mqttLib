@@ -47,7 +47,7 @@ class RebotWork(appContext: Context, workerParams: WorkerParameters) :
                         DeviceOptManager.getHKBasicDeviceOpt()?.systemReset()
                     }
                     DeviceType.MODULE_HK8305 -> {
-                        DeviceOptManager.getI0830BDeviceOptImpl()?.systemReset()
+                        DeviceOptManager.getHK8305DeviceOpt()?.systemReset()
                     }
                     DeviceType.MODULE_SK -> {
                         DeviceOptManager.getSkDeviceOpt()

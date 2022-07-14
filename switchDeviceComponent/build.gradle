@@ -48,7 +48,7 @@ configurations.all {
 dependencies {
 //    def work_version = "2.7.1"
     def work_version = "2.6.0"
-    implementation fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
+    api fileTree(include: ['*.jar', '*.aar'], dir: 'libs')
     implementation('com.idc.idcsdk:commonComponent:1.0.6') {
         exclude module: 'appcompat'
         exclude module: 'core-ktx'
@@ -88,7 +88,7 @@ publishing {
         uploadSDK(MavenPublication) {
             artifact "build/outputs/aar/switchDeviceComponent-debug.aar"
             artifactId "deviceOptComponent"
-            version "1.2.0"
+            version "1.2.4"
         }
     }
 }

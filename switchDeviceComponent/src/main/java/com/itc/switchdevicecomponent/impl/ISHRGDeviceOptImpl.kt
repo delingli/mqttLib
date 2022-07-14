@@ -35,8 +35,9 @@ class ISHRGDeviceOptImpl(override var context: Context?) : ISHRGDeviceOpt {
         intent.putExtra("timeon", timeOn)
         intent.putExtra("timeoff", timeoff)
         intent.putExtra("enable", true)
+        intent.addFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP) //仅8.1需要添加此行代码
         if (Build.VERSION.RELEASE.equals("8.1.0")) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP) //仅8.1需要添加此行代码
+
             LogUtils.dTag(TAG, "当前SDK版本执行了FLAG_ACTIVITY_PREVIOUS_IS_TOP")
         }
         context?.sendBroadcast(intent)
@@ -74,8 +75,9 @@ class ISHRGDeviceOptImpl(override var context: Context?) : ISHRGDeviceOpt {
         intent.putExtra("timeon", timeOn)
         intent.putExtra("timeoff", timeoff)
         LogUtils.dTag(TAG, "当前SDK版本:${Build.VERSION.RELEASE}")
+        intent.addFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP) //仅8.1需要添加此行代码
         if (Build.VERSION.RELEASE.equals("8.1.0")) {
-            intent.addFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP) //仅8.1需要添加此行代码
+
             LogUtils.dTag(TAG, "当前SDK版本执行了FLAG_ACTIVITY_PREVIOUS_IS_TOP")
         }
         intent.putExtra("enable", false)
