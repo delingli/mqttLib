@@ -3,6 +3,9 @@ package com.itc.switchdevicecomponent.impl
 import android.content.Context
 import android.content.Intent
 import android.os.Build
+import android.os.UserHandle
+import android.provider.Telephony.Carriers.CURRENT
+import android.text.util.Linkify.ALL
 import com.blankj.utilcode.util.LogUtils
 import com.itc.switchdevicecomponent.basic.IDeviceOpt
 import com.itc.switchdevicecomponent.basic.IDeviceOpt.Companion.TAG
@@ -74,10 +77,10 @@ class ISHRGDeviceOptImpl(override var context: Context?) : ISHRGDeviceOpt {
         val intent = Intent("android.intent.action.setpoweronoff")
         intent.putExtra("timeon", timeOn)
         intent.putExtra("timeoff", timeoff)
+//        LogUtils.dTag(TAG, "timeOn:${timeOn}timeoff:${timeoff}")
         LogUtils.dTag(TAG, "当前SDK版本:${Build.VERSION.RELEASE}")
-        intent.addFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP) //仅8.1需要添加此行代码
         if (Build.VERSION.RELEASE.equals("8.1.0")) {
-
+            intent.addFlags(Intent.FLAG_ACTIVITY_PREVIOUS_IS_TOP) //仅8.1需要添加此行代码
             LogUtils.dTag(TAG, "当前SDK版本执行了FLAG_ACTIVITY_PREVIOUS_IS_TOP")
         }
         intent.putExtra("enable", false)

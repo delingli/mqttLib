@@ -14,4 +14,5 @@ public interface IRabbitDispatch {
     void destroyDispatcher();
     void publishReport(String deviceInfo);
     boolean publishFaceReport(String deviceInfo);
+    boolean isConnection();
 }

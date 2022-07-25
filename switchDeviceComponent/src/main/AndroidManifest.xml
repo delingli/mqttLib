@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.itc.switchdevicecomponent">
 
+    <uses-permission android:name="android.permission.INTERACT_ACROSS_USERS" />
     <uses-permission
         android:name="android.permission.SET_TIME"
         tools:ignore="ProtectedPermissions" />

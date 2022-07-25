@@ -1,5 +1,6 @@
 package com.example.idsapp
 
+import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -26,6 +27,7 @@ class TestOpenCloseDeviceActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         val mBinding = ActivityTestOpenCloseDeviceBinding.inflate(layoutInflater)
         setContentView(mBinding.root)
+
         val sdfs = SimpleDateFormat("yyyy-MM-dd HH:mm")
         val booleanS = booleanArrayOf(true, true, true, true, true, true)
         var mSwitchDeviceOption =
@@ -97,7 +99,8 @@ class TestOpenCloseDeviceActivity : AppCompatActivity() {
         var mSingleSelectedDialog = SingleSelectedDialog()
         mBinding.btnSelectDevice.setOnClickListener {
 //            yyyy-MM-dd HH:mm
-            DeviceOptManager.getISHRGDeviceOpt()?.startCloseDevice("2022-07-13 12:03","2022-07-13 12:02")
+            DeviceOptManager.getISHRGDeviceOpt()
+                ?.startCloseDevice("2022-07-19 15:50", "2022-07-19 15:45")
 
 //            DeviceOptManager.getSkDeviceOpt()?.cancelStartCloseDevice("2022-06-28 14:55","2022-06-28 14:50")
 //            DeviceOptManager.getSkDeviceOpt()?.systemReset()
@@ -119,7 +122,7 @@ class TestOpenCloseDeviceActivity : AppCompatActivity() {
         mBinding.btnCancel.setOnClickListener {
             var deviceTypes: String? = getDeviceType()
             DeviceOptManager.getISHRGDeviceOpt()
-                ?.cancelStartCloseDevice("2022-07-13 12:03", "2022-07-13 12:02")
+                ?.cancelStartCloseDevice("2022-07-19 15:50", "2022-07-19 15:45")
 
 //            DeviceOptManager.getHK8305DeviceOpt()?.cancelStartCloseDevice()
 

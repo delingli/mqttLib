@@ -43,7 +43,7 @@ abstract public class AbsRabbitDispatch implements IRabbitDispatch, IRabbitMqRec
     private int CONNECTIONTIMEOUT = 1000 * 30;
     private int HEARTBEAT = 10;
     private boolean underDestroy = false;
-    private Map params = new ArrayMap<String, String>();//参数
+    private Map params;//参数
     protected RabbitEventListener eventListener;
 
     public interface RabbitEventListener {
@@ -52,16 +52,24 @@ abstract public class AbsRabbitDispatch implements IRabbitDispatch, IRabbitMqRec
         void onShutdownSignaled(String consumerTag, String sig);
     }
 
+    @Override
+    public boolean isConnection() {
+        if (connection == null || channel == null || !channel.isOpen() || !connection.isOpen()|| underDestroy == true ) {
+            return false;
+        }
+        return true;
+    }
+
     /*private boolean canConnect(){
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo info = connectivityManager.getActiveNetworkInfo();
-        if (info != null && info.isAvailable()) {
-            String name = info.getTypeName();
-            Log.i(TAG, "当前网络名称：" + name);
-            return true;
-        } else {
-            Log.i(TAG, "没有可用网络");
-            *//*没有可用网络的时候，延迟30秒再尝试重连*//*
+            ConnectivityManager connectivityManager = (ConnectivityManager) context.getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo info = connectivityManager.getActiveNetworkInfo();
+            if (info != null && info.isAvailable()) {
+                String name = info.getTypeName();
+                Log.i(TAG, "当前网络名称：" + name);
+                return true;
+            } else {
+                Log.i(TAG, "没有可用网络");
+                *//*没有可用网络的时候，延迟30秒再尝试重连*//*
         mHandler.sendEmptyMessageDelayed(1, RECONNECT_TIME);
         return false;
     }
@@ -80,6 +88,7 @@ abstract public class AbsRabbitDispatch implements IRabbitDispatch, IRabbitMqRec
             throw new RuntimeException("RabbitMqOption 配置参数不得为空");
         }
         this.devicesn = DeviceIdUtil.getDeviceId(context);
+        params = new ArrayMap<String, String>();//参数
         //初始参数
         params.put("type", 1);
         params.put("device_sn", devicesn);
@@ -131,6 +140,7 @@ abstract public class AbsRabbitDispatch implements IRabbitDispatch, IRabbitMqRec
 
     }
 
+
     private static String QUEUE_NAMES = "ReportQRM";
     private static String QUEUE_EXCHANGE = "CERM";
     private static String FACE_EXCHANGE = "FACE_EXC";
@@ -171,6 +181,9 @@ abstract public class AbsRabbitDispatch implements IRabbitDispatch, IRabbitMqRec
         try {
             if (factory == null) {
                 initConnectFactor();
+            }
+            if (isConnection()) {
+                return true;
             }
             if (factory != null) {
                 connection = factory.newConnection();
@@ -261,31 +274,39 @@ abstract public class AbsRabbitDispatch implements IRabbitDispatch, IRabbitMqRec
         public void handleDelivery(String consumerTag,
                                    Envelope envelope,
                                    AMQP.BasicProperties properties,
-                                   byte[] body) throws IOException {
-
-
-            String routingKey = envelope.getRoutingKey();
-            String contentType = properties.getContentType();
-            LogUtils.dTag(TAG, "handle message with routingKey:" + routingKey + " contentType: " + contentType);
-            long deliveryTag = envelope.getDeliveryTag();
-            String message = new String(body);
-            LogUtils.dTag(TAG, "lastMsgId:" + lastMsgId + "deliveryTag:" + deliveryTag);
-            if (lastMsgId != deliveryTag) {
-                lastMsgId = deliveryTag;
-                LogUtils.dTag(TAG, "lastMsgId!=deliveryTag..." + "underDestroy:" + underDestroy);
-                if (!TextUtils.isEmpty(message) && !underDestroy) {
+                                   byte[] body) {
+            try {
+                String routingKey = envelope.getRoutingKey();
+                String contentType = properties.getContentType();
+                LogUtils.dTag(TAG, "handle message with routingKey:" + routingKey + " contentType: " + contentType);
+                long deliveryTag = envelope.getDeliveryTag();
+                String message = new String(body);
+                LogUtils.dTag(TAG, "lastMsgId:" + lastMsgId + "deliveryTag:" + deliveryTag);
+        /*        if (!TextUtils.isEmpty(message) && !underDestroy) {
                     LogUtils.dTag(TAG, "message:" + message + "deliveryTag:" + deliveryTag);
                     receiveMessage(message);
-                }
+                }*/
+                if (lastMsgId != deliveryTag) {
+                    lastMsgId = deliveryTag;
+                    LogUtils.dTag(TAG, "lastMsgId!=deliveryTag..." + "underDestroy:" + underDestroy);
+                    if (!TextUtils.isEmpty(message) && !underDestroy) {
+                        LogUtils.dTag(TAG, "message:" + message + "deliveryTag:" + deliveryTag);
+                        receiveMessage(message);
+                    }
 
-            }
-            LogUtils.dTag(TAG, "ChannelNumber:" + channel.getChannelNumber() + "消息:" + message);
+                }
+                LogUtils.dTag(TAG, "ChannelNumber:" + channel.getChannelNumber() + "消息:" + message);
 //            channel.basicAck(deliveryTag, false);
 
 //            channel.basicConsume(deliveryTag, false);
-            if (eventListener != null && underDestroy == false) {
-                eventListener.onMessageReceived(message);
+                if (eventListener != null && underDestroy == false) {
+                    eventListener.onMessageReceived(message);
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
+
 
         }
 
